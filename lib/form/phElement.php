@@ -3,9 +3,10 @@
  * A phElement is a decorator for SimpleXMLElement objects that allows a html tag like "input"
  * to be an element in a phForm
  * 
- * @author Rob Graham <rob@mellowplace.com>
+ * @author Rob Graham <htmlforms@mellowplace.com>
+ * @package phform
  */
-abstract class phElement
+abstract class phElement implements phBindable
 {
 	/**
 	 * An optional validator class that checks the value for this element is valid
@@ -17,10 +18,15 @@ abstract class phElement
 	 * @var SimpleXMLElement
 	 */
 	protected $_element = null;
+	/**
+	 * A cleaner that if set will clean the user inputted data
+	 * @var phCleaner
+	 */
+	protected $_cleaner = null;
 	
 	public function __construct(phForm $form, SimpleXMLElement $element)
 	{
-		
+		$this->_element = $element;
 	}
 	
 	public function setValidator(phValidator $validator)
@@ -28,10 +34,60 @@ abstract class phElement
 		$this->_validator = $validator;
 	}
 	
+	/**
+	 * @return phValidator
+	 */
+	public function getValidator()
+	{
+		return $this->_validator;
+	}
+	
 	public function isValid()
 	{
 		return ($this->_validator===null || $this->_validator->isValid($this));
 	}
 	
-	public abstract function getValue();
+	public function setCleaner(phCleaner $cleaner)
+	{
+		$this->_cleaner = $cleaner;
+	}
+	
+	/**
+	 * @return phCleaner an object who knows how to clean the elements data
+	 */
+	public function getCleaner()
+	{
+		return $this->_cleaner;
+	}
+	
+	/**
+	 * Gets a value from the element that has been cleaned by its data cleaner
+	 * @return mixed
+	 */
+	public function getValue()
+	{
+		return $this->_cleaner!==null ?
+					$this->getCleaner()->clean($this->getRawValue()) : $this->getRawValue();
+	}
+	
+	public function clearValue()
+	{
+		$this->setRawValue(null);
+	}
+	
+	/**
+	 * gets the raw value of the SimpleXmlElement element
+	 */
+	public abstract function getRawValue();
+	
+	/**
+	 * sets the raw value of the SimpleXmlElement element
+	 * @param mixed $value
+	 */
+	public abstract function setRawValue($value);
+	
+	public function bind($value)
+	{
+		$this->setRawValue($value);
+	}
 }

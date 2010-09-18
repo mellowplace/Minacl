@@ -55,5 +55,31 @@ class phViewTest extends PHPUnit_Framework_TestCase
     {
     	$this->assertEquals($this->view->id('underscores_are_ok'), 'underscores_are_ok', 'element id set ok');
     }
+    
+    public function testRender()
+    {
+    	$html = $this->view->render();
+    	
+    	$template = realpath(dirname(__FILE__)) . '../resources/viewTestView.php';
+		$view = new phFormViewTest($template, new phForm($template));
+		
+		$this->assertEquals(new SimpleXMLElement($html), $view->getDom(), 'Rendered HTML is same as original');
+    }
+    
+    public function testSetValue()
+    {
+    	$this->view->username->setValue("Test123 ABC");
+    	$html = $this->view->render();
+    	
+    	assertContains('"Test123 ABC"', $html, 'The username value was set and rendered correctly');
+    }
+}
+
+class phFormViewTest extends phFormView
+{
+	public function getDom()
+	{
+		return parent::getDom();
+	}
 }
 ?>

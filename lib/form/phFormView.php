@@ -1,20 +1,34 @@
 <?php
 /**
- * This class is responsible for rendering the form and providing object access to
+ * This class is responsible for rendering the form and providing an API to access
  * its elements
  * 
  * @author Rob Graham <htmlforms@mellowplace.com>
+ * @package phform
  */
 class phFormView
 {
+	/**
+	 * The owning form instance
+	 * @var phForm
+	 */
 	protected $_form = null;
 	protected $_template = null;
-	protected $_dontRenderForms = false;
 	/**
 	 * Dom handler for the html in the template
 	 * @var SimpleXMLElement
 	 */
 	protected $_dom = null;
+	/**
+	 * Holds the list of rewritten ids
+	 * @var array
+	 */
+	protected $_ids = array();
+	/**
+	 * Holds the list of rewritten input names
+	 * @var array
+	 */
+	protected $_names = array();
 	
 	protected $_elements = array();
 	
@@ -22,12 +36,15 @@ class phFormView
 	{
 		$this->_template = $template;
 		$this->_form = $form;
-		$this->_dom = $this->getDom();
+		$this->_dom = $this->parseDom($template);
 	}
 	
-	protected function getDom()
+	protected function parseDom($template)
 	{
-		$xml = $this->render(true);
+		ob_start();
+		require($template);
+		$xml = ob_get_clean();
+		
 		try 
 		{
 			$dom = new SimpleXMLElement($xml);
@@ -35,23 +52,25 @@ class phFormView
 		}
 		catch(Exception $e)
 		{
-			throw new phFormException("Unparsable html in template '{$this->_template}'");
+			throw new phFormException("Unparsable html in template '{$template}'");
 		}
 	}
 	
 	/**
-	 * Returns the fully parsed content of the form
-	 * 
-	 * @param boolean $noForms if we only want html from the view and not subforms then this should be true
+	 * gets the DOM tree for the template
+	 * @return SimpleXMLElement
 	 */
-	public function render($noForms = false)
+	protected function getDom()
 	{
-		$this->_dontRenderForms = $noForms;
-		
-		ob_start();
-		require($this->_template);
-		$html = ob_get_clean();
-		
+		return $this->_dom;
+	}
+	
+	/**
+	 * Using the dom, render out the fully parsed content of the form
+	 */
+	public function render()
+	{
+		$html = $this->getDom()->asXml();	
 		return $html;
 	}
 	
@@ -90,21 +109,58 @@ class phFormView
 	}
 	
 	/*
+	 * The id grabber functions
+	 */
+	
+	/**
+	 * Gets the elements id from the posted variable name
+	 * @param string $name
+	 */
+	public function getRealIdFromName($name)
+	{
+		
+	}
+	
+	/**
+	 * Gets the real element id from the rewritten one
+	 * @param string $id
+	 */
+	public function getRealId($id)
+	{
+		
+	}
+	
+	/*
 	 * Begin render helper methods
 	 */
 	
 	/**
-	 * Outputs a form in the view
+	 * Gets a rewritten id that will be unique even with sub forms
+	 * @param string $id
+	 */
+	public function id($id)
+	{
+		if(isset($this->_ids[$id]))
+		{
+			return $this->_ids[$id];
+		}
+		else
+		{
+			$newId = sprintf($this->_form->getIdFormat(), $id);
+			$this->_ids[$newId] = $id;
+		
+			return $newId;
+		}
+	}
+	
+	/**
+	 * Registers that there is a form in the view, also returns a tag which is later 
+	 * replaced with the actual form content
 	 * 
 	 * @param string $name the name of the form
 	 */
 	public function form($name)
 	{
-		if($this->_dontRenderForms)
-		{
-			return; // quietly return, we are not rendering forms
-		}
-		
-		return $form->$name->__toString();
+		return "<phform name=\"{$name}\" />";
 	}
 }
