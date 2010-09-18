@@ -1,4 +1,7 @@
 <?php
+require_once 'phBindable.php';
+require_once 'phFormException.php';
+require_once 'phFormView.php';
 /**
  * This is the base class for all forms, a form can be something as simple as a reusable component
  * of provide a full set of functionality.
@@ -173,6 +176,13 @@ class phForm implements phBindable
 		{
 			throw new phFormException("The entity '{$name}' is not on this form");
 		}
+		
+		return $entity;
+	}
+	
+	public function __toString()
+	{
+		return $this->_view->render();
 	}
 	
 	protected function entityExists($name)

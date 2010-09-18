@@ -1,4 +1,5 @@
 <?php
+require_once 'phBindable.php';
 /**
  * A phElement is a decorator for SimpleXMLElement objects that allows a html tag like "input"
  * to be an element in a phForm
@@ -77,7 +78,7 @@ abstract class phElement implements phBindable
 	
 	public function clearValue()
 	{
-		$this->setRawValue(null);
+		$this->setValue(null);
 	}
 	
 	/**
@@ -93,7 +94,7 @@ abstract class phElement implements phBindable
 	
 	public function bind($value)
 	{
-		$this->setRawValue($value);
+		$this->setValue($value);
 	}
 	
 	public function getElement()

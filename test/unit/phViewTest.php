@@ -3,8 +3,6 @@ require_once 'PHPUnit/Framework.php';
 $path = realpath(dirname(__FILE__)) . '/../../lib/form/';
 set_include_path(get_include_path() . PATH_SEPARATOR . $path);
 
-require_once 'phBindable.php';
-require_once 'phFormException.php';
 require_once 'phForm.php';
 require_once 'phFormView.php';
 
