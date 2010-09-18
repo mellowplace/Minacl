@@ -24,7 +24,7 @@ abstract class phElement implements phBindable
 	 */
 	protected $_cleaner = null;
 	
-	public function __construct(phForm $form, SimpleXMLElement $element)
+	public function __construct(SimpleXMLElement $element, phForm $form)
 	{
 		$this->_element = $element;
 	}
@@ -60,6 +60,11 @@ abstract class phElement implements phBindable
 		return $this->_cleaner;
 	}
 	
+	public function setValue($value)
+	{
+		$this->setRawValue($value);
+	}
+	
 	/**
 	 * Gets a value from the element that has been cleaned by its data cleaner
 	 * @return mixed
@@ -89,5 +94,10 @@ abstract class phElement implements phBindable
 	public function bind($value)
 	{
 		$this->setRawValue($value);
+	}
+	
+	public function getElement()
+	{
+		return $this->_element;
 	}
 }

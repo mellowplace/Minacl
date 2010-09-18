@@ -12,6 +12,7 @@ class phForm implements phBindable
 	protected $_valid = false;
 	protected $_bound = false;
 	protected $_name = '';
+	protected $_idFormat = '';
 	protected $_nameFormat = '';
 	
 	public function __construct($name, $template)
@@ -23,7 +24,9 @@ class phForm implements phBindable
 		
 		$this->_name = $name;
 		$this->setNameFormat($name . '[%s]');
-		$this->_view = new phFormView($template);
+		$this->setIdFormat($name . '_%s');
+		
+		$this->_view = new phFormView($template, $this);
 	}
 	
 	public function addForm(phForm $form)
@@ -39,6 +42,7 @@ class phForm implements phBindable
 		 * setup the name format for the sub form
 		 */
 		$form->setNameFormat(sprintf($this->getNameFormat(), $name) . '[%s]');
+		$form->setIdFormat(sprintf($this->getNameFormat(), $name) . '_%s');
 		$this->_forms[$name] = $form;
 	}
 	
@@ -66,8 +70,18 @@ class phForm implements phBindable
 		 */
 		foreach($values as $postedName=>$v)
 		{
-			$name = $this->_view->getRealIdFromName($postedName);
-			$this->$name->bind($v);
+			if(isset($this->_forms[$postedName]))
+			{
+				$this->_forms[$postedName]->bind($v);
+			}
+			else
+			{
+				$elements = $this->_view->getElementsFromName($postedName);
+				foreach($elements as $e)
+				{
+					$e->bind($v);
+				}
+			}
 		}
 	}
 	
@@ -77,6 +91,25 @@ class phForm implements phBindable
 		{
 			return false;
 		}
+		
+		$elements = $this->view->getAllElements();
+		foreach($elements as $e)
+		{
+			if(!$e->isValid())
+			{
+				return false;
+			}
+		}
+		
+		foreach($this->_forms as $f)
+		{
+			if(!$f->isValid())
+			{
+				return false;
+			}
+		}
+		
+		return true;
 	}
 	
 	public function clearValues()
@@ -111,6 +144,16 @@ class phForm implements phBindable
 	public function getNameFormat()
 	{
 		return $this->_nameFormat;
+	}
+	
+	public function setIdFormat($format)
+	{
+		$this->_idFormat = $format;
+	}
+	
+	public function getIdFormat()
+	{
+		return $this->_idFormat;
 	}
 	
 	public function __get($name)

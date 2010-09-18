@@ -21,3 +21,18 @@
 		<td>Table test</td>
 	</tr>
 </table>
+
+<input 	type="checkbox" 
+		id="<?php echo $this->id('checkbox1'); ?>"
+		name="<?php echo $this->name('checkbox'); ?>"
+		value="1" />
+
+<input 	type="checkbox" 
+		id="<?php echo $this->id('checkbox2'); ?>"
+		name="<?php echo $this->name('checkbox'); ?>"
+		value="2" />
+		
+<input 	type="checkbox" 
+		id="<?php echo $this->id('checkbox3'); ?>"
+		name="<?php echo $this->name('checkbox'); ?>"
+		value="3" />
