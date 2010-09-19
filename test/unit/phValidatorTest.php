@@ -6,8 +6,9 @@ set_include_path(get_include_path() . PATH_SEPARATOR . $path);
 require_once 'phForm.php';
 require_once 'phFormView.php';
 require_once 'validator/phValidator.php';
+require_once 'validator/phRequiredValidator.php';
 
-class phValidatorFailTest extends PHPUnit_Framework_TestCase
+class phValidatorTest extends PHPUnit_Framework_TestCase
 {
 	public function setUp()
 	{
@@ -69,6 +70,30 @@ class phValidatorFailTest extends PHPUnit_Framework_TestCase
 			'password'=>'pass'
 		));
 		$this->assertTrue($this->form->isValid(), 'Form is correctly valid');
+	}
+	
+	public function testRequiredValidatorFail()
+	{
+		$this->form->username->setValidator(new phRequiredValidator("Username is required"));
+		$this->form->bind(array(
+			'username'=>'',
+			'password'=>'fail'
+		));
+		
+		$this->assertFalse($this->form->username->isValid(), 'The username is correctly invalid');
+		$this->assertTrue(in_array('Username is required', $this->form->username->getErrors()),
+			'The username required validator error was set properly');
+	}
+	
+	public function testRequiredValidatorPass()
+	{
+		$this->form->username->setValidator(new phRequiredValidator("Username is required"));
+		$this->form->bind(array(
+			'username'=>'here',
+			'password'=>'fail'
+		));
+		
+		$this->assertTrue($this->form->username->isValid(), 'The username is valid');
 	}
 }
 
