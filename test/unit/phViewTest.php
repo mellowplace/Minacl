@@ -10,7 +10,7 @@ class phViewTest extends PHPUnit_Framework_TestCase
 {
 	protected function setUp()
 	{
-		$this->template = realpath(dirname(__FILE__)) . '/../resources/viewTestView.php';
+		$this->template = realpath(dirname(__FILE__)) . '/../resources/renderTestView.php';
 		$this->form = new phForm('test', $this->template);
 		$this->view = new phFormView($this->template, $this->form);
 	}
@@ -66,7 +66,7 @@ class phViewTest extends PHPUnit_Framework_TestCase
     {
     	$html = $this->view->render();
     	
-    	$template = realpath(dirname(__FILE__)) . '/../resources/viewTestView.php';
+    	$template = realpath(dirname(__FILE__)) . '/../resources/renderTestView.php';
 		$view = new phFormViewTest($template, new phForm('test', $template));
 		
 		$this->assertEquals(new SimpleXMLElement($html), $view->getDom(), 'Rendered HTML is same as original');
@@ -88,8 +88,12 @@ class phViewTest extends PHPUnit_Framework_TestCase
     
 	public function testSubFormElementGrabbing()
     {
-    	$this->form->addForm(new phForm('validName', $this->template));
-    	$elements = $this->view->getElementsFromName('validName');
+    	$template = realpath(dirname(__FILE__)) . '/../resources/viewTestView.php';
+		$form = new phForm('test', $template);
+		$view = new phFormView($template, $form);
+		
+    	$form->addForm(new phForm('validName', $this->template));
+    	$elements = $view->getElementsFromName('validName');
     	$this->assertEquals(sizeof($elements), 1, '1 element returned from getElementsFromName(\'validName\')');
     	$this->assertTrue($elements[0] instanceof phForm, 'returned element is a phForm');
     }

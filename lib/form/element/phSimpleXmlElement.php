@@ -144,6 +144,9 @@ abstract class phSimpleXmlElement implements phElement
 		$this->_errors = array();
 	}
 	
+	/**
+	 * @return SimpleXMLElement
+	 */
 	public function getElement()
 	{
 		return $this->_element;

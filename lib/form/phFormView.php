@@ -73,10 +73,40 @@ class phFormView
 	 */
 	public function render()
 	{
-		$html = $this->getDom()->asXml();	
-		return $html;
+		/*
+		 * parse again so any errors are drawn, then for each element,
+		 * replace with our instance
+		 */
+		$dom = dom_import_simplexml($this->parseDom($this->_template));
+		$xpath = new DOMXPath($dom->ownerDocument);
+		
+		$elements = $this->getAllElements();
+		foreach($elements as $e)
+		{
+			if($e instanceof phSimpleXmlElement)
+			{
+				$newElement = $e->getElement();
+				$id = (string)$newElement->attributes()->id;
+				
+				$nodes = $xpath->query("//*[@id='{$id}']");
+				$oldElement = $nodes->item(0);
+				
+				$new = $dom->ownerDocument->importNode(dom_import_simplexml($newElement), true);
+				$oldElement->parentNode->replaceChild($new, $oldElement);
+			}
+		}
+		
+		return $dom->ownerDocument->saveXML();
 	}
 	
+	private function simplexml_replace(SimpleXMLElement $dom, SimpleXMLElement $old, SimpleXMLElement $new)
+	{
+		$node1 = dom_import_simplexml($dom);
+		$dom_sxe = dom_import_simplexml($new);
+		$node2 = $node1->ownerDocument->importNode($dom_sxe, true);
+		$node1->parentNode->replaceChild($node2,$node1);
+	}
+	 
 	/**
 	 * @return phForm the form this view is for
 	 */
