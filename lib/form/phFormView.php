@@ -287,4 +287,24 @@ class phFormView
 		$newName = $this->name($name);
 		return "<phform id=\"{$newId}\" name=\"{$newName}\" />";
 	}
+	
+	/**
+	 * Returns any errors for the element with $id
+	 * 
+	 * @param string $id
+	 * @return array list of errors
+	 */
+	public function error($id)
+	{
+		$e = $this->$id;
+		return $e->getErrors();
+	}
+	
+	/**
+	 * Gets all errors for the form
+	 */
+	public function allErrors()
+	{
+		return $this->_form->getErrors();
+	}
 }

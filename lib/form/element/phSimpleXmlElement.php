@@ -1,5 +1,6 @@
 <?php
 require_once 'phElement.php';
+require_once 'validator/phValidator.php';
 /**
  * A phSimpleXmlElement is a decorator for SimpleXMLElement objects that allows a html tag like "input"
  * to be an element in a phForm
@@ -24,6 +25,16 @@ abstract class phSimpleXmlElement implements phElement
 	 * @var phCleaner
 	 */
 	protected $_cleaner = null;
+	/**
+	 * when the element is bound the validator will run and set this variable
+	 * @var boolean
+	 */
+	protected $_valid = true;
+	/**
+	 * Holds a list of errors that validators may attach
+	 * @var array
+	 */
+	protected $_errors = array();
 	
 	public function __construct(SimpleXMLElement $element, phFormView $view)
 	{
@@ -45,7 +56,7 @@ abstract class phSimpleXmlElement implements phElement
 	
 	public function isValid()
 	{
-		return ($this->_validator===null || $this->_validator->isValid($this));
+		return $this->_valid;
 	}
 	
 	public function setCleaner(phCleaner $cleaner)
@@ -76,6 +87,10 @@ abstract class phSimpleXmlElement implements phElement
 					$this->getCleaner()->clean($this->getRawValue()) : $this->getRawValue();
 	}
 	
+	/**
+	 * (non-PHPdoc)
+	 * @see lib/form/phElement::clearValues()
+	 */
 	public function clearValues()
 	{
 		$this->setValue(null);
@@ -92,9 +107,41 @@ abstract class phSimpleXmlElement implements phElement
 	 */
 	public abstract function setRawValue($value);
 	
-	public function bind($value)
+	public function bind($value, phForm $form = null)
 	{
 		$this->setValue($value);
+		
+		if($this->_validator!==null)
+		{
+			$this->_valid = $this->_validator->validate($this, $form);
+		}
+	}
+	
+	/**
+	 * (non-PHPdoc)
+	 * @see lib/form/phElement::addError()
+	 */
+	public function addError($error)
+	{
+		$this->_errors[] = $error;
+	}
+	
+	/**
+	 * (non-PHPdoc)
+	 * @see lib/form/phElement::getErrors()
+	 */
+	public function getErrors()
+	{
+		return $this->_errors;
+	}
+	
+	/**
+	 * (non-PHPdoc)
+	 * @see lib/form/phElement::resetErrors()
+	 */
+	public function resetErrors()
+	{
+		$this->_errors = array();
 	}
 	
 	public function getElement()

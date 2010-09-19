@@ -12,11 +12,15 @@ class phForm implements phElement
 {
 	protected $_view;
 	protected $_forms = array();
-	protected $_valid = false;
 	protected $_bound = false;
 	protected $_name = '';
 	protected $_idFormat = '';
 	protected $_nameFormat = '';
+	/**
+	 * Holds a list of errors that have been added to the form
+	 * @var array
+	 */
+	protected $_errors = array();
 	
 	public function __construct($name, $template)
 	{
@@ -64,8 +68,9 @@ class phForm implements phElement
 	 * setting elements values
 	 *  
 	 * @param array $values array in $name=>$value format, may be multidimensional
+	 * @param phForm $form the form that is being bound (null will mean $this is used)
 	 */
-	public function bind($values)
+	public function bind($values, phForm $form=null)
 	{
 		if($this->isBound())
 		{
@@ -86,7 +91,7 @@ class phForm implements phElement
 			$elements = $this->_view->getElementsFromName($postedName);
 			foreach($elements as $e)
 			{
-				$e->bind($v);
+				$e->bind($v, $this);
 			}
 		}
 		
@@ -134,6 +139,53 @@ class phForm implements phElement
 		}
 		
 		return $values;
+	}
+	
+	/**
+	 * Get errors actually gets ALL errors in the form, that is errors that have
+	 * been added to this object (global errors) as well as all child element errors
+	 * 
+	 * @return array all the errors in this form
+	 */
+	public function getErrors()
+	{
+		$errors = $this->_errors;
+		
+		$elements = $this->_view->getAllElements();
+		foreach($elements as $e)
+		{
+			$errors = array_merge($errors, $e->getErrors());
+		}
+		
+		return $errors;
+	}
+	
+	/**
+	 * This returns just the errors that have been added to this form
+	 * 
+	 * @return array array of error strings
+	 */
+	public function getGlobalErrors()
+	{
+		return $this->_errors;
+	}
+	
+	/**
+	 * (non-PHPdoc)
+	 * @see lib/form/phElement::addError()
+	 */
+	public function addError($message)
+	{
+		$this->_errors[] = $message;
+	}
+	
+	/**
+	 * (non-PHPdoc)
+	 * @see lib/form/phElement::resetErrors()
+	 */
+	public function resetErrors()
+	{
+		$this->errors = array();
 	}
 	
 	public function isBound()
