@@ -296,8 +296,11 @@ class phFormView
 	 */
 	public function error($id)
 	{
-		$e = $this->$id;
-		return $e->getErrors();
+		if($this->_dom)
+		{
+			$e = $this->$id;
+			return $e->getErrors();
+		}
 	}
 	
 	/**
@@ -305,7 +308,10 @@ class phFormView
 	 */
 	public function allErrors()
 	{
-		return $this->_form->getErrors();
+		if($this->_dom)
+		{
+			return $this->_form->getErrors();
+		}
 	}
 	
 	/**
@@ -315,14 +321,17 @@ class phFormView
 	 */
 	public function errorList($id = null)
 	{
-		$errors = $id===null?$this->allErrors():$this->error($id);
-		$html = "<ul>";
-		foreach($errors as $e)
+		if($this->_dom)
 		{
-			$html .= "<li>".htmlentities($e,ENT_COMPAT,'utf-8')."</li>";
+			$errors = $id===null?$this->allErrors():$this->error($id);
+			$html = "<ul>";
+			foreach($errors as $e)
+			{
+				$html .= "<li>".htmlentities($e,ENT_COMPAT,'utf-8')."</li>";
+			}
+			$html .= "</ul>";
+			
+			return $html;
 		}
-		$html .= "</ul>";
-		
-		return $html;
 	}
 }
