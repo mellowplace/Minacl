@@ -37,6 +37,25 @@ class phFormTest extends PHPUnit_Framework_TestCase
     	$this->assertSame($this->form->validName, $this->addedForm, 'Form has been added and is the original object');
     }
     
+    /**
+     * @expectedException phFormException
+     */
+    public function testFormNotFound()
+    {
+    	$this->addForm('validName');
+    	$this->form->getForm('nonExistant');
+    }
+    
+    /**
+     * @expectedException phFormException
+     */
+    public function testAddSameForm()
+    {
+    	$this->addForm('validName');
+    	$sameForm = new phForm('validName', realpath(dirname(__FILE__)). '/../resources/viewTestView.php');
+    	$this->form->addForm($sameForm); // should error as form with this name already added
+    }
+    
     public function testBind()
     {
     	$form = new phForm('test', realpath(dirname(__FILE__)) . '/../resources/simpleTestView.php');

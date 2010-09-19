@@ -98,14 +98,6 @@ class phFormView
 		
 		return $dom->ownerDocument->saveXML();
 	}
-	
-	private function simplexml_replace(SimpleXMLElement $dom, SimpleXMLElement $old, SimpleXMLElement $new)
-	{
-		$node1 = dom_import_simplexml($dom);
-		$dom_sxe = dom_import_simplexml($new);
-		$node2 = $node1->ownerDocument->importNode($dom_sxe, true);
-		$node1->parentNode->replaceChild($node2,$node1);
-	}
 	 
 	/**
 	 * @return phForm the form this view is for
@@ -147,11 +139,6 @@ class phFormView
 		}
 		
 		return $this->_elements[$id];
-	}
-	
-	public function __toString()
-	{
-		return $this->render();
 	}
 	
 	/**

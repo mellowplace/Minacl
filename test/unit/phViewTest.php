@@ -113,6 +113,15 @@ class phViewTest extends PHPUnit_Framework_TestCase
     	
     	$this->assertSame($username1, $username2, '__get returns a reference and isn\'t creating a new object each time');
     }
+    
+    /**
+     * @expectedException phFormException
+     */
+    public function testCrapHtml()
+    {
+    	$template = dirname(__FILE__) . '/../resources/crapHtmlView.php';
+    	new phFormView($template, new phForm('test', $template));
+    }
 }
 
 class phFormViewTest extends phFormView
