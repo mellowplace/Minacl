@@ -1,4 +1,7 @@
 <?php
+$path = realpath(dirname(__FILE__));
+set_include_path(get_include_path() . PATH_SEPARATOR . $path);
+
 require_once 'phElement.php';
 require_once 'phFormException.php';
 require_once 'phFormView.php';
