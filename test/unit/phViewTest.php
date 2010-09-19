@@ -93,6 +93,22 @@ class phViewTest extends PHPUnit_Framework_TestCase
     	$this->assertEquals(sizeof($elements), 1, '1 element returned from getElementsFromName(\'validName\')');
     	$this->assertTrue($elements[0] instanceof phForm, 'returned element is a phForm');
     }
+    
+    public function testGetByNameReturnsSameInstance()
+    {
+    	$username1 = $this->view->getElementsFromName('username');
+    	$username2 = $this->view->getElementsFromName('username');
+    	
+    	$this->assertSame($username1, $username2, 'getElementsFromName returns a reference and isn\'t creating a new object each time');
+    }
+    
+	public function testMagicGetReturnsSameInstance()
+    {
+    	$username1 = $this->username;
+    	$username2 = $this->username;
+    	
+    	$this->assertSame($username1, $username2, '__get returns a reference and isn\'t creating a new object each time');
+    }
 }
 
 class phFormViewTest extends phFormView

@@ -86,7 +86,7 @@ class phFormView
 	}
 	
 	/**
-	 * Searches the template for an element with the $id and returns the decorated
+	 * Searches the template for an element with the $id and returns a reference to the decorated
 	 * element object
 	 * 
 	 * @param string $id
@@ -96,10 +96,24 @@ class phFormView
 		if(!isset($this->_elements[$id]))
 		{
 			$rewrittenId = $this->getRewrittenId($id);
-			$elements = $this->getElementsByXpath("//*[@id='{$rewrittenId}']");
+			$elements = $this->_dom->xpath("//*[@id='{$rewrittenId}']");
+			
+			if(!sizeof($elements))
+			{
+				throw new phException("No element found by the id of '{$id}'");
+			}
+			
 			$element = $elements[0];
 			
-			$this->_elements[$id] = $element;
+			$f = phElementFactory::getFactory($element);
+			if($f===null)
+			{
+				throw new phFormException("no factory exists for handling the '{$element->getName()}' element");
+			}
+			
+			$phElement = $f->createPhElement($element, $this);
+			
+			$this->_elements[$id] = $phElement;
 		}
 		
 		return $this->_elements[$id];
@@ -136,7 +150,7 @@ class phFormView
 		$key = array_search($id, $this->_ids);
 		if($key===false)
 		{
-			throw new phFormException("No elements on the form had their id rewritten to '{$id}'");
+			throw new phFormException("No element by the id of '{$id}' was registered on the form");
 		}
 		
 		return $key;
@@ -168,11 +182,35 @@ class phFormView
 	 * Gets an array of elements from the posted variable name
 	 * @param string $name
 	 * @return array an array of phElement objects
+	 * @todo We've searched the document once with xpath and have the SimpleXmlElement, we should not search it again in __get, needs an intermediary method that both this and __get can use
 	 */
 	public function getElementsFromName($name)
 	{
 		$name = $this->getRewrittenName($name);
-		return $this->getElementsByXpath("//*[@name='{$name}']");
+		$elements = $this->_dom->xpath("//*[@name='{$name}']");
+		
+		if(!sizeof($elements))
+		{
+			throw new phFormException("No elements found by the name of '{$name}'", $code);
+		}
+		
+		$phElements = array();
+		/*
+		 * return the initialised instances by using the magic __get function
+		 */
+		foreach($elements as $e)
+		{
+			$id = (string)$e->attributes()->id;
+			if(!$id)
+			{
+				throw new phFormException("Element with the name '{$name}' has no id set");
+			}
+			
+			$id = $this->getRealId($id);
+			$phElements[] = $this->$id;
+		}
+		
+		return $phElements;
 	}
 	
 	public function getAllElements()
@@ -185,30 +223,6 @@ class phFormView
 		}
 		
 		return $elements;
-	}
-	
-	protected function getElementsByXpath($xpath)
-	{
-		$elements = $this->_dom->xpath($xpath);
-		if($elements===false || !sizeof($elements))
-		{
-			throw new phFormException("no elements found using xpath '{$xpath}' in the template '{$this->_template}'");
-		}
-		
-		$phElements = array();
-		
-		foreach($elements as $element)
-		{
-			$f = phElementFactory::getFactory($element);
-			if($f===null)
-			{
-				throw new phFormException("no factory exists for handling the '{$element->getName()}' element");
-			}
-			
-			$phElements[] = $f->createPhElement($element, $this);
-		}
-		
-		return $phElements;
 	}
 	
 	/*
