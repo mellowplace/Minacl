@@ -307,4 +307,22 @@ class phFormView
 	{
 		return $this->_form->getErrors();
 	}
+	
+	/**
+	 * Gets an html <ul> list of errors
+	 * 
+	 * @param string $id optional id to get only errors from one field
+	 */
+	public function errorList($id = null)
+	{
+		$errors = $id===null?$this->allErrors():$this->error($id);
+		$html = "<ul>";
+		foreach($errors as $e)
+		{
+			$html .= "<li>".htmlentities($e,ENT_COMPAT,'utf-8')."</li>";
+		}
+		$html .= "</ul>";
+		
+		return $html;
+	}
 }
