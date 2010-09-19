@@ -1,6 +1,6 @@
 <?php
 /**
- * The element factory finds the appropriate creator oh phElement instances
+ * The element factory finds the appropriate creator of phElement instances
  * for a given SimpleXmlElement object
  *
  * @author Rob Graham <htmlforms@mellowplace.com>
@@ -31,7 +31,7 @@ abstract class phElementFactory
 	{
 		$factories = array();
 		
-		$dir = realpath(dirname(__FILE__)).'/factory';
+		$dir = realpath(dirname(__FILE__));
 		$files = new DirectoryIterator($dir);
 		foreach($files as $f)
 		{
@@ -58,8 +58,8 @@ abstract class phElementFactory
 	 * creates a new phElement from a SimpleXMLElement
 	 * 
 	 * @param SimpleXMLElement $e
-	 * @param phForm $form the form the element appears on
+	 * @param phFormView $view the view the element appears on
 	 * @return phElement
 	 */
-	public abstract function createPhElement(SimpleXMLElement $e, phForm $form);
+	public abstract function createPhElement(SimpleXMLElement $e, phFormView $view);
 }

@@ -1,4 +1,3 @@
-<span>Login Form</span>
 <dl>
 	<dt>Username</dt>
 	<dd>
@@ -15,19 +14,11 @@
 				value="" />
 	</dd>
 </dl>
-<!-- Some comments here -->
-<table border="0" width="100%">
-	<tr>
-		<td>Table test</td>
-	</tr>
-</table>
-
-<?php echo $this->form('validName'); ?>
 
 <input 	type="checkbox" 
 		id="<?php echo $this->id('checkbox1'); ?>"
 		name="<?php echo $this->name('checkbox'); ?>"
-		value="1" />
+		value="1" checked="checked" />
 
 <input 	type="checkbox" 
 		id="<?php echo $this->id('checkbox2'); ?>"

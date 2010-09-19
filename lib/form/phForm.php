@@ -1,5 +1,5 @@
 <?php
-require_once 'phBindable.php';
+require_once 'phElement.php';
 require_once 'phFormException.php';
 require_once 'phFormView.php';
 /**
@@ -8,7 +8,7 @@ require_once 'phFormView.php';
  * 
  * @author Rob Graham <htmlforms@mellowplace.com>
  */
-class phForm implements phBindable
+class phForm implements phElement
 {
 	protected $_view;
 	protected $_forms = array();
@@ -20,7 +20,7 @@ class phForm implements phBindable
 	
 	public function __construct($name, $template)
 	{
-		if(!$this->isNameValid($name))
+		if(!$this->isValidId($name))
 		{
 			throw new phFormException("Invalid form name '{$name}'", $code);
 		}
@@ -49,6 +49,16 @@ class phForm implements phBindable
 		$this->_forms[$name] = $form;
 	}
 	
+	public function getForm($name)
+	{
+		if(!isset($this->_forms[$name]))
+		{
+			throw new phFormException("no form with the name '{$name}' exists");
+		}
+		
+		return $this->_forms[$name];
+	}
+	
 	/**
 	 * binds input from a post/get into the form, triggering validators and
 	 * setting elements values
@@ -73,19 +83,14 @@ class phForm implements phBindable
 		 */
 		foreach($values as $postedName=>$v)
 		{
-			if(isset($this->_forms[$postedName]))
+			$elements = $this->_view->getElementsFromName($postedName);
+			foreach($elements as $e)
 			{
-				$this->_forms[$postedName]->bind($v);
-			}
-			else
-			{
-				$elements = $this->_view->getElementsFromName($postedName);
-				foreach($elements as $e)
-				{
-					$e->bind($v);
-				}
+				$e->bind($v);
 			}
 		}
+		
+		$this->setBound(true);
 	}
 	
 	public function isValid()
@@ -95,18 +100,10 @@ class phForm implements phBindable
 			return false;
 		}
 		
-		$elements = $this->view->getAllElements();
+		$elements = $this->_view->getAllElements();
 		foreach($elements as $e)
 		{
 			if(!$e->isValid())
-			{
-				return false;
-			}
-		}
-		
-		foreach($this->_forms as $f)
-		{
-			if(!$f->isValid())
 			{
 				return false;
 			}
@@ -120,8 +117,23 @@ class phForm implements phBindable
 		$elements = $this->_view->getAllElements();
 		foreach($elements as $e)
 		{
-			$e->clearValue();
+			$e->clearValues();
 		}
+	}
+	
+	/**
+	 * Gets the cleaned values of the form
+	 */
+	public function getValues()
+	{
+		$elements = $this->_view->getAllElements();
+		$values = array();
+		foreach($elements as $e)
+		{
+			$values[] = $e->getValues();
+		}
+		
+		return $values;
 	}
 	
 	public function isBound()
@@ -159,25 +171,14 @@ class phForm implements phBindable
 		return $this->_idFormat;
 	}
 	
+	public function isValidId($id)
+	{
+		return preg_match('/^[a-zA-Z\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/', $id)>0;
+	}
+	
 	public function __get($name)
 	{
-		$entity = null;
-		
-		if(isset($this->_forms[$name]))
-		{
-			$entity = $this->_forms[$name];
-		}
-		else
-		{
-			$entity = $this->_view->$name;
-		}
-		
-		if($entity===null)
-		{
-			throw new phFormException("The entity '{$name}' is not on this form");
-		}
-		
-		return $entity;
+		return $this->_view->$name;
 	}
 	
 	public function __toString()
@@ -188,10 +189,5 @@ class phForm implements phBindable
 	protected function entityExists($name)
 	{
 		return (isset($this->$name) || isset($this->_forms[$name]));
-	}
-	
-	protected function isNameValid($name)
-	{
-		return true;
 	}
 }

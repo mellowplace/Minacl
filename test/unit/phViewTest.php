@@ -10,8 +10,9 @@ class phViewTest extends PHPUnit_Framework_TestCase
 {
 	protected function setUp()
 	{
-		$template = realpath(dirname(__FILE__)) . '/../resources/viewTestView.php';
-		$this->view = new phFormView($template, new phForm('test', $template));
+		$this->template = realpath(dirname(__FILE__)) . '/../resources/viewTestView.php';
+		$this->form = new phForm('test', $this->template);
+		$this->view = new phFormView($this->template, $this->form);
 	}
 	
     public function testElementFinding()
@@ -83,6 +84,14 @@ class phViewTest extends PHPUnit_Framework_TestCase
     {
     	$elements = $this->view->getElementsFromName('checkbox');
     	$this->assertEquals(sizeof($elements), 3, '3 elements returned from getElementsFromName(\'checkbox\')');
+    }
+    
+	public function testSubFormElementGrabbing()
+    {
+    	$this->form->addForm(new phForm('validName', $this->template));
+    	$elements = $this->view->getElementsFromName('validName');
+    	$this->assertEquals(sizeof($elements), 1, '1 element returned from getElementsFromName(\'validName\')');
+    	$this->assertTrue($elements[0] instanceof phForm, 'returned element is a phForm');
     }
 }
 

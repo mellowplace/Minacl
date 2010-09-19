@@ -1,6 +1,6 @@
 <?php
 require_once('phForm.php');
-require_once('phElementFactory.php');
+require_once('factory/phElementFactory.php');
 require_once 'phFormException.php';
 /**
  * This class is responsible for rendering the form and providing an API to access
@@ -78,6 +78,14 @@ class phFormView
 	}
 	
 	/**
+	 * @return phForm the form this view is for
+	 */
+	public function getForm()
+	{
+		return $this->_form;
+	}
+	
+	/**
 	 * Searches the template for an element with the $id and returns the decorated
 	 * element object
 	 * 
@@ -102,17 +110,12 @@ class phFormView
 		return $this->render();
 	}
 	
-	protected function isValidId($id)
-	{
-		return preg_match('/^[a-zA-Z\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/', $id)>0;
-	}
-	
 	/**
 	 * Gets the real element id from the rewritten one
 	 * 
 	 * @param string $id
 	 */
-	protected function getRealId($id)
+	public function getRealId($id)
 	{
 		if(!isset($this->_ids[$id]))
 		{
@@ -128,7 +131,7 @@ class phFormView
 	 * @param $id
 	 * @return string the rewritten id
 	 */
-	protected function getRewrittenId($id)
+	public function getRewrittenId($id)
 	{
 		$key = array_search($id, $this->_ids);
 		if($key===false)
@@ -146,7 +149,7 @@ class phFormView
 	 * @throws phFormException
 	 * @return string the rewritten name
 	 */
-	protected function getRewrittenName($name)
+	public function getRewrittenName($name)
 	{
 		$key = array_search($name, $this->_names);
 		if($key===false)
@@ -202,7 +205,7 @@ class phFormView
 				throw new phFormException("no factory exists for handling the '{$element->getName()}' element");
 			}
 			
-			$phElements[] = $f->createPhElement($element, $this->_form);
+			$phElements[] = $f->createPhElement($element, $this);
 		}
 		
 		return $phElements;
@@ -225,7 +228,7 @@ class phFormView
 		}
 		else
 		{
-			if(!$this->isValidId($id))
+			if(!$this->_form->isValidId($id))
 			{
 				throw new phFormException("'{$id}' is not valid, ids must be a-z0-9 or '_' only and contain no spaces and must not start with an '_' (underscore) or number", $code);
 			}
@@ -266,6 +269,8 @@ class phFormView
 	 */
 	public function form($name)
 	{
-		return "<phform name=\"{$name}\" />";
+		$newId = $this->id($name);
+		$newName = $this->name($name);
+		return "<phform id=\"{$newId}\" name=\"{$newName}\" />";
 	}
 }

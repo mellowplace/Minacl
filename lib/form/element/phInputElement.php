@@ -1,12 +1,12 @@
 <?php
-require_once('phElement.php');
+require_once('element/phSimpleXmlElement.php');
 
-class phInputElement extends phElement
+class phInputElement extends phSimpleXmlElement
 {
 	public function getRawValue()
 	{
 		$e = $this->getElement();
-		return $e->attributes()->value;
+		return (string)$e->attributes()->value;
 	}
 	
 	public function setRawValue($value)

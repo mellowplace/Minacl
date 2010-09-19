@@ -1,6 +1,6 @@
 <?php
 require_once('element/phInputElement.php');
-require_once('phElementFactory.php');
+require_once('factory/phElementFactory.php');
 /**
  * This factory can handle all input elements bar if they are a checkbox
  * 
@@ -26,8 +26,8 @@ class phInputElementFactory extends phElementFactory
 		return false;
 	}
 	
-	public function createPhElement(SimpleXMLElement $e, phForm $form)
+	public function createPhElement(SimpleXMLElement $e, phFormView $view)
 	{
-		return new phInputElement($e, $form);
+		return new phInputElement($e, $view);
 	}
 }

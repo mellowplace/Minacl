@@ -1,6 +1,6 @@
 <?php
 require_once('element/phCheckboxElement.php');
-require_once('phElementFactory.php');
+require_once('factory/phElementFactory.php');
 /**
  * This factory can handle checkbox elements
  * 
@@ -26,8 +26,8 @@ class phCheckboxElementFactory extends phElementFactory
 		return false;
 	}
 	
-	public function createPhElement(SimpleXMLElement $e, phForm $form)
+	public function createPhElement(SimpleXMLElement $e, phFormView $view)
 	{
-		return new phCheckboxElement($e, $form);
+		return new phCheckboxElement($e, $view);
 	}
 }
