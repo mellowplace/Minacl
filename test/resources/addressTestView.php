@@ -9,6 +9,8 @@
 			name="<?php echo $this->name('address'); ?>"
 			value="" />
 	</td>
+</tr>
+<tr>
 	<td>
 		<label for="<?php echo $this->id('postalCode'); ?>">Post Code:</label>
 	</td>

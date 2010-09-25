@@ -81,16 +81,19 @@ class phForm implements phElement
 		 */
 		$this->clearValues();
 		
+		$form = $form!==null ? $form : $this;
+		
 		/*
-		 * set the values of the form into the elements (element could also be a form)
+		 * Get all the elements and find a value in the posted array.  We do it this way around
+		 * so we make sure all validators are fired regardless of if their value is posted or not
 		 */
-		foreach($values as $postedName=>$v)
+		$elements = $this->_view->getAllElements();
+		foreach($elements as $e)
 		{
-			$elements = $this->_view->getElementsFromName($postedName);
-			foreach($elements as $e)
-			{
-				$e->bind($v, $this);
-			}
+			$e->bind(
+				isset($values[$e->getName()]) ? $values[$e->getName()] : null, 
+				$form
+			);
 		}
 		
 		$this->setBound(true);
@@ -98,6 +101,11 @@ class phForm implements phElement
 	
 	public function isValid()
 	{	
+		if(!$this->isBound())
+		{
+			return false;
+		}
+		
 		$elements = $this->_view->getAllElements();
 		foreach($elements as $e)
 		{

@@ -4,6 +4,7 @@ set_include_path(get_include_path() . PATH_SEPARATOR . $path);
 
 require_once 'PHPUnit/Framework.php';
 require_once 'phForm.php';
+require_once realpath(dirname(__FILE__)) . '/../resources/phTestForm.php';
  
 class phFormTest extends PHPUnit_Framework_TestCase
 {	
@@ -113,16 +114,5 @@ class phFormTest extends PHPUnit_Framework_TestCase
     	$this->addedForm = new phForm($name, realpath(dirname(__FILE__)). '/../resources/viewTestView.php');
         $this->form->addForm($this->addedForm);
     }
-}
-
-class phTestForm extends phForm
-{
-	/**
-	 * @return phFormView
-	 */
-	public function getView()
-	{
-		return $this->_view;
-	}
 }
 ?>

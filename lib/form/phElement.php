@@ -48,4 +48,10 @@ interface phElement
 	 * @return array
 	 */
 	public function getErrors();
+	
+	/**
+	 * Gets the name of this element as it appears in the view
+	 * @return string
+	 */
+	public function getName();
 }

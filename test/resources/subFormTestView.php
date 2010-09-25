@@ -1,8 +1,8 @@
 <table width="100%">
 	<thead>
 		<tr>
-			<th>&nbsp;</th>
-			<th>&nbsp;</th>
+			<th> </th>
+			<th> </th>
 		</tr>
 	</thead>
 	<tbody>

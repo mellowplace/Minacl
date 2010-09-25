@@ -11,6 +11,11 @@ require_once 'validator/phValidator.php';
 abstract class phSimpleXmlElement implements phElement
 {
 	/**
+	 * The view this element appears on
+	 * @var phFormView
+	 */
+	protected $_view = null;
+	/**
 	 * An optional validator class that checks the value for this element is valid
 	 * @var phValidator
 	 */
@@ -39,6 +44,7 @@ abstract class phSimpleXmlElement implements phElement
 	public function __construct(SimpleXMLElement $element, phFormView $view)
 	{
 		$this->_element = $element;
+		$this->_view = $view;
 	}
 	
 	public function setValidator(phValidator $validator)
@@ -150,5 +156,14 @@ abstract class phSimpleXmlElement implements phElement
 	public function getElement()
 	{
 		return $this->_element;
+	}
+	
+	/**
+	 * (non-PHPdoc)
+	 * @see lib/form/phElement::getName()
+	 */
+	public function getName()
+	{
+		return $this->_view->getRealName((string)$this->_element->attributes()->name);
 	}
 }

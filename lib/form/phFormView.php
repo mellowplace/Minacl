@@ -105,7 +105,8 @@ class phFormView
 		 */
 		$dom = dom_import_simplexml($this->parseDom($this->_template));
 		$xpath = new DOMXPath($dom->ownerDocument);
-		$dom->ownerDocument->removeChild($dom->ownerDocument->doctype);
+		
+		$forms = array();
 		
 		$elements = $this->getAllElements();
 		foreach($elements as $e)
@@ -121,9 +122,13 @@ class phFormView
 				$new = $dom->ownerDocument->importNode(dom_import_simplexml($newElement), true);
 				$oldElement->parentNode->replaceChild($new, $oldElement);
 			}
+			else if($e instanceof phForm)
+			{
+				$forms[$e->getName()] = $e->__toString();
+			}
 		}
 		
-		
+		$dom->ownerDocument->removeChild($dom->ownerDocument->doctype);
 		$xml = $dom->ownerDocument->saveXML();
 		/*
 		 * get rid of the xml declaration and wrapping xhtml tags that were
@@ -132,6 +137,14 @@ class phFormView
 		$xml = str_replace('<?xml version="1.0"?>', '', $xml);
 		$xml = str_replace('<phformdoc>', '', $xml);
 		$xml = str_replace('</phformdoc>', '', $xml);
+		/*
+		 * replace any phform tags with their relevant subform output
+		 */
+		foreach($forms as $name=>$html)
+		{
+			$id = $this->id($name);
+			$xml = preg_replace('/<phform .*id="'.$id.'".*\/>/', $html, $xml);
+		}
 		
 		return $xml;
 	}
@@ -226,6 +239,22 @@ class phFormView
 		}
 		
 		return $key;
+	}
+	
+	/**
+	 * Gets a real name from a rewritten one
+	 * 
+	 * @param string $rewrittenName
+	 * @throws phFormException
+	 */
+	public function getRealName($rewrittenName)
+	{
+		if(!isset($this->_names[$rewrittenName]))
+		{
+			throw new phFormException("No elements had their name rewritten to '{$rewrittenName}'");
+		}
+		
+		return $this->_names[$rewrittenName];
 	}
 	
 	/*

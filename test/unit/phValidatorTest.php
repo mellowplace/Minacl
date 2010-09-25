@@ -25,6 +25,14 @@ class phValidatorTest extends PHPUnit_Framework_TestCase
 		$this->assertFalse($this->form->isValid(), 'Form is correctly not valid');
 	}
 	
+	public function testEmptyPostFormFail()
+	{
+		$this->form->username->setValidator(new TestValidatorFail('required'));
+		$this->form->username->setValue('');
+		$this->form->bind(array());
+		$this->assertFalse($this->form->isValid(), 'Form is correctly not valid');
+	}
+	
 	public function testElementErrorMessages()
 	{
 		$this->form->username->setValidator(new TestValidatorFail('This field is required'));
@@ -94,6 +102,11 @@ class phValidatorTest extends PHPUnit_Framework_TestCase
 		));
 		
 		$this->assertTrue($this->form->username->isValid(), 'The username is valid');
+	}
+	
+	public function testUnboundFormFail()
+	{
+		$this->assertFalse($this->form->isValid(), 'Unbound form is not valid');
 	}
 }
 
