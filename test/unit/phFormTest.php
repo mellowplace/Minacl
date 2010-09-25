@@ -79,7 +79,7 @@ class phFormTest extends PHPUnit_Framework_TestCase
     		'checkbox'=>'3'
     	));
     	
-    	$xml = new SimpleXMLElement($form->__toString());
+    	$xml = new SimpleXMLElement('<xhtml>' . $form->__toString() . '</xhtml>');
     	$elements = $xml->xpath('//input[@value=\'the username\']');
     	
     	$this->assertEquals(sizeof($elements), 1, 'found an input matching the usernames value');

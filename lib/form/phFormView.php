@@ -96,7 +96,16 @@ class phFormView
 			}
 		}
 		
-		return $dom->ownerDocument->saveXML();
+		
+		$xml = $dom->ownerDocument->saveXML();
+		/*
+		 * get rid of the xml declaration and wrapping xhtml tags that were
+		 * needed to create a dom from the view but have no use in being returned
+		 */
+		$xml = str_replace('<?xml version="1.0"?>', '', $xml);
+		$xml = str_replace('<xhtml>', '', $xml);
+		$xml = str_replace('</xhtml>', '', $xml);
+		return $xml;
 	}
 	 
 	/**

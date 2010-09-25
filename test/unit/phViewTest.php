@@ -69,7 +69,7 @@ class phViewTest extends PHPUnit_Framework_TestCase
     	$template = realpath(dirname(__FILE__)) . '/../resources/renderTestView.php';
 		$view = new phFormViewTest($template, new phForm('test', $template));
 		
-		$this->assertEquals(new SimpleXMLElement($html), $view->getDom(), 'Rendered HTML is same as original');
+		$this->assertEquals($html, $view->render(), 'Rendered HTML is same as original');
     }
     
     public function testSetValue()
