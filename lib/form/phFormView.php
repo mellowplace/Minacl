@@ -35,18 +35,44 @@ class phFormView
 	
 	protected $_elements = array();
 	
+	/**
+	 * Holds the document type declaration which allows us to include
+	 * definitions for xhtml entities like &nbsp; that would be unparsable
+	 * otherwise
+	 * @var string
+	 */
+	protected $_docTypeDecl = '';
+	
 	public function __construct($template, phForm $form)
 	{
 		$this->_template = $template;
 		$this->_form = $form;
+		
+		$this->_docTypeDecl = file_get_contents('dtd/xhtml-entities.ent', true);
+		if($this->_docTypeDecl===false)
+		{
+			throw new phFormException('Cannot find xhtml entities definitions');
+		}
+		
 		$this->_dom = $this->parseDom($template);
 	}
 	
 	protected function parseDom($template)
 	{
 		ob_start();
+		echo "<!DOCTYPE phformdoc [\n";
+		/*
+		 * include the xhtml entity definitions so there are
+		 * no parsing errors when coming across special entities
+		 * like &nbsp;
+		 */
+		echo $this->_docTypeDecl;
+		echo "\n]>\n";
+		echo "<phformdoc>\n";
 		require($template);
-		$xml = '<xhtml>' . ob_get_clean() . '</xhtml>';
+		echo "</phformdoc>\n";
+		
+		$xml = ob_get_clean();
 		
 		try 
 		{
@@ -55,7 +81,7 @@ class phFormView
 		}
 		catch(Exception $e)
 		{
-			throw new phFormException("Unparsable html in template '{$template}'");
+			throw new phFormException("Unparsable html in template '{$template}', parser said: {$e->getMessage()}");
 		}
 	}
 	
@@ -79,6 +105,7 @@ class phFormView
 		 */
 		$dom = dom_import_simplexml($this->parseDom($this->_template));
 		$xpath = new DOMXPath($dom->ownerDocument);
+		$dom->ownerDocument->removeChild($dom->ownerDocument->doctype);
 		
 		$elements = $this->getAllElements();
 		foreach($elements as $e)
@@ -103,8 +130,9 @@ class phFormView
 		 * needed to create a dom from the view but have no use in being returned
 		 */
 		$xml = str_replace('<?xml version="1.0"?>', '', $xml);
-		$xml = str_replace('<xhtml>', '', $xml);
-		$xml = str_replace('</xhtml>', '', $xml);
+		$xml = str_replace('<phformdoc>', '', $xml);
+		$xml = str_replace('</phformdoc>', '', $xml);
+		
 		return $xml;
 	}
 	 
@@ -127,11 +155,11 @@ class phFormView
 		if(!isset($this->_elements[$id]))
 		{
 			$rewrittenId = $this->getRewrittenId($id);
-			$elements = $this->_dom->xpath("//*[@id='{$rewrittenId}']");
+			$elements = $this->getDom()->xpath("//*[@id='{$rewrittenId}']");
 			
 			if(!sizeof($elements))
 			{
-				throw new phException("No element found by the id of '{$id}'");
+				throw new phFormException("No element found by the id of '{$id}'");
 			}
 			
 			$element = $elements[0];
@@ -213,7 +241,7 @@ class phFormView
 	public function getElementsFromName($name)
 	{
 		$name = $this->getRewrittenName($name);
-		$elements = $this->_dom->xpath("//*[@name='{$name}']");
+		$elements = $this->getDom()->xpath("//*[@name='{$name}']");
 		
 		if(!sizeof($elements))
 		{
@@ -262,9 +290,10 @@ class phFormView
 	 */
 	public function id($id)
 	{
-		if(isset($this->_ids[$id]))
+		$key = array_search($id, $this->_ids);
+		if($key!==false)
 		{
-			return $this->_ids[$id];
+			return $key;
 		}
 		else
 		{
@@ -288,9 +317,10 @@ class phFormView
 	 */
 	public function name($name)
 	{
-		if(isset($this->_names[$name]))
+		$key = array_search($name, $this->_names);
+		if($key!==false)
 		{
-			return $this->_names[$name];
+			return $key;
 		}
 		else
 		{
@@ -322,11 +352,15 @@ class phFormView
 	 */
 	public function error($id)
 	{
-		if($this->_dom)
+		$errors = array();
+		
+		if($this->getDom())
 		{
 			$e = $this->$id;
-			return $e->getErrors();
+			$errors = $e->getErrors();
 		}
+		
+		return $errors;
 	}
 	
 	/**
@@ -334,7 +368,7 @@ class phFormView
 	 */
 	public function allErrors()
 	{
-		if($this->_dom)
+		if($this->getDom())
 		{
 			return $this->_form->getErrors();
 		}
@@ -347,7 +381,7 @@ class phFormView
 	 */
 	public function errorList($id = null)
 	{
-		if($this->_dom)
+		if($this->getDom())
 		{
 			$errors = $id===null?$this->allErrors():$this->error($id);
 			$html = "<ul>";

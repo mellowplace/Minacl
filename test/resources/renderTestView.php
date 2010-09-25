@@ -37,3 +37,6 @@
 		id="<?php echo $this->id('checkbox3'); ?>"
 		name="<?php echo $this->name('checkbox'); ?>"
 		value="3" />
+		
+<!-- should be ok with HTML comments and entities below -->
+&nbsp;&gt;&lt;&quot;

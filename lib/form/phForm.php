@@ -74,12 +74,7 @@ class phForm implements phElement
 	 * @param phForm $form the form that is being bound (null will mean $this is used)
 	 */
 	public function bind($values, phForm $form=null)
-	{
-		if($this->isBound())
-		{
-			throw new phFormException('This form has already been bound');
-		}
-		
+	{	
 		/*
 		 * clear all existing values from our form, sub forms will clear themselves
 		 * when their bind method is called
@@ -102,12 +97,7 @@ class phForm implements phElement
 	}
 	
 	public function isValid()
-	{
-		if(!$this->_bound)
-		{
-			return false;
-		}
-		
+	{	
 		$elements = $this->_view->getAllElements();
 		foreach($elements as $e)
 		{

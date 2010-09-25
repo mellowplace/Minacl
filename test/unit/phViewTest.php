@@ -23,6 +23,69 @@ class phViewTest extends PHPUnit_Framework_TestCase
     /**
      * @expectedException phFormException
      */
+    public function testElementNotfound()
+    {
+    	$this->view->elementDoesNotExist;
+    }
+    
+	/**
+     * @expectedException phFormException
+     */
+    public function testIdRegisteredButNotInView()
+    {
+    	$this->view->id('missing');
+    	$this->view->missing;
+    }
+    
+	/**
+     * @expectedException phFormException
+     */
+    public function testNameRegisteredButNotInView()
+    {
+    	$this->view->name('missing');
+    	$this->view->getElementsFromName('missing');
+    }
+    
+    
+    /**
+     * @expectedException phFormException
+     */
+    public function testNoFactory()
+    {
+    	$template = realpath(dirname(__FILE__)) . '/../resources/invalidElementView.php';
+    	$view = new phFormView($template, new phForm('test', $template));
+    	$view->invalid;
+    }
+    
+    /**
+     * @expectedException phFormException
+     */
+    public function testRewrittenNameNotFound()
+    {
+    	$this->view->getRewrittenName('nonexistantname');
+    }
+    
+	/**
+     * @expectedException phFormException
+     */
+    public function testRealIdNotFound()
+    {
+    	$this->view->getRealId('nonexistantid');
+    }
+    
+	/**
+     * @expectedException phFormException
+     */
+    public function testElementNameButNoId()
+    {
+    	$template = realpath(dirname(__FILE__)) . '/../resources/invalidElementView.php';
+    	$view = new phFormView($template, new phForm('test', $template));
+    	$view->getElementsFromName('noId');
+    }
+    
+    /**
+     * @expectedException phFormException
+     */
     public function testInvalidElementId()
     {
     	$this->view->id('123nostartwithnumbers');
@@ -68,7 +131,6 @@ class phViewTest extends PHPUnit_Framework_TestCase
     	
     	$template = realpath(dirname(__FILE__)) . '/../resources/renderTestView.php';
 		$view = new phFormViewTest($template, new phForm('test', $template));
-		
 		$this->assertEquals($html, $view->render(), 'Rendered HTML is same as original');
     }
     

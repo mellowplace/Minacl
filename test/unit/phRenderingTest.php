@@ -12,7 +12,7 @@ require_once 'phForm.php';
  * @package phform
  * @subpackage test
  */
-class RenderingTest extends PHPUnit_Framework_TestCase
+class phRenderingTest extends PHPUnit_Framework_TestCase
 {
 	public function setUp()
 	{
