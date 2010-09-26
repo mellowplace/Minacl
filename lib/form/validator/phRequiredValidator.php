@@ -10,7 +10,9 @@ require_once 'validator/phValidatorException.php';
  */
 class phRequiredValidator extends phValidatorCommon
 {
-	protected function doValidate(phValidatableFormDataItem $item)
+	const REQUIRED = 1;
+	
+	public function validate(phValidatableFormDataItem $item)
 	{
 		$value = $item->getValue();
 		if(is_array($value))
@@ -18,6 +20,22 @@ class phRequiredValidator extends phValidatorCommon
 			throw new phValidatorException('I cannot validate elements that return multiple values');
 		}
 		
-		return (strlen($value)>0);
+		$valid = (strlen($value)>0);
+		if(!$valid)
+		{
+			$item->addError($this->getError(self::REQUIRED));
+		}
+		
+		return $valid;
+	}
+	
+	protected function getValidErrorCodes()
+	{
+		return array(self::REQUIRED);
+	}
+	
+	protected function getDefaultErrorMessages()
+	{
+		return array(self::REQUIRED=>'This is a required field, please enter a value');
 	}
 }

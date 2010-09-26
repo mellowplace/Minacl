@@ -7,6 +7,7 @@ require_once 'phForm.php';
 require_once 'phFormView.php';
 require_once 'validator/phValidator.php';
 require_once 'validator/phRequiredValidator.php';
+require_once 'validator/phStringLengthValidator.php';
 
 class phValidatorTest extends PHPUnit_Framework_TestCase
 {
@@ -82,7 +83,9 @@ class phValidatorTest extends PHPUnit_Framework_TestCase
 	
 	public function testRequiredValidatorFail()
 	{
-		$this->form->username->setValidator(new phRequiredValidator("Username is required"));
+		$this->form->username->setValidator(new phRequiredValidator(
+			array(phRequiredValidator::REQUIRED=>'Username is required')
+		));
 		$this->form->bind(array(
 			'username'=>'',
 			'password'=>'fail'
@@ -95,12 +98,54 @@ class phValidatorTest extends PHPUnit_Framework_TestCase
 	
 	public function testRequiredValidatorPass()
 	{
-		$this->form->username->setValidator(new phRequiredValidator("Username is required"));
+		$this->form->username->setValidator(new phRequiredValidator(array(
+			phRequiredValidator::REQUIRED=>"Username is required"
+		)));
 		$this->form->bind(array(
 			'username'=>'here',
 			'password'=>'fail'
 		));
 		
+		$this->assertTrue($this->form->username->validate(), 'The username is valid');
+	}
+	
+	public function testStringLengthValidator()
+	{
+		$strVal = new phStringLengthValidator(array(
+			phStringLengthValidator::INVALID=>"Please enter a string between 6 and 8 characters long"
+		));
+		$strVal->min(6)->max(8);
+		$this->form->username->setValidator($strVal);
+		
+		/*
+		 * too short tests
+		 */
+		$this->form->bind(array(
+			'username'=>'short',
+			'password'=>'fail'
+		));
+		$this->assertFalse($this->form->username->validate(), 'The username is correctly not valid');
+		$this->assertTrue(in_array('Please enter a string between 6 and 8 characters long', $this->form->username->getErrors()),
+			'Correct error message is in username');
+		
+		/*
+		 * too long tests
+		 */
+		$this->form->bind(array(
+			'username'=>'waytoolong',
+			'password'=>'fail'
+		));
+		$this->assertFalse($this->form->username->validate(), 'The username is correctly not valid');
+		$this->assertTrue(in_array('Please enter a string between 6 and 8 characters long', $this->form->username->getErrors()),
+			'Correct error message is in username');
+		
+		/*
+		 * just right!
+		 */
+		$this->form->bind(array(
+			'username'=>'justfine',
+			'password'=>'fail'
+		));
 		$this->assertTrue($this->form->username->validate(), 'The username is valid');
 	}
 	

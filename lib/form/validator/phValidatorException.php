@@ -6,7 +6,7 @@
  * @package phform
  * @subpackage validator
  */
-class phValidatorException
+class phValidatorException extends Exception
 {
 	
 }

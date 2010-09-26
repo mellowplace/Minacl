@@ -1,7 +1,7 @@
 <?php
 require_once 'validator/phValidator.php';
 /**
- * Common base for a basic validator that provides an error message
+ * Common base for a basic validator that provides error messages
  * 
  * @author Rob Graham <htmlforms@mellowplace.com>
  * @package phform
@@ -9,26 +9,38 @@ require_once 'validator/phValidator.php';
  */
 abstract class phValidatorCommon implements phValidator
 {
-	protected $_errorMessage = null;
+	protected $_errors = array();
 	
-	public function __construct($errorMessage)
+	public function __construct(array $errors = array())
 	{
-		$this->_errorMessage = $errorMessage;
-	}
-	
-	/**
-	 * (non-PHPdoc)
-	 * @see lib/form/validator/phValidator::validate()
-	 */
-	public function validate(phValidatableFormDataItem $item)
-	{
-		$ok = $this->doValidate($item);
-		if(!$ok)
+		foreach($errors as $code=>$e)
 		{
-			$item->addError($this->_errorMessage);
+			$this->setError($code, $e);
 		}
-		return $ok;
 	}
 	
-	protected abstract function doValidate(phValidatableFormDataItem $item);
+	public function setError($code, $message)
+	{
+		if(!in_array($code, $this->getValidErrorCodes()))
+		{
+			throw new phValidatorException("The error code '{$code}' is not valid for this validator");
+		}
+		
+		$this->_errors[$code] = $message;
+	}
+	
+	protected function getError($code)
+	{
+		if(isset($this->_errors[$code]))
+		{
+			return $this->_errors[$code];
+		}
+		
+		$defaults = $this->getDefaultErrorMessages();
+		return $defaults[$code];
+	}
+	
+	protected abstract function getValidErrorCodes();
+	
+	protected abstract function getDefaultErrorMessages();
 }

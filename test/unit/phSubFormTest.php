@@ -56,7 +56,9 @@ class phSubFormTest extends PHPUnit_Framework_TestCase
 	
 	public function testSubFormValidation()
 	{
-		$this->form->address->address->setValidator(new phRequiredValidator('Required field'));
+		$this->form->address->address->setValidator(new phRequiredValidator(
+			array(phRequiredValidator::REQUIRED=>'Required field')
+		));
 		$this->form->bindAndValidate(array(
 			'first_name'=>'Rob',
 			'address'=>array(
@@ -66,7 +68,9 @@ class phSubFormTest extends PHPUnit_Framework_TestCase
 		));
 		$this->assertTrue($this->form->isValid(), 'Form is valid');
 		
-		$this->form->address->address->setValidator(new phRequiredValidator('Required field'));
+		$this->form->address->address->setValidator(new phRequiredValidator(
+			array(phRequiredValidator::REQUIRED=>'Required field')
+		));
 		$this->form->bind(array());
 		$this->assertFalse($this->form->isValid(), 'Form is not valid');
 	}

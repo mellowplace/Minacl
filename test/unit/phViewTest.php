@@ -33,7 +33,7 @@ class phViewTest extends PHPUnit_Framework_TestCase
      */
     public function testIdRegisteredButNotInView()
     {
-    	$this->view->id('missing');
+    	$this->view->name('missing');
     	$this->view->missing;
     }
     
