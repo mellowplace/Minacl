@@ -15,7 +15,7 @@ class phRequiredValidator extends phValidatorCommon
 		$value = $checkElement->getValues();
 		if(is_array($value))
 		{
-			throw new phValidatorException('I cannot valid elements that return multiple values');
+			throw new phValidatorException('I cannot validate elements that return multiple values');
 		}
 		
 		return (strlen($value)>0);

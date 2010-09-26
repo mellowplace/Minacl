@@ -11,7 +11,7 @@ class phcheckboxElement extends phInputElement
 		{
 			/*
 			 * value being set to same as our elements
-			 * value="" attribute, therefor we need to
+			 * value="" attribute, therefore we need to
 			 * be marked as checked
 			 */
 			unset($e->attributes()->checked);
