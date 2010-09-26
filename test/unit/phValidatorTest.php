@@ -28,7 +28,7 @@ class phValidatorTest extends PHPUnit_Framework_TestCase
 	public function testEmptyPostFormFail()
 	{
 		$this->form->username->setValidator(new TestValidatorFail('required'));
-		$this->form->username->setValue('');
+		$this->form->username->bind('');
 		$this->form->bind(array());
 		$this->assertFalse($this->form->isValid(), 'Form is correctly not valid');
 	}
@@ -36,7 +36,7 @@ class phValidatorTest extends PHPUnit_Framework_TestCase
 	public function testElementErrorMessages()
 	{
 		$this->form->username->setValidator(new TestValidatorFail('This field is required'));
-		$this->form->bind(array(
+		$this->form->bindAndValidate(array(
 			'username'=>'fail',
 			'password'=>'fail'
 		));
@@ -48,7 +48,7 @@ class phValidatorTest extends PHPUnit_Framework_TestCase
 	public function testFormErrorMessages()
 	{
 		$this->form->username->setValidator(new TestValidatorFail('This field is required'));
-		$this->form->bind(array(
+		$this->form->bindAndValidate(array(
 			'username'=>'fail',
 			'password'=>'fail'
 		));
@@ -60,7 +60,7 @@ class phValidatorTest extends PHPUnit_Framework_TestCase
 	public function testViewErrorMessages()
 	{
 		$this->form->username->setValidator(new TestValidatorFail('This field is required'));
-		$this->form->bind(array(
+		$this->form->bindAndValidate(array(
 			'username'=>'fail',
 			'password'=>'fail'
 		));
@@ -73,7 +73,7 @@ class phValidatorTest extends PHPUnit_Framework_TestCase
 	public function testFormPass()
 	{
 		$this->form->username->setValidator(new TestValidatorPass());
-		$this->form->bind(array(
+		$this->form->bindAndValidate(array(
 			'username'=>'pass',
 			'password'=>'pass'
 		));
@@ -88,7 +88,7 @@ class phValidatorTest extends PHPUnit_Framework_TestCase
 			'password'=>'fail'
 		));
 		
-		$this->assertFalse($this->form->username->isValid(), 'The username is correctly invalid');
+		$this->assertFalse($this->form->username->validate(), 'The username is correctly invalid');
 		$this->assertTrue(in_array('Username is required', $this->form->username->getErrors()),
 			'The username required validator error was set properly');
 	}
@@ -101,7 +101,7 @@ class phValidatorTest extends PHPUnit_Framework_TestCase
 			'password'=>'fail'
 		));
 		
-		$this->assertTrue($this->form->username->isValid(), 'The username is valid');
+		$this->assertTrue($this->form->username->validate(), 'The username is valid');
 	}
 	
 	public function testUnboundFormFail()
@@ -128,16 +128,16 @@ class TestValidatorFail implements phValidator
 		$this->_message = $message;
 	}
 	
-	public function validate(phElement $checkElement, phForm $bindingForm)
+	public function validate(phValidatableFormDataItem $item)
 	{
-		$checkElement->addError($this->_message);
+		$item->addError($this->_message);
 		return false;
 	}
 }
 
 class TestValidatorPass implements phValidator
 {
-	public function validate(phElement $checkElement, phForm $bindingForm)
+	public function validate(phValidatableFormDataItem $item)
 	{
 		return true;
 	}

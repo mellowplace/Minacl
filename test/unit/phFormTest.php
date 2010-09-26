@@ -60,7 +60,7 @@ class phFormTest extends PHPUnit_Framework_TestCase
     public function testBind()
     {
     	$form = new phForm('test', realpath(dirname(__FILE__)) . '/../resources/simpleTestView.php');
-    	$form->bind(array(
+    	$form->bindAndValidate(array(
     		'username'=>'test',
     		'password'=>'pass'
     	));
@@ -86,14 +86,14 @@ class phFormTest extends PHPUnit_Framework_TestCase
     	$this->assertEquals(sizeof($elements), 1, 'found an input matching the usernames value');
     	$rewrittenName = $form->getView()->name('username');
     	$this->assertEquals((string)$elements[0]->attributes()->name, $rewrittenName, 'the username name attribute matches the rewritten name for username');
-    	$this->assertEquals($form->username->getValues(), 'the username', 'username field was set correctly');
+    	$this->assertEquals($form->username->getValue(), 'the username', 'username field was set correctly');
     	
     	$elements = $xml->xpath('//input[@value=\'the password\']');
     	
     	$this->assertEquals(sizeof($elements), 1, 'found an input matching the password value');
     	$rewrittenName = $form->getView()->name('password');
     	$this->assertEquals((string)$elements[0]->attributes()->name, $rewrittenName, 'the username name attribute matches the rewritten name for password');
-    	$this->assertEquals($form->password->getValues(), 'the password', 'password field was set correctly');
+    	$this->assertEquals($form->password->getValue(), 'the password', 'password field was set correctly');
     	
     	$rewrittenId = $form->getView()->id('checkbox3');
     	$elements = $xml->xpath("//input[@id='{$rewrittenId}']");

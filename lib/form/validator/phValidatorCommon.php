@@ -20,15 +20,15 @@ abstract class phValidatorCommon implements phValidator
 	 * (non-PHPdoc)
 	 * @see lib/form/validator/phValidator::validate()
 	 */
-	public function validate(phElement $checkElement, phForm $bindingForm)
+	public function validate(phValidatableFormDataItem $item)
 	{
-		$ok = $this->doValidate($checkElement, $bindingForm);
+		$ok = $this->doValidate($item);
 		if(!$ok)
 		{
-			$checkElement->addError($this->_errorMessage);
+			$item->addError($this->_errorMessage);
 		}
 		return $ok;
 	}
 	
-	protected abstract function doValidate(phElement $checkElement, phForm $bindingForm);
+	protected abstract function doValidate(phValidatableFormDataItem $item);
 }

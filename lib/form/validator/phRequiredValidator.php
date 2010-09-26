@@ -10,9 +10,9 @@ require_once 'validator/phValidatorException.php';
  */
 class phRequiredValidator extends phValidatorCommon
 {
-	protected function doValidate(phElement $checkElement, phForm $bindingForm)
+	protected function doValidate(phValidatableFormDataItem $item)
 	{
-		$value = $checkElement->getValues();
+		$value = $item->getValue();
 		if(is_array($value))
 		{
 			throw new phValidatorException('I cannot validate elements that return multiple values');

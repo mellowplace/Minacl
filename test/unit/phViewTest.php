@@ -17,7 +17,7 @@ class phViewTest extends PHPUnit_Framework_TestCase
 	
     public function testElementFinding()
     {
-        $this->assertTrue($this->view->username instanceof phInputElement, 'username exists and is a phInputElement');
+        $this->assertTrue($this->view->username instanceof phFormDataItem, 'username exists and is a phFormDataItem');
     }
     
     /**
@@ -43,7 +43,7 @@ class phViewTest extends PHPUnit_Framework_TestCase
     public function testNameRegisteredButNotInView()
     {
     	$this->view->name('missing');
-    	$this->view->getElementsFromName('missing');
+    	$this->view->missing;
     }
     
     
@@ -80,7 +80,7 @@ class phViewTest extends PHPUnit_Framework_TestCase
     {
     	$template = realpath(dirname(__FILE__)) . '/../resources/invalidElementView.php';
     	$view = new phFormView($template, new phForm('test', $template));
-    	$view->getElementsFromName('noId');
+    	$view->noId;
     }
     
     /**
@@ -136,42 +136,16 @@ class phViewTest extends PHPUnit_Framework_TestCase
     
     public function testSetValue()
     {
-    	$this->view->username->setValue("Test123 ABC");
+    	$this->view->username->bind("Test123 ABC");
     	$html = $this->view->render();
     	
     	$this->assertContains('"Test123 ABC"', $html, 'The username value was set and rendered correctly');
     }
     
-    public function testElementGrabbing()
-    {
-    	$elements = $this->view->getElementsFromName('checkbox');
-    	$this->assertEquals(sizeof($elements), 3, '3 elements returned from getElementsFromName(\'checkbox\')');
-    }
-    
-	public function testSubFormElementGrabbing()
-    {
-    	$template = realpath(dirname(__FILE__)) . '/../resources/viewTestView.php';
-		$form = new phForm('test', $template);
-		$view = new phFormView($template, $form);
-		
-    	$form->addForm(new phForm('validName', $this->template));
-    	$elements = $view->getElementsFromName('validName');
-    	$this->assertEquals(sizeof($elements), 1, '1 element returned from getElementsFromName(\'validName\')');
-    	$this->assertTrue($elements[0] instanceof phForm, 'returned element is a phForm');
-    }
-    
-    public function testGetByNameReturnsSameInstance()
-    {
-    	$username1 = $this->view->getElementsFromName('username');
-    	$username2 = $this->view->getElementsFromName('username');
-    	
-    	$this->assertSame($username1, $username2, 'getElementsFromName returns a reference and isn\'t creating a new object each time');
-    }
-    
 	public function testMagicGetReturnsSameInstance()
     {
-    	$username1 = $this->username;
-    	$username2 = $this->username;
+    	$username1 = $this->view->username;
+    	$username2 = $this->view->username;
     	
     	$this->assertSame($username1, $username2, '__get returns a reference and isn\'t creating a new object each time');
     }

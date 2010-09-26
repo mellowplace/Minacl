@@ -17,8 +17,9 @@ class phFormElementFactory extends phElementFactory
 	
 	public function createPhElement(SimpleXMLElement $e, phFormView $view)
 	{
-		return $view->getForm()->getForm(
-			$view->getRealId((string)$e->attributes()->id)
+		$form = $view->getForm()->getForm(
+			$view->getRealName((string)$e->attributes()->name)
 		);
+		return $form;
 	}
 }

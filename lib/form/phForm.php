@@ -2,16 +2,18 @@
 $path = realpath(dirname(__FILE__));
 set_include_path(get_include_path() . PATH_SEPARATOR . $path);
 
-require_once 'phElement.php';
+require_once 'phFormViewElement.php';
 require_once 'phFormException.php';
 require_once 'phFormView.php';
+require_once 'phValidatable.php';
+
 /**
  * This is the base class for all forms, a form can be something as simple as a reusable component
  * of provide a full set of functionality.
  * 
  * @author Rob Graham <htmlforms@mellowplace.com>
  */
-class phForm implements phElement
+class phForm extends phFormDataItem implements phFormViewElement, phValidatable
 {
 	protected $_view;
 	protected $_forms = array();
@@ -19,6 +21,7 @@ class phForm implements phElement
 	protected $_name = '';
 	protected $_idFormat = '';
 	protected $_nameFormat = '';
+	protected $_valid = false;
 	/**
 	 * Holds a list of errors that have been added to the form
 	 * @var array
@@ -66,20 +69,27 @@ class phForm implements phElement
 		return $this->_forms[$name];
 	}
 	
+	public function hasForm($name)
+	{
+		return isset($this->_forms[$name]);
+	}
+	
 	/**
 	 * binds input from a post/get into the form, triggering validators and
 	 * setting elements values
 	 *  
 	 * @param array $values array in $name=>$value format, may be multidimensional
 	 * @param phForm $form the form that is being bound (null will mean $this is used)
+	 * @todo remove the phForm arg
 	 */
 	public function bind($values, phForm $form=null)
 	{	
+		$this->_valid = false; // needs to be revalidated now it has been bound
 		/*
 		 * clear all existing values from our form, sub forms will clear themselves
 		 * when their bind method is called
 		 */
-		$this->clearValues();
+		$this->clearValue();
 		
 		$form = $form!==null ? $form : $this;
 		
@@ -87,16 +97,40 @@ class phForm implements phElement
 		 * Get all the elements and find a value in the posted array.  We do it this way around
 		 * so we make sure all validators are fired regardless of if their value is posted or not
 		 */
-		$elements = $this->_view->getAllElements();
-		foreach($elements as $e)
+		$items = $this->_view->getAllDataItems();
+		foreach($items as $i)
 		{
-			$e->bind(
-				isset($values[$e->getName()]) ? $values[$e->getName()] : null, 
-				$form
+			$i->bind(
+				isset($values[$i->getName()]) ? $values[$i->getName()] : null
 			);
 		}
 		
+		parent::bind($values);
+		
 		$this->setBound(true);
+	}
+	
+	public function validate()
+	{
+		$this->_valid = true;
+		
+		$items = $this->_view->getAllDataItems();
+		foreach($items as $i)
+		{
+			if($i instanceof phValidatable && !$i->validate())
+			{
+				$this->_valid = false;
+			}
+		}
+		
+		return $this->_valid;
+	}
+	
+	
+	public function bindAndValidate($values)
+	{
+		$this->bind($values);
+		$this->validate();
 	}
 	
 	public function isValid()
@@ -106,24 +140,15 @@ class phForm implements phElement
 			return false;
 		}
 		
-		$elements = $this->_view->getAllElements();
-		foreach($elements as $e)
-		{
-			if(!$e->isValid())
-			{
-				return false;
-			}
-		}
-		
-		return true;
+		return $this->_valid;
 	}
 	
-	public function clearValues()
+	public function clearValue()
 	{
-		$elements = $this->_view->getAllElements();
-		foreach($elements as $e)
+		$items = $this->_view->getAllDataItems();
+		foreach($items as $i)
 		{
-			$e->clearValues();
+			$i->clearValue();
 		}
 	}
 	
@@ -132,11 +157,11 @@ class phForm implements phElement
 	 */
 	public function getValues()
 	{
-		$elements = $this->_view->getAllElements();
+		$items = $this->_view->getAllDataItems();
 		$values = array();
-		foreach($elements as $e)
+		foreach($items as $i)
 		{
-			$values[] = $e->getValues();
+			$values[] = $i->getValues();
 		}
 		
 		return $values;
@@ -152,10 +177,10 @@ class phForm implements phElement
 	{
 		$errors = $this->_errors;
 		
-		$elements = $this->_view->getAllElements();
-		foreach($elements as $e)
+		$items = $this->_view->getAllDataItems();
+		foreach($items as $i)
 		{
-			$errors = array_merge($errors, $e->getErrors());
+			$errors = array_merge($errors, $i->getErrors());
 		}
 		
 		return $errors;
@@ -242,5 +267,15 @@ class phForm implements phElement
 	protected function entityExists($name)
 	{
 		return (isset($this->$name) || isset($this->_forms[$name]));
+	}
+	
+	/**
+	 * When a phform element in the view is found a phFormDataItem instance is created
+	 * and then when, in bind it has its values set
+	 * @see lib/form/phDataChangeListener::dataChanged()
+	 */
+	public function dataChanged(phFormDataItem $item)
+	{
+		$this->setValue($item->getValue());
 	}
 }

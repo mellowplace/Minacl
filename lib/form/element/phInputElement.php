@@ -12,6 +12,6 @@ class phInputElement extends phSimpleXmlElement
 	public function setRawValue($value)
 	{
 		$e = $this->getElement();
-		$e->attributes()->value = $value;
+		$e->attributes()->value = (string)$value;
 	}
 }

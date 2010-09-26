@@ -9,11 +9,10 @@
 interface phValidator
 {
 	/**
-	 * validates $checkElement's input
+	 * validates $item's input
 	 * 
-	 * @param $checkElement
-	 * @param $bindingForm the phForm object that is being bound with user input
+	 * @param $item phValidatableFormDataItem the data item being validated
 	 * @return boolean true if the content is valid, false otherwise
 	 */
-	public function validate(phElement $checkElement, phForm $bindingForm);
+	public function validate(phValidatableFormDataItem $item);
 }

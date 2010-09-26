@@ -1,5 +1,6 @@
 <?php
 require_once('phForm.php');
+require_once('phValidatableFormDataItem.php');
 require_once('factory/phElementFactory.php');
 require_once 'phFormException.php';
 /**
@@ -34,7 +35,11 @@ class phFormView
 	protected $_names = array();
 	
 	protected $_elements = array();
-	
+	/**
+	 * Holds all the phFormDataItem objects on the view
+	 * @var array
+	 */
+	protected $_dataItems = array();
 	/**
 	 * Holds the document type declaration which allows us to include
 	 * definitions for xhtml entities like &nbsp; that would be unparsable
@@ -158,37 +163,20 @@ class phFormView
 	}
 	
 	/**
-	 * Searches the template for an element with the $id and returns a reference to the decorated
-	 * element object
+	 * returns a reference to the phFormDataItem that represents the input denoted by $name
 	 * 
-	 * @param string $id
+	 * @param string $name
 	 */
-	public function __get($id)
+	public function __get($name)
 	{
-		if(!isset($this->_elements[$id]))
+		$this->initialize();
+		
+		if(!isset($this->_dataItems[$name]))
 		{
-			$rewrittenId = $this->getRewrittenId($id);
-			$elements = $this->getDom()->xpath("//*[@id='{$rewrittenId}']");
-			
-			if(!sizeof($elements))
-			{
-				throw new phFormException("No element found by the id of '{$id}'");
-			}
-			
-			$element = $elements[0];
-			
-			$f = phElementFactory::getFactory($element);
-			if($f===null)
-			{
-				throw new phFormException("no factory exists for handling the '{$element->getName()}' element");
-			}
-			
-			$phElement = $f->createPhElement($element, $this);
-			
-			$this->_elements[$id] = $phElement;
+			throw new phFormException("The data item \"{$name}\" is not registered in this view", $code);
 		}
 		
-		return $this->_elements[$id];
+		return $this->_dataItems[$name];
 	}
 	
 	/**
@@ -257,64 +245,82 @@ class phFormView
 		return $this->_names[$rewrittenName];
 	}
 	
+	/**
+	 * Parses the view and sets up the data items and elements that appear there
+	 * 
+	 * @throws phFormException
+	 */
+	protected function initialize()
+	{
+		if(isset($this->_initialized))
+		{
+			return;
+		}
+		
+		foreach($this->_names as $rewrittenName=>$name)
+		{
+			$elements = $this->getDom()->xpath("//*[@name='{$rewrittenName}']");
+			
+			if(!sizeof($elements))
+			{
+				throw new phFormException("No elements found with the name of '{$name}'");
+			}
+			
+			if($this->_form->hasForm($name))
+			{
+				$dataItem = $this->_form->getForm($name);
+			}
+			else
+			{
+				$dataItem = new phValidatableFormDataItem($name);
+			}
+			
+			$this->_dataItems[$name] = $dataItem;
+			
+			foreach($elements as $element)
+			{
+				$f = phElementFactory::getFactory($element);
+				if($f===null)
+				{
+					throw new phFormException("no factory exists for handling the '{$element->getName()}' element");
+				}
+				
+				$phElement = $f->createPhElement($element, $this);
+				if($phElement instanceof phDataChangeListener)
+				{
+					$dataItem->addChangeListener($phElement);
+				}
+				
+				$this->_elements[$this->getRealId((string)$element->attributes()->id)] = $phElement;
+			}
+		}
+		
+		$this->_initialized = true;
+	}
+	
 	/*
 	 * The element grabber functions
 	 */
-	
-	/**
-	 * Gets an array of elements from the posted variable name
-	 * @param string $name
-	 * @return array an array of phElement objects
-	 * @todo We've searched the document once with xpath and have the SimpleXmlElement, we should not search it again in __get, needs an intermediary method that both this and __get can use
-	 */
-	public function getElementsFromName($name)
-	{
-		$name = $this->getRewrittenName($name);
-		$elements = $this->getDom()->xpath("//*[@name='{$name}']");
-		
-		if(!sizeof($elements))
-		{
-			throw new phFormException("No elements found by the name of '{$name}'", $code);
-		}
-		
-		$phElements = array();
-		/*
-		 * return the initialised instances by using the magic __get function
-		 */
-		foreach($elements as $e)
-		{
-			$id = (string)$e->attributes()->id;
-			if(!$id)
-			{
-				throw new phFormException("Element with the name '{$name}' has no id set");
-			}
-			
-			$id = $this->getRealId($id);
-			$phElements[] = $this->$id;
-		}
-		
-		return $phElements;
-	}
-	
 	public function getAllElements()
 	{
-		$elements = array();
+		$this->initialize();
 		
-		foreach($this->_ids as $id)
-		{
-			$elements[] = $this->$id;
-		}
+		return $this->_elements;
+	}
+	
+	public function getAllDataItems()
+	{
+		$this->initialize();
 		
-		return $elements;
+		return $this->_dataItems;
 	}
 	
 	/*
 	 * Begin render helper methods
 	 */
-	
 	/**
 	 * Gets a rewritten id that will be unique even with sub forms
-	 * 
+	 *
 	 * @param string $id
 	 */
 	public function id($id)
@@ -330,10 +336,10 @@ class phFormView
 			{
 				throw new phFormException("'{$id}' is not valid, ids must be a-z0-9 or '_' only and contain no spaces and must not start with an '_' (underscore) or number", $code);
 			}
-			
+
 			$newId = sprintf($this->_form->getIdFormat(), $id);
 			$this->_ids[$newId] = $id;
-		
+
 			return $newId;
 		}
 	}
