@@ -115,38 +115,37 @@ class phValidatorTest extends PHPUnit_Framework_TestCase
 			phStringLengthValidator::INVALID=>"Please enter a string between 6 and 8 characters long"
 		));
 		$strVal->min(6)->max(8);
-		$this->form->username->setValidator($strVal);
 		
-		/*
-		 * too short tests
-		 */
-		$this->form->bind(array(
-			'username'=>'short',
-			'password'=>'fail'
-		));
-		$this->assertFalse($this->form->username->validate(), 'The username is correctly not valid');
-		$this->assertTrue(in_array('Please enter a string between 6 and 8 characters long', $this->form->username->getErrors()),
-			'Correct error message is in username');
+		$username = new phValidatableFormDataItem('username');
+		$username->setValidator($strVal);
 		
-		/*
-		 * too long tests
-		 */
-		$this->form->bind(array(
-			'username'=>'waytoolong',
-			'password'=>'fail'
-		));
-		$this->assertFalse($this->form->username->validate(), 'The username is correctly not valid');
-		$this->assertTrue(in_array('Please enter a string between 6 and 8 characters long', $this->form->username->getErrors()),
-			'Correct error message is in username');
+		$username->bind('short');
+		$this->assertFalse($strVal->validate($username), 'The validator is correctly not valid');
+		$this->assertTrue(in_array('Please enter a string between 6 and 8 characters long', 
+							$username->getErrors()), 'error message set properly');
 		
-		/*
-		 * just right!
-		 */
-		$this->form->bind(array(
-			'username'=>'justfine',
-			'password'=>'fail'
-		));
-		$this->assertTrue($this->form->username->validate(), 'The username is valid');
+		$username->bind('tooloooooooong');
+		$this->assertFalse($strVal->validate($username), 'The validator is correctly not valid');
+		
+		$username->bind('justfine');
+		$this->assertTrue($strVal->validate($username), 'The validator is valid');
+		
+		$strVal->min(6)->max(null);
+		$username->bind('short');
+		$this->assertFalse($strVal->validate($username), 'The validator is correctly not valid');
+		
+		$username->bind('123456');
+		$this->assertTrue($strVal->validate($username), 'The validator is correctly valid');
+		
+		$strVal->min(null)->max(10);
+		$username->bind('');
+		$this->assertTrue($strVal->validate($username), 'The validator is correctly valid');
+		
+		$username->bind('1234567890');
+		$this->assertTrue($strVal->validate($username), 'The validator is correctly valid');
+		
+		$username->bind('waaaaaaaayyyytooooolong');
+		$this->assertFalse($strVal->validate($username), 'The validator is correctly not valid');
 	}
 	
 	public function testUnboundFormFail()

@@ -44,12 +44,22 @@ class phStringLengthValidator extends phValidatorCommon
 		return $valid;
 	}
 	
+	/**
+	 * sets the minimum character length
+	 * @param integer $num
+	 * @return phStringLengthValidator
+	 */
 	public function min($num)
 	{
 		$this->_min = $num;
 		return $this;
 	}
 	
+	/**
+	 * sets the maximum character length
+	 * @param integer $num
+	 * @return phStringLengthValidator
+	 */
 	public function max($num)
 	{
 		$this->_max = $num;
