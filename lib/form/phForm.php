@@ -5,15 +5,16 @@ set_include_path(get_include_path() . PATH_SEPARATOR . $path);
 require_once 'phFormViewElement.php';
 require_once 'phFormException.php';
 require_once 'phFormView.php';
-require_once 'phValidatable.php';
+require_once 'phData.php';
 
 /**
  * This is the base class for all forms, a form can be something as simple as a reusable component
  * of provide a full set of functionality.
  * 
  * @author Rob Graham <htmlforms@mellowplace.com>
+ * @package phform
  */
-class phForm extends phFormDataItem implements phFormViewElement, phValidatable
+class phForm implements phFormViewElement, phData
 {
 	protected $_view;
 	protected $_forms = array();
@@ -82,14 +83,14 @@ class phForm extends phFormDataItem implements phFormViewElement, phValidatable
 	 * @param phForm $form the form that is being bound (null will mean $this is used)
 	 * @todo remove the phForm arg
 	 */
-	public function bind($values, phForm $form=null)
+	public function bind($values)
 	{	
 		$this->_valid = false; // needs to be revalidated now it has been bound
 		/*
 		 * clear all existing values from our form, sub forms will clear themselves
 		 * when their bind method is called
 		 */
-		$this->clearValue();
+		$this->clear();
 		
 		$form = $form!==null ? $form : $this;
 		
@@ -97,15 +98,13 @@ class phForm extends phFormDataItem implements phFormViewElement, phValidatable
 		 * Get all the elements and find a value in the posted array.  We do it this way around
 		 * so we make sure all validators are fired regardless of if their value is posted or not
 		 */
-		$items = $this->_view->getAllDataItems();
+		$items = $this->_view->getAllData();
 		foreach($items as $i)
 		{
 			$i->bind(
 				isset($values[$i->getName()]) ? $values[$i->getName()] : null
 			);
 		}
-		
-		parent::bind($values);
 		
 		$this->setBound(true);
 	}
@@ -114,10 +113,10 @@ class phForm extends phFormDataItem implements phFormViewElement, phValidatable
 	{
 		$this->_valid = true;
 		
-		$items = $this->_view->getAllDataItems();
+		$items = $this->_view->getAllData();
 		foreach($items as $i)
 		{
-			if($i instanceof phValidatable && !$i->validate())
+			if(!$i->validate())
 			{
 				$this->_valid = false;
 			}
@@ -143,28 +142,13 @@ class phForm extends phFormDataItem implements phFormViewElement, phValidatable
 		return $this->_valid;
 	}
 	
-	public function clearValue()
+	public function clear()
 	{
-		$items = $this->_view->getAllDataItems();
+		$items = $this->_view->getAllData();
 		foreach($items as $i)
 		{
-			$i->clearValue();
+			$i->clear();
 		}
-	}
-	
-	/**
-	 * Gets the cleaned values of the form
-	 */
-	public function getValues()
-	{
-		$items = $this->_view->getAllDataItems();
-		$values = array();
-		foreach($items as $i)
-		{
-			$values[] = $i->getValues();
-		}
-		
-		return $values;
 	}
 	
 	/**
@@ -177,7 +161,7 @@ class phForm extends phFormDataItem implements phFormViewElement, phValidatable
 	{
 		$errors = $this->_errors;
 		
-		$items = $this->_view->getAllDataItems();
+		$items = $this->_view->getAllData();
 		foreach($items as $i)
 		{
 			$errors = array_merge($errors, $i->getErrors());

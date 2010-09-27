@@ -12,9 +12,12 @@ class phRequiredValidator extends phValidatorCommon
 {
 	const REQUIRED = 1;
 	
-	public function validate(phValidatableFormDataItem $item)
+	/**
+	 * (non-PHPdoc)
+	 * @see lib/form/validator/phValidator::validate()
+	 */
+	public function validate($value, phValidatable $errors)
 	{
-		$value = $item->getValue();
 		if(is_array($value))
 		{
 			throw new phValidatorException('I cannot validate elements that return multiple values');
@@ -23,7 +26,7 @@ class phRequiredValidator extends phValidatorCommon
 		$valid = (strlen($value)>0);
 		if(!$valid)
 		{
-			$item->addError($this->getError(self::REQUIRED));
+			$errors->addError($this->getError(self::REQUIRED));
 		}
 		
 		return $valid;

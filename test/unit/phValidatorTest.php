@@ -116,36 +116,36 @@ class phValidatorTest extends PHPUnit_Framework_TestCase
 		));
 		$strVal->min(6)->max(8);
 		
-		$username = new phValidatableFormDataItem('username');
+		$username = new phFormDataItem('username');
 		$username->setValidator($strVal);
 		
 		$username->bind('short');
-		$this->assertFalse($strVal->validate($username), 'The validator is correctly not valid');
+		$this->assertFalse($strVal->validate($username->getValue(), $username), 'The validator is correctly not valid');
 		$this->assertTrue(in_array('Please enter a string between 6 and 8 characters long', 
 							$username->getErrors()), 'error message set properly');
 		
 		$username->bind('tooloooooooong');
-		$this->assertFalse($strVal->validate($username), 'The validator is correctly not valid');
+		$this->assertFalse($strVal->validate($username->getValue(), $username), 'The validator is correctly not valid');
 		
 		$username->bind('justfine');
-		$this->assertTrue($strVal->validate($username), 'The validator is valid');
+		$this->assertTrue($strVal->validate($username->getValue(), $username), 'The validator is valid');
 		
 		$strVal->min(6)->max(null);
 		$username->bind('short');
-		$this->assertFalse($strVal->validate($username), 'The validator is correctly not valid');
+		$this->assertFalse($strVal->validate($username->getValue(), $username), 'The validator is correctly not valid');
 		
 		$username->bind('123456');
-		$this->assertTrue($strVal->validate($username), 'The validator is correctly valid');
+		$this->assertTrue($strVal->validate($username->getValue(), $username), 'The validator is correctly valid');
 		
 		$strVal->min(null)->max(10);
 		$username->bind('');
-		$this->assertTrue($strVal->validate($username), 'The validator is correctly valid');
+		$this->assertTrue($strVal->validate($username->getValue(), $username), 'The validator is correctly valid');
 		
 		$username->bind('1234567890');
-		$this->assertTrue($strVal->validate($username), 'The validator is correctly valid');
+		$this->assertTrue($strVal->validate($username->getValue(), $username), 'The validator is correctly valid');
 		
 		$username->bind('waaaaaaaayyyytooooolong');
-		$this->assertFalse($strVal->validate($username), 'The validator is correctly not valid');
+		$this->assertFalse($strVal->validate($username->getValue(), $username), 'The validator is correctly not valid');
 	}
 	
 	public function testUnboundFormFail()
@@ -172,7 +172,7 @@ class TestValidatorFail implements phValidator
 		$this->_message = $message;
 	}
 	
-	public function validate(phValidatableFormDataItem $item)
+	public function validate($value, phValidatable $item)
 	{
 		$item->addError($this->_message);
 		return false;
@@ -181,7 +181,7 @@ class TestValidatorFail implements phValidator
 
 class TestValidatorPass implements phValidator
 {
-	public function validate(phValidatableFormDataItem $item)
+	public function validate($value, phValidatable $item)
 	{
 		return true;
 	}

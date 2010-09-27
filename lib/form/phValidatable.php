@@ -1,12 +1,12 @@
 <?php
 /**
- * Something that is "validatable" can be validated by a phValidator
+ * Something that is "validatable" can have errors attached to it and be validated
  * 
  * @author Rob Graham <htmlforms@mellowplace.com>
- *
+ * @package phform
  */
 interface phValidatable
-{	
+{
 	public function validate();
 	/**
 	 * allows a validator to attach an error message to this element

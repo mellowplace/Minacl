@@ -1,4 +1,5 @@
 <?php
+require_once 'phValidatable.php';
 /**
  * the validator interface allows us to validate an element
  * 
@@ -11,8 +12,9 @@ interface phValidator
 	/**
 	 * validates $item's input
 	 * 
-	 * @param $item phValidatableFormDataItem the data item being validated
+	 * @param $value mixed the value being validated
+	 * @param $errors phErrorable the object to attach errors to
 	 * @return boolean true if the content is valid, false otherwise
 	 */
-	public function validate(phValidatableFormDataItem $item);
+	public function validate($value, phValidatable $errors);
 }

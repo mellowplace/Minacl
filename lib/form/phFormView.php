@@ -1,6 +1,6 @@
 <?php
 require_once('phForm.php');
-require_once('phValidatableFormDataItem.php');
+require_once('phFormDataItem.php');
 require_once('factory/phElementFactory.php');
 require_once 'phFormException.php';
 /**
@@ -272,7 +272,7 @@ class phFormView
 			}
 			else
 			{
-				$dataItem = new phValidatableFormDataItem($name);
+				$dataItem = new phFormDataItem($name);
 			}
 			
 			$this->_dataItems[$name] = $dataItem;
@@ -308,7 +308,10 @@ class phFormView
 		return $this->_elements;
 	}
 	
-	public function getAllDataItems()
+	/**
+	 * @return array array of phData objects
+	 */
+	public function getAllData()
 	{
 		$this->initialize();
 		

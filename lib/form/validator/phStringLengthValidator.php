@@ -15,9 +15,8 @@ class phStringLengthValidator extends phValidatorCommon
 	
 	private $_min = null, $_max = null;
 	
-	public function validate(phValidatableFormDataItem $item)
+	public function validate($value, phValidatable $errors)
 	{
-		$value = $item->getValue();
 		if(is_array($value))
 		{
 			throw new phValidatorException('I cannot validate elements that return multiple values');
@@ -38,7 +37,7 @@ class phStringLengthValidator extends phValidatorCommon
 		
 		if(!$valid)
 		{
-			$item->addError($this->getError(self::INVALID));
+			$errors->addError($this->getError(self::INVALID));
 		}
 		
 		return $valid;
