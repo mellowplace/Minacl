@@ -8,6 +8,7 @@ require_once 'validator/phValidator.php';
  * 
  * @author Rob Graham <htmlforms@mellowplace.com>
  * @package phform
+ * @subpackage element
  */
 abstract class phSimpleXmlElement implements phDataChangeListener, phFormViewElement
 {

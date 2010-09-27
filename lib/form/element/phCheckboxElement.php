@@ -1,6 +1,12 @@
 <?php
 require_once('element/phInputElement.php');
-
+/**
+ * This class provides handling for checkboxes 
+ * 
+ * @author Rob Graham <htmlforms@mellowplace.com>
+ * @package phform
+ * @subpackage element
+ */
 class phcheckboxElement extends phInputElement
 {
 	public function setValue($value)
