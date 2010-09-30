@@ -8,6 +8,8 @@ require_once 'phFormView.php';
 require_once 'validator/phValidator.php';
 require_once 'validator/phRequiredValidator.php';
 require_once 'validator/phStringLengthValidator.php';
+require_once 'validator/phCompareValidator.php';
+require_once 'validator/phValidatorLogic.php';
 
 class phValidatorTest extends PHPUnit_Framework_TestCase
 {
@@ -148,6 +150,76 @@ class phValidatorTest extends PHPUnit_Framework_TestCase
 		$this->assertFalse($strVal->validate($username->getValue(), $username), 'The validator is correctly not valid');
 	}
 	
+	public function testCompareValidator()
+	{
+		$password = new phFormDataItem('password');
+		$confirmPassword = new phFormDataItem('confirmPassword');
+		$confirmPassword->bind('password');
+		
+		$compareVal = new phCompareValidator($confirmPassword, phCompareValidator::EQUAL, array(
+			phCompareValidator::INVALID=>"The passwords are not the same"
+		));
+		
+		$this->assertFalse($compareVal->validate('notequal', $password), 'The validator is correctly not valid');
+		$this->assertTrue(in_array('The passwords are not the same', 
+							$password->getErrors()), 'error message set properly');
+							
+		$this->assertTrue($compareVal->validate('password', $password), 'The validator is correctly valid');
+		
+		$compareVal = new phCompareValidator($confirmPassword, phCompareValidator::NOT_EQUAL);
+		$this->assertFalse($compareVal->validate('password', $password), 'The validator is correctly not valid');
+		$this->assertTrue($compareVal->validate('notequal', $password), 'The validator is correctly valid');
+		
+		$confirmPassword->bind(5);
+		
+		$compareVal = new phCompareValidator($confirmPassword, phCompareValidator::LESS_THAN);
+		$this->assertFalse($compareVal->validate(10, $password), 'The validator is correctly not valid');
+		$this->assertTrue($compareVal->validate(1, $password), 'The validator is correctly valid');
+		
+		$compareVal = new phCompareValidator($confirmPassword, phCompareValidator::LESS_EQUAL);
+		$this->assertFalse($compareVal->validate(10, $password), 'The validator is correctly not valid');
+		$this->assertTrue($compareVal->validate(5, $password), 'The validator is correctly valid');
+		
+		$compareVal = new phCompareValidator($confirmPassword, phCompareValidator::GREATER_THAN);
+		$this->assertFalse($compareVal->validate(1, $password), 'The validator is correctly not valid');
+		$this->assertTrue($compareVal->validate(10, $password), 'The validator is correctly valid');
+		
+		$compareVal = new phCompareValidator($confirmPassword, phCompareValidator::GREATER_EQUAL);
+		$this->assertFalse($compareVal->validate(1, $password), 'The validator is correctly not valid');
+		$this->assertTrue($compareVal->validate(5, $password), 'The validator is correctly valid');
+	}
+	
+	public function testValidatorLogic()
+	{
+		$fail = new TestValidatorFail('fail!');
+		$pass = new TestValidatorPass();
+		$errors = new phTestValidatable();
+		
+		$logic = new phValidatorLogic($pass);
+		$logic->and_($fail);
+		$this->assertFalse($logic->validate('test', $errors), 'The and logic correctly fails');
+		
+		$logic = new phValidatorLogic($pass);
+		$logic->andNot($fail);
+		$this->assertTrue($logic->validate('test', $errors), 'The andNot logic correctly passes');
+		
+		$logic = new phValidatorLogic($pass);
+		$logic->or_($fail);
+		$this->assertTrue($logic->validate('test', $errors), 'The or logic correctly passes');
+		
+		$logic = new phValidatorLogic($fail);
+		$logic->or_($fail);
+		$this->assertFalse($logic->validate('test', $errors), 'The or logic correctly fails');
+		
+		$logic = new phValidatorLogic($pass, true);
+		$logic->or_($fail);
+		$this->assertFalse($logic->validate('test', $errors), 'The not or logic correctly fails');
+		
+		
+		$logic = new phValidatorLogic($pass);
+		$logic->and_($fail)->or_($pass);
+		$this->assertTrue($logic->validate('test', $errors), 'The v and v or v logic correctly passes');
+	}
 	public function testUnboundFormFail()
 	{
 		$this->assertFalse($this->form->isValid(), 'Unbound form is not valid');
@@ -184,5 +256,46 @@ class TestValidatorPass implements phValidator
 	public function validate($value, phValidatable $item)
 	{
 		return true;
+	}
+}
+
+class phTestValidatable implements phValidatable
+{
+	protected $_errors = array();
+	
+	/**
+	 * (non-PHPdoc)
+	 * @see lib/form/phValidatable::addError()
+	 */
+	public function addError($message)
+	{
+		$this->_errors[] = $message;
+	}
+	
+	/**
+	 * (non-PHPdoc)
+	 * @see lib/form/phValidatable::resetErrors()
+	 */
+	public function resetErrors()
+	{
+		$this->_errors = array();
+	}
+	
+	/**
+	 * (non-PHPdoc)
+	 * @see lib/form/phValidatable::getErrors()
+	 */
+	public function getErrors()
+	{
+		return $this->_errors;
+	}
+	
+	/**
+	 * (non-PHPdoc)
+	 * @see lib/form/phValidatable::validate()
+	 */
+	public function validate()
+	{
+		return sizeof($this->_errors)==0;
 	}
 }
