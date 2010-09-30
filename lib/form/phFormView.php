@@ -422,12 +422,12 @@ class phFormView
 		if($this->getDom())
 		{
 			$errors = $id===null?$this->allErrors():$this->error($id);
-			$html = "<ul>";
+			$html = sizeof($errors)>0 ? '<ul>' : '';
 			foreach($errors as $e)
 			{
-				$html .= "<li>".htmlentities($e,ENT_COMPAT,'utf-8')."</li>";
+				$html .= '<li>'.htmlentities($e,ENT_COMPAT,'utf-8').'</li>';
 			}
-			$html .= "</ul>";
+			$html .= sizeof($errors)>0 ? '</ul>' : '';
 			
 			return $html;
 		}

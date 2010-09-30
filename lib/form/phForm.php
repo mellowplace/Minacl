@@ -41,6 +41,16 @@ class phForm implements phFormViewElement, phData
 		$this->setIdFormat($name . '_%s');
 		
 		$this->_view = new phFormView($template, $this);
+		
+		$this->configure();
+	}
+	
+	/**
+	 * A handy method subclasses can override to do specific setup
+	 */
+	public function configure()
+	{
+		
 	}
 	
 	public function addForm(phForm $form)
