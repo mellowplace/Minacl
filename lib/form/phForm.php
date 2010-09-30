@@ -102,8 +102,6 @@ class phForm implements phFormViewElement, phData
 		 */
 		$this->clear();
 		
-		$form = $form!==null ? $form : $this;
-		
 		/*
 		 * Get all the elements and find a value in the posted array.  We do it this way around
 		 * so we make sure all validators are fired regardless of if their value is posted or not
