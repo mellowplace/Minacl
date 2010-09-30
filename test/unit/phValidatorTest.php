@@ -200,25 +200,17 @@ class phValidatorTest extends PHPUnit_Framework_TestCase
 		$this->assertFalse($logic->validate('test', $errors), 'The and logic correctly fails');
 		
 		$logic = new phValidatorLogic($pass);
-		$logic->andNot($fail);
-		$this->assertTrue($logic->validate('test', $errors), 'The andNot logic correctly passes');
-		
-		$logic = new phValidatorLogic($pass);
 		$logic->or_($fail);
 		$this->assertTrue($logic->validate('test', $errors), 'The or logic correctly passes');
 		
 		$logic = new phValidatorLogic($fail);
 		$logic->or_($fail);
-		$this->assertFalse($logic->validate('test', $errors), 'The or logic correctly fails');
-		
-		$logic = new phValidatorLogic($pass, true);
-		$logic->or_($fail);
-		$this->assertFalse($logic->validate('test', $errors), 'The not or logic correctly fails');
-		
+		$this->assertFalse($logic->validate('test', $errors), 'The or logic correctly fails');	
 		
 		$logic = new phValidatorLogic($pass);
 		$logic->and_($fail)->or_($pass);
 		$this->assertTrue($logic->validate('test', $errors), 'The v and v or v logic correctly passes');
+		
 	}
 	public function testUnboundFormFail()
 	{
