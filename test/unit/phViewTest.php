@@ -158,6 +158,17 @@ class phViewTest extends PHPUnit_Framework_TestCase
     	$template = dirname(__FILE__) . '/../resources/crapHtmlView.php';
     	new phFormView($template, new phForm('test', $template));
     }
+    
+    public function testErrorListing()
+    {
+    	$username = $this->view->username;
+    	$username->setValidator(new phRequiredValidator(array(phRequiredValidator::REQUIRED=>'Field is required')));
+    	$username->bind('');
+    	$username->validate();
+    	
+    	$errorList = $this->view->errorList('username');
+    	$this->assertTrue(strstr($errorList, 'Field is required')!==false, 'The required error was listed in the view');
+    }
 }
 
 class phFormViewTest extends phFormView

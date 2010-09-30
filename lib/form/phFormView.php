@@ -421,7 +421,7 @@ class phFormView
 	{
 		if($this->getDom())
 		{
-			$errors = $id===null?$this->allErrors():$this->error($id);
+			$errors = $id===null ? $this->allErrors() : $this->error($id);
 			$html = sizeof($errors)>0 ? '<ul>' : '';
 			foreach($errors as $e)
 			{
