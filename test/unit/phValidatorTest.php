@@ -211,6 +211,12 @@ class phValidatorTest extends PHPUnit_Framework_TestCase
 		$logic->and_($fail)->or_($pass);
 		$this->assertTrue($logic->validate('test', $errors), 'The v and v or v logic correctly passes');
 		
+		$logic = new phValidatorLogic($fail);
+		$logic->and_($fail);
+		$errors->resetErrors();
+		$logic->validate('test', $errors);
+		$this->assertEquals(sizeof($errors->getErrors()), 2, 'The 2 fails messages where added');
+		
 	}
 	public function testUnboundFormFail()
 	{

@@ -26,13 +26,13 @@ class phValidatorLogic implements phValidator
 	 */
 	public function validate($value, phValidatable $errors)
 	{
-		$valid = null;
+		$valid = '';
 		
 		foreach($this->_validators as $v)
 		{
-			if($valid===null)
+			if($valid==='')
 			{
-				$valid = $v->validate($value, $errors);
+				$valid = $v->validate($value, $errors) ? 'true' : 'false';
 			}
 			else
 			{
@@ -40,17 +40,18 @@ class phValidatorLogic implements phValidator
 				
 				if($logic==self::$_AND)
 				{
-					$valid = $valid && $v[0]->validate($value, $errors);
+					$valid .= ' && ' . ($v[0]->validate($value, $errors) ? 'true' : 'false');
 				}
 				else
 				if($logic==self::$_OR)
 				{
-					$valid = $valid || $v[0]->validate($value, $errors);
+					$valid .= ' || ' . ($v[0]->validate($value, $errors) ? 'true' : 'false');
 				}
 			}
 		}
 		
-		return $valid;
+		eval('$result = ' . $valid . ';');
+		return $result;
 	}
 	
 	/**
