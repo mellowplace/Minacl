@@ -1,13 +1,15 @@
 <?php
-require_once 'PHPUnit/Framework.php';
+require_once 'phTestCase.php';
 require_once realpath(dirname(__FILE__)) . '/../../lib/form/phLoader.php';
 phLoader::registerAutoloader();
 
-class phViewTest extends PHPUnit_Framework_TestCase
+class phViewTest extends phTestCase
 {
 	protected function setUp()
 	{
-		$this->template = realpath(dirname(__FILE__)) . '/../resources/renderTestView.php';
+		parent::setup();
+		
+		$this->template = 'renderTestView';
 		$this->form = new phForm('test', $this->template);
 		$this->view = new phFormView($this->template, $this->form);
 	}
@@ -49,7 +51,7 @@ class phViewTest extends PHPUnit_Framework_TestCase
      */
     public function testNoFactory()
     {
-    	$template = realpath(dirname(__FILE__)) . '/../resources/invalidElementView.php';
+    	$template = 'invalidElementView';
     	$view = new phFormView($template, new phForm('test', $template));
     	$view->invalid;
     }
@@ -75,7 +77,7 @@ class phViewTest extends PHPUnit_Framework_TestCase
      */
     public function testElementNameButNoId()
     {
-    	$template = realpath(dirname(__FILE__)) . '/../resources/invalidElementView.php';
+    	$template = 'invalidElementView';
     	$view = new phFormView($template, new phForm('test', $template));
     	$view->noId;
     }
@@ -126,7 +128,7 @@ class phViewTest extends PHPUnit_Framework_TestCase
     {
     	$html = $this->view->render();
     	
-    	$template = realpath(dirname(__FILE__)) . '/../resources/renderTestView.php';
+    	$template = 'renderTestView';
 		$view = new phFormViewTest($template, new phForm('test', $template));
 		$this->assertEquals($html, $view->render(), 'Rendered HTML is same as original');
     }
@@ -152,7 +154,7 @@ class phViewTest extends PHPUnit_Framework_TestCase
      */
     public function testCrapHtml()
     {
-    	$template = dirname(__FILE__) . '/../resources/crapHtmlView.php';
+    	$template = 'crapHtmlView';
     	new phFormView($template, new phForm('test', $template));
     }
     

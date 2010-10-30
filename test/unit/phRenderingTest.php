@@ -1,5 +1,5 @@
 <?php
-require_once 'PHPUnit/Framework.php';
+require_once 'phTestCase.php';
 require_once realpath(dirname(__FILE__)) . '/../../lib/form/phLoader.php';
 phLoader::registerAutoloader();
 
@@ -10,11 +10,13 @@ phLoader::registerAutoloader();
  * @package phform
  * @subpackage test
  */
-class phRenderingTest extends PHPUnit_Framework_TestCase
+class phRenderingTest extends phTestCase
 {
 	public function setUp()
 	{
-		$this->form = new phForm('test', realpath(dirname(__FILE__)) . '/../resources/xhtmlView.php');
+		parent::setUp();
+		
+		$this->form = new phForm('test', 'xhtmlView');
 		$this->xhtmlDecl = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" 
         \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n";
 	}

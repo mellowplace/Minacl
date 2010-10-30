@@ -1,5 +1,5 @@
 <?php
-require_once 'PHPUnit/Framework.php';
+require_once 'phTestCase.php';
 require_once realpath(dirname(__FILE__)) . '/../../lib/form/phLoader.php';
 phLoader::registerAutoloader();
 
@@ -12,13 +12,14 @@ require_once realpath(dirname(__FILE__)) . '/../resources/phTestForm.php';
  * @package phform
  * @subpackage test
  */
-class phSubFormTest extends PHPUnit_Framework_TestCase
+class phSubFormTest extends phTestCase
 {
 	public function setUp()
 	{
-		$templateDir = realpath(dirname(__FILE__)) . '/../resources/';
-		$this->form = new phTestForm('test', $templateDir . 'subFormTestView.php');
-		$addressForm = new phTestForm('address', $templateDir . 'addressTestView.php');
+		parent::setUp();
+		
+		$this->form = new phTestForm('test', 'subFormTestView');
+		$addressForm = new phTestForm('address', 'addressTestView');
 		$this->form->addForm($addressForm);
 	}
 	

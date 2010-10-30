@@ -1,13 +1,15 @@
 <?php
-require_once 'PHPUnit/Framework.php';
+require_once 'phTestCase.php';
 require_once realpath(dirname(__FILE__)) . '/../../lib/form/phLoader.php';
 phLoader::registerAutoloader();
 
-class phValidatorTest extends PHPUnit_Framework_TestCase
+class phValidatorTest extends phTestCase
 {
 	public function setUp()
 	{
-		$this->form = new TestForm('test', dirname(__FILE__) . '/../resources/simpleTestView.php');
+		parent::setUp();
+		
+		$this->form = new TestForm('test', 'simpleTestView');
 	}
 	
 	public function testFormFail()

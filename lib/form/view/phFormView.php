@@ -5,6 +5,7 @@
  * 
  * @author Rob Graham <htmlforms@mellowplace.com>
  * @package phform
+ * @subpackage view
  */
 class phFormView
 {
@@ -49,7 +50,7 @@ class phFormView
 		$this->_template = $template;
 		$this->_form = $form;
 		
-		$this->_docTypeDecl = file_get_contents('dtd/xhtml-entities.ent', true);
+		$this->_docTypeDecl = file_get_contents(realpath(dirname(__FILE__) . '/../') . DIRECTORY_SEPARATOR . 'dtd' . DIRECTORY_SEPARATOR . 'xhtml-entities.ent', false);
 		if($this->_docTypeDecl===false)
 		{
 			throw new phFormException('Cannot find xhtml entities definitions');
@@ -58,7 +59,7 @@ class phFormView
 		$this->_dom = $this->parseDom($template);
 	}
 	
-	protected function parseDom($template)
+	protected function parseDom($view)
 	{
 		ob_start();
 		echo "<!DOCTYPE phformdoc [\n";
@@ -70,7 +71,7 @@ class phFormView
 		echo $this->_docTypeDecl;
 		echo "\n]>\n";
 		echo "<phformdoc>\n";
-		require($template);
+		require phViewLoader::getInstance()->getViewFileOrStream($view);
 		echo "</phformdoc>\n";
 		
 		$xml = ob_get_clean();
@@ -82,7 +83,7 @@ class phFormView
 		}
 		catch(Exception $e)
 		{
-			throw new phFormException("Unparsable html in template '{$template}', parser said: {$e->getMessage()}");
+			throw new phFormException("Unparsable html in view '{$view}', parser said: {$e->getMessage()}");
 		}
 	}
 	

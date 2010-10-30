@@ -1,11 +1,11 @@
 <?php
-require_once 'PHPUnit/Framework.php';
+require_once 'phTestCase.php';
 require_once dirname(__FILE__) . '/../../lib/form/phLoader.php';
 phLoader::registerAutoloader();
 
 require_once realpath(dirname(__FILE__)) . '/../resources/phTestForm.php';
  
-class phFormTest extends PHPUnit_Framework_TestCase
+class phFormTest extends phTestCase
 {	
 	/**
      * @expectedException phFormException
@@ -52,13 +52,13 @@ class phFormTest extends PHPUnit_Framework_TestCase
     public function testAddSameForm()
     {
     	$this->addForm('validName');
-    	$sameForm = new phForm('validName', realpath(dirname(__FILE__)). '/../resources/viewTestView.php');
+    	$sameForm = new phForm('validName', 'viewTestView');
     	$this->form->addForm($sameForm); // should error as form with this name already added
     }
     
     public function testBind()
     {
-    	$form = new phForm('test', realpath(dirname(__FILE__)) . '/../resources/simpleTestView.php');
+    	$form = new phForm('test', 'simpleTestView');
     	$form->bindAndValidate(array(
     		'username'=>'test',
     		'password'=>'pass'
@@ -72,7 +72,7 @@ class phFormTest extends PHPUnit_Framework_TestCase
      */
     public function testFillIn()
     {
-    	$form = new phTestForm('test', realpath(dirname(__FILE__)) . '/../resources/fillInTestView.php');
+    	$form = new phTestForm('test', 'fillInTestView');
     	$form->bind(array(
     		'username'=>'the username',
     		'password'=>'the password',
@@ -109,8 +109,8 @@ class phFormTest extends PHPUnit_Framework_TestCase
     
     private function addForm($name)
     {
-    	$this->form = new phForm('test', realpath(dirname(__FILE__)) . '/../resources/viewTestView.php');
-    	$this->addedForm = new phForm($name, realpath(dirname(__FILE__)). '/../resources/viewTestView.php');
+    	$this->form = new phForm('test', 'viewTestView');
+    	$this->addedForm = new phForm($name, 'viewTestView');
         $this->form->addForm($this->addedForm);
     }
 }
