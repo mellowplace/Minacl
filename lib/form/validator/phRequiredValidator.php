@@ -1,6 +1,4 @@
 <?php
-require_once 'validator/phValidatorCommon.php';
-require_once 'validator/phValidatorException.php';
 /**
  * A validator that makes sure something was entered
  * 

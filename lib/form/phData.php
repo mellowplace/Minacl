@@ -1,5 +1,4 @@
 <?php
-require_once 'phValidatable.php';
 /**
  * This represents some data, it can have values bound to it and 
  * can be cleared of data.  It can also be validated.

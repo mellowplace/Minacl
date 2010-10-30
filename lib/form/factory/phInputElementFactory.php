@@ -1,6 +1,4 @@
 <?php
-require_once('element/phInputElement.php');
-require_once('factory/phElementFactory.php');
 /**
  * This factory can handle all input elements bar if they are a checkbox
  * 

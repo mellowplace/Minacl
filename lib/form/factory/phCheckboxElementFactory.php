@@ -1,6 +1,4 @@
 <?php
-require_once('element/phCheckboxElement.php');
-require_once('factory/phElementFactory.php');
 /**
  * This factory can handle checkbox elements
  * 

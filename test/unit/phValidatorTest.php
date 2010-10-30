@@ -1,15 +1,7 @@
 <?php
 require_once 'PHPUnit/Framework.php';
-$path = realpath(dirname(__FILE__)) . '/../../lib/form/';
-set_include_path(get_include_path() . PATH_SEPARATOR . $path);
-
-require_once 'phForm.php';
-require_once 'phFormView.php';
-require_once 'validator/phValidator.php';
-require_once 'validator/phRequiredValidator.php';
-require_once 'validator/phStringLengthValidator.php';
-require_once 'validator/phCompareValidator.php';
-require_once 'validator/phValidatorLogic.php';
+require_once realpath(dirname(__FILE__)) . '/../../lib/form/phLoader.php';
+phLoader::registerAutoloader();
 
 class phValidatorTest extends PHPUnit_Framework_TestCase
 {

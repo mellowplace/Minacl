@@ -1,5 +1,4 @@
 <?php
-require_once('element/phInputElement.php');
 /**
  * This class provides handling for checkboxes 
  * 
@@ -7,7 +6,7 @@ require_once('element/phInputElement.php');
  * @package phform
  * @subpackage element
  */
-class phcheckboxElement extends phInputElement
+class phCheckboxElement extends phInputElement
 {
 	public function setValue($value)
 	{

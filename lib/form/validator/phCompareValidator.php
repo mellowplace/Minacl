@@ -1,6 +1,4 @@
 <?php
-require_once 'validator/phValidatorCommon.php';
-require_once 'validator/phValidatorException.php';
 /**
  * A validator that compares a value with a data item using an operator
  * 

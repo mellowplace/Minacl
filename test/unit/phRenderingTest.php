@@ -1,9 +1,7 @@
 <?php
-$path = realpath(dirname(__FILE__)) . '/../../lib/form/';
-set_include_path(get_include_path() . PATH_SEPARATOR . $path);
-
 require_once 'PHPUnit/Framework.php';
-require_once 'phForm.php';
+require_once realpath(dirname(__FILE__)) . '/../../lib/form/phLoader.php';
+phLoader::registerAutoloader();
 
 /**
  * this test case tests various rendering aspects of the phForm library

@@ -1,6 +1,4 @@
 <?php
-require_once 'validator/phValidatorCommon.php';
-require_once 'validator/phValidatorException.php';
 /**
  * A validator that makes sure a string is over a min length, under a max length
  * or in between the two

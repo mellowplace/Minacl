@@ -1,6 +1,4 @@
 <?php
-require_once 'validator/phValidator.php';
-require_once 'validator/phValidatorException.php';
 /**
  * A class that allows you to chain validators together using add, or, andNot and orNot
  * 

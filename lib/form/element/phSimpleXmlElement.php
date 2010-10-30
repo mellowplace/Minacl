@@ -1,7 +1,4 @@
 <?php
-require_once 'phFormViewElement.php';
-require_once 'phDataChangeListener.php';
-require_once 'validator/phValidator.php';
 /**
  * A phSimpleXmlElement is a decorator for SimpleXMLElement objects that allows a html tag like "input"
  * to be an element in a phForm

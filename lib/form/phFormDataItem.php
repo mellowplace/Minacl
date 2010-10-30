@@ -1,5 +1,4 @@
 <?php
-require_once('phData.php');
 /**
  * A single item of data that can be read and cleaned
  * 

@@ -1,5 +1,4 @@
 <?php
-require_once('element/phSimpleXmlElement.php');
 /**
  * This class provides handling for basic "input" elements 
  * 

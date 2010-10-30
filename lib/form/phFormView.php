@@ -1,8 +1,4 @@
 <?php
-require_once('phForm.php');
-require_once('phFormDataItem.php');
-require_once('factory/phElementFactory.php');
-require_once 'phFormException.php';
 /**
  * This class is responsible for rendering the form and providing an API to access
  * its elements

@@ -1,12 +1,4 @@
 <?php
-$path = realpath(dirname(__FILE__));
-set_include_path(get_include_path() . PATH_SEPARATOR . $path);
-
-require_once 'phFormViewElement.php';
-require_once 'phFormException.php';
-require_once 'phFormView.php';
-require_once 'phData.php';
-
 /**
  * This is the base class for all forms, a form can be something as simple as a reusable component
  * of provide a full set of functionality.

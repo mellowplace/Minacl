@@ -1,10 +1,7 @@
 <?php
 require_once 'PHPUnit/Framework.php';
-$path = realpath(dirname(__FILE__)) . '/../../lib/form/';
-set_include_path(get_include_path() . PATH_SEPARATOR . $path);
-
-require_once 'phForm.php';
-require_once 'phFormView.php';
+require_once realpath(dirname(__FILE__)) . '/../../lib/form/phLoader.php';
+phLoader::registerAutoloader();
 
 class phViewTest extends PHPUnit_Framework_TestCase
 {
