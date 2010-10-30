@@ -107,6 +107,7 @@ class phForm implements phFormViewElement, phData
 		 * so we make sure all validators are fired regardless of if their value is posted or not
 		 */
 		$items = $this->_view->getAllData();
+		
 		foreach($items as $i)
 		{
 			$i->bind(

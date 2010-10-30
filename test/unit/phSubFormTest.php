@@ -32,12 +32,26 @@ class phSubFormTest extends PHPUnit_Framework_TestCase
 	
 	public function testSubFormFillin()
 	{
-		$this->form->address->address->bind('123 A Street');
-		$this->form->address->postal_code->bind('PC123');
+		$this->form->bind(array(
+				'first_name'=>'Roberto',
+				'address'=>array(
+					'address'=>'123 A Street',
+					'postal_code'=>'PC123'
+				)
+			)	
+		);
 		
 		$html = $this->form->__toString();
+		
 		$xml = new SimpleXMLElement("<xhtml>{$html}</xhtml>");
 		
+		$elements = $xml->xpath('//input[@value=\'Roberto\']');
+		
+		$this->assertEquals(sizeof($elements), 1, 'found an input matching the addresses value');
+    	$rewrittenName = $this->form->getView()->name('first_name');
+    	$this->assertEquals((string)$elements[0]->attributes()->name, $rewrittenName, 'the name attribute matches the rewritten name for the first_name field');
+    	$this->assertEquals($this->form->first_name->getValue(), 'Roberto', 'first_name field was set correctly');
+    	
 		$elements = $xml->xpath('//input[@value=\'123 A Street\']');
     	
     	$this->assertEquals(sizeof($elements), 1, 'found an input matching the addresses value');
