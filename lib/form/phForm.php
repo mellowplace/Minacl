@@ -14,6 +14,7 @@ class phForm implements phFormViewElement, phData
 	protected $_name = '';
 	protected $_idFormat = '';
 	protected $_nameFormat = '';
+	protected $_elementFinder = null;
 	protected $_valid = false;
 	/**
 	 * Holds a list of errors that have been added to the form
@@ -33,6 +34,7 @@ class phForm implements phFormViewElement, phData
 		$this->setIdFormat($name . '_%s');
 		
 		$this->_view = new phFormView($template, $this);
+		$this->_elementFinder = new phElementFinder($this->_view);
 		
 		$this->configure();
 	}
@@ -244,6 +246,14 @@ class phForm implements phFormViewElement, phData
 		return $this->_view->$name;
 	}
 	
+	/**
+	 * @return phElementFinder an object that finds elements in the view
+	 */
+	public function element()
+	{
+		return $this->_elementFinder;
+	}
+	
 	public function __toString()
 	{
 		return $this->_view->render();
@@ -262,5 +272,34 @@ class phForm implements phFormViewElement, phData
 	public function dataChanged(phFormDataItem $item)
 	{
 		$this->setValue($item->getValue());
+	}
+}
+
+/**
+ * Private class used by phForm for finding elements in the view.
+ * (it is returned from the element() function)
+ * 
+ * @author Rob Graham <htmlforms@mellowplace.com>
+ * @package phform
+ */
+class phElementFinder
+{
+	/**
+	 * @var phFormView
+	 */
+	protected $_view = null;
+	
+	public function __construct(phFormView $view)
+	{
+		$this->_view = $view;
+	}
+	
+	/**
+	 * Finds the element in the view referenced by $id
+	 * @param string $id
+	 */
+	public function __get($id)
+	{
+		return $this->_view->getElement($id);
 	}
 }

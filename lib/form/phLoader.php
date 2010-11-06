@@ -60,5 +60,7 @@ class phLoader
 		'phStringLengthValidator'	=> 'validator/phStringLengthValidator.php',
 		'phRequiredValidator'		=> 'validator/phRequiredValidator.php',
 		'phCompareValidator'		=> 'validator/phCompareValidator.php',
+		'phTextAreaElementFactory'  => 'factory/phTextAreaElementFactory.php',
+		'phTextAreaElement' 		=> 'element/phTextAreaElement.php',
 	);
 }

@@ -107,6 +107,31 @@ class phFormTest extends phTestCase
     	$this->assertFalse(isset($elements[0]->attributes()->checked), 'the checkbox1 is not marked as checked');
     }
     
+    public function testElementFinder()
+    {
+    	$form = new phForm('test', 'simpleTestView');
+    	$this->assertTrue($form->element() instanceof phElementFinder, '$form->element() returns a phElementFinder object');
+    	$this->assertTrue($form->element()->username instanceof phInputElement, '$form->element()->username returns a phInputElement object');
+    }
+    
+    /**
+     * tests that textareas are dealt with properly
+     */
+    public function testTextArea()
+    {
+    	$form = new phTestForm('test', 'textAreaTestView');
+    	/*
+    	 * check the default value of the text area can be set and in turn is set into
+    	 * the textareas simple xml element
+    	 */
+    	$form->textarea->bind('test value');
+    	
+    	/*
+    	 * check the textarea's element value is set
+    	 */
+    	$this->assertEquals((string)$form->element()->textarea->getElement(), 'test value', 'the textareas value was set properly');
+    }
+    
     private function addForm($name)
     {
     	$this->form = new phForm('test', 'viewTestView');

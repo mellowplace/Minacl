@@ -306,6 +306,24 @@ class phFormView
 	}
 	
 	/**
+	 * Gets an element identified by $id
+	 * @param $id
+	 * @throws phFormException if the element does not exist
+	 * @return phFormViewElement
+	 */
+	public function getElement($id)
+	{
+		$this->initialize();
+		
+		if(!isset($this->_elements[$id]))
+		{
+			throw new phFormException("The element referenced by '{$id}' could not be found");
+		}
+		
+		return $this->_elements[$id];
+	}
+	
+	/**
 	 * @return array array of phData objects
 	 */
 	public function getAllData()

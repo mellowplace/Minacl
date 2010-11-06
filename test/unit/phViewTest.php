@@ -168,6 +168,23 @@ class phViewTest extends phTestCase
     	$errorList = $this->view->errorList('username');
     	$this->assertTrue(strstr($errorList, 'Field is required')!==false, 'The required error was listed in the view');
     }
+    
+    public function testGetElement()
+    {
+    	$username = $this->view->getElement('username');
+    	$this->assertTrue($username instanceof phInputElement, 'username is a phInputElement');
+    	
+    	$rewrittenId = $this->view->id('username');
+    	$this->assertEquals((string)$username->getElement()->attributes()->id, $rewrittenId, 'getElement returned the correct element');
+    }
+    
+    /**
+     * @expectedException phFormException
+     */
+	public function testGetElementWithNonExistantElement()
+    {
+    	$username = $this->view->getElement('nonExistantId');
+    }
 }
 
 class phFormViewTest extends phFormView
