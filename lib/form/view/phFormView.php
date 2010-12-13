@@ -263,7 +263,17 @@ class phFormView
 				throw new phFormException("No elements found with the name of '{$name}'");
 			}
 			
-			if($this->_form->hasForm($name))
+			$nameParts = $this->parseName($name);
+			$name = $nameParts['name'];
+			
+			if($nameParts['array'])
+			{
+				/**
+				 * @todo load the array! - think multi-dimensional arrays - this will need recursion!
+				 */
+				$dataItem = new phFormDataItem($name);
+			}
+			else if($this->_form->hasForm($name))
 			{
 				$dataItem = $this->_form->getForm($name);
 			}
@@ -286,6 +296,11 @@ class phFormView
 				if($phElement instanceof phDataChangeListener)
 				{
 					$dataItem->addChangeListener($phElement);
+				}
+				
+				if(!strlen((string)$element->attributes()->id))
+				{
+					throw new phFormException("You must specify an id for the element with name '{$name}'");
 				}
 				
 				$this->_elements[$this->getRealId((string)$element->attributes()->id)] = $phElement;
@@ -370,6 +385,17 @@ class phFormView
 	 */
 	public function name($name)
 	{
+		/*
+		 * valid names can only start with alpha characters
+		 * following the first letter can be alpha, numeric or underscores (but need'nt be present, a valid name can be 1 character)
+		 * the second parahenthises check, if an array is present that it is valid
+		 */
+		$nameParts = $this->parseName($name);
+		if($nameParts===null)
+		{
+			throw new phFormException("'{$name}' is not valid, names must be a-z0-9 or '_' only and contain no spaces and must not start with an '_' (underscore) or number");
+		}
+		
 		$key = array_search($name, $this->_names);
 		if($key!==false)
 		{
@@ -377,11 +403,43 @@ class phFormView
 		}
 		else
 		{
-			$newName = sprintf($this->_form->getNameFormat(), $name);
+			$nameOnly = $nameParts['name'];
+			$newName = sprintf($this->_form->getNameFormat(), $nameOnly);
+			if($nameParts['array'])
+			{
+				$newName .= $nameParts['arrayParts'];
+			}
+				
 			$this->_names[$newName] = $name;
 			
 			return $newName;
 		}
+	}
+	
+	protected function parseName($name)
+	{
+		$numMatched = preg_match('/^([a-zA-Z\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*?)((\[[a-zA-Z0-9_\x7f-\xff]*?\])*)?$/', $name, $matches);
+		
+		if($numMatched===0)
+		{
+			return null;
+		}
+		
+		$name = $matches[1];
+		$array = false;
+		$arrayParts = '';
+		
+		if(isset($matches[2]) && strlen($matches[2]) > 0)
+		{
+			$array = true;
+			$arrayParts = $matches[2];
+		}
+		
+		return array(
+			'name' => $name,
+			'array' => $array,
+			'arrayParts' => $arrayParts
+		);
 	}
 	
 	/**

@@ -124,6 +124,105 @@ class phViewTest extends phTestCase
     	$this->assertEquals($this->view->id('underscores_are_ok'), 'test_underscores_are_ok', 'element id set ok');
     }
     
+    public function testValidNames()
+    {
+    	$this->assertEquals($this->view->name('goodName'), 'test[goodName]');
+    	$this->assertEquals($this->view->name('nameWithNumbers123'), 'test[nameWithNumbers123]');
+    	$this->assertEquals($this->view->name('arrayData[]'), 'test[arrayData][]');
+    	$this->assertEquals($this->view->name('associativeArray[key]'), 'test[associativeArray][key]');
+    	$this->assertEquals($this->view->name('numericKey[1]'), 'test[numericKey][1]');
+    	$this->assertEquals($this->view->name('multiDimensional[1][1]'), 'test[multiDimensional][1][1]');
+    }
+    
+    /**
+     * @expectedException phFormException
+     */
+    public function testInvalidNameWithSpaces()
+    {
+    	$this->view->name('Bad Name');
+    }
+    
+	/**
+     * @expectedException phFormException
+     */
+    public function testInvalidName2()
+    {
+    	$this->view->name('BadName[');
+    }
+    
+	/**
+     * @expectedException phFormException
+     */
+    public function testInvalidName3()
+    {
+    	$this->view->name('BadN]a[me');
+    }
+    
+	/**
+     * @expectedException phFormException
+     */
+    public function testInvalidName4()
+    {
+    	$this->view->name('123BadName'); // can't start with numbers
+    }
+    
+	/**
+     * @expectedException phFormException
+     */
+    public function testInvalidName5()
+    {
+    	$this->view->name('_BadName'); // can't start with _
+    }
+    
+	/**
+     * @expectedException phFormException
+     */
+    public function testInvalidName6()
+    {
+    	$this->view->name('BadName[]moo'); // can't have anything after the array close
+    }
+    
+	/**
+     * @expectedException phFormException
+     */
+    public function testInvalidName7()
+    {
+    	$this->view->name('BadName[[]'); // bad character in the array key
+    }
+    
+	/**
+     * @expectedException phFormException
+     */
+    public function testInvalidName8()
+    {
+    	$this->view->name('BadName[@]'); // bad character in the array key
+    }
+    
+	/**
+     * @expectedException phFormException
+     */
+    public function testInvalidName9()
+    {
+    	$this->view->name('BadName]'); // unopened array
+    }
+    
+	/**
+     * @expectedException phFormException
+     */
+    public function testInvalidName10()
+    {
+    	$this->view->name('BadName['); // unclosed array
+    }
+    
+	/**
+     * @expectedException phFormException
+     */
+    public function testInvalidName11()
+    {
+    	$this->view->name('badName');
+    	$this->view->name('badName[]'); // badName is already registered
+    }
+    
     public function testRender()
     {
     	$html = $this->view->render();
@@ -184,6 +283,13 @@ class phViewTest extends phTestCase
 	public function testGetElementWithNonExistantElement()
     {
     	$username = $this->view->getElement('nonExistantId');
+    }
+    
+    public function testArrays()
+    {
+    	$view = new phFormView('arrayTestView', new phForm('test', 'arrayTestView'));
+    	$this->assertTrue(is_array($view->ids), 'The ids data is accessible and is an array');
+    	$this->assertEquals(sizeof($view->ids), 5, 'There are 5 elements in ids');
     }
 }
 
