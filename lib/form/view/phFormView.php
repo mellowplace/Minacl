@@ -271,7 +271,7 @@ class phFormView
 				/**
 				 * @todo load the array! - think multi-dimensional arrays - this will need recursion!
 				 */
-				$dataItem = new phFormDataItem($name);
+				$dataItem = new phArrayFormDataItem($name);
 			}
 			else if($this->_form->hasForm($name))
 			{

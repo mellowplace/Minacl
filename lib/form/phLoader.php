@@ -47,6 +47,7 @@ class phLoader
 		'phData'					=> 'phData.php',
 		'phValidatable'				=> 'phValidatable.php',
 		'phFormDataItem'			=> 'phFormDataItem.php',
+		'phArrayFormDataItem'		=> 'phArrayFormDataItem.php',
 		'phDataChangeListener'		=> 'phDataChangeListener.php',
 		'phFormException'			=> 'phFormException.php',
 		'phElementFactory'			=> 'factory/phElementFactory.php',
