@@ -12,6 +12,8 @@ class phArrayFormDataItem extends phFormDataItem implements ArrayAccess, Countab
 	
 	protected $_arrayTemplate = array();
 	
+	protected $_boundData = array();
+	
 	public function bind($value)
 	{
 		if(!is_array($value))
@@ -19,7 +21,49 @@ class phArrayFormDataItem extends phFormDataItem implements ArrayAccess, Countab
 			throw new phFormException("Trying to bind a value that is not an array to {$this->_name}");
 		}
 		
-		return parent::bind($value);
+		$data = $this->recursiveBind($this->_arrayTemplate, $value);
+		$this->_boundData = $data;
+	}
+	
+	protected function recursiveBind($registeredKeys, $data, $path = '')
+	{
+		foreach($data as $k=>$v)
+		{
+			$currentPath = $path . '[' . $k . ']';
+			if(!array_key_exists($k, $registeredKeys))
+			{
+				/*
+				 * We've come across some data that doesn't exist in
+				 * the template but is trying to be bound to our item
+				 */
+				throw new phFormException("Attempting to bind invalid data, I do not have any registed keys at {$currentPath}");
+			}
+		}
+		
+		$boundData = array();
+		
+		foreach($registeredKeys as $k=>$v)
+		{
+			$currentPath = $path . '[' . $k . ']';
+			
+			if(array_key_exists($k, $data))
+			{
+				if(is_array($data[$k]))
+				{
+					$boundData[$k] = $this->recursiveBind($registeredKeys[$k], $data[$k], $currentPath);
+				}
+				else
+				{
+					$boundData[$k] = $data[$k];
+				}
+			}
+			else
+			{
+				$boundData[$k] = null;
+			}
+		}
+		
+		return $boundData;
 	}
 	
 	public function registerArrayKeyString($keyString)
@@ -134,12 +178,12 @@ class phArrayFormDataItem extends phFormDataItem implements ArrayAccess, Countab
 	
 	public function offsetExists($offset)
 	{
-		return array_key_exists($offset, $this->_arrayTemplate);
+		return array_key_exists($offset, $this->_boundData);
 	}
 	
 	public function offsetGet($offset)
 	{
-		return $this->_arrayTemplate[$offset];
+		return $this->_boundData[$offset];
 	}
 	
 	public function offsetSet ($offset, $value)

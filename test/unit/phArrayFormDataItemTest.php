@@ -77,11 +77,11 @@ class phArrayFormDataItemTest extends phTestCase
 		$testData->registerArrayKeyString('[]'); // 2
 		$testData->registerArrayKeyString('[]'); // 3
 		
-		$this->assertEquals(sizeof($testData), 4, 'Test data has 4 elements');
-		$this->assertEquals($testData[0], 1, 'There is data at [0]');
-		$this->assertEquals($testData[1], 1, 'There is data at [1]');
-		$this->assertEquals($testData[2], 1, 'There is data at [2]');
-		$this->assertEquals($testData[3], 1, 'There is data at [3]');
+		$this->assertEquals(sizeof($testData->_arrayTemplate), 4, 'Test data has 4 elements');
+		$this->assertEquals($testData->_arrayTemplate[0], 1, 'There is data at [0]');
+		$this->assertEquals($testData->_arrayTemplate[1], 1, 'There is data at [1]');
+		$this->assertEquals($testData->_arrayTemplate[2], 1, 'There is data at [2]');
+		$this->assertEquals($testData->_arrayTemplate[3], 1, 'There is data at [3]');
 	}
 	
 	public function testIsArrayKeysUnregistered()
@@ -128,6 +128,88 @@ class phArrayFormDataItemTest extends phTestCase
 		$testData->registerArrayKeyString('[data][2]');
 		$this->assertEquals($testData->_arrayTemplate['data'][1], 1, 'Registered key [data][1] stored properly');
 		$this->assertEquals($testData->_arrayTemplate['data'][2], 1, '2nd registered key [data][2] stored properly');
+	}
+	
+	public function testBindData()
+	{
+		$testData = new phArrayFormDataItem('test');
+		$testData->registerArrayKeyString('[0]');
+		$testData->registerArrayKeyString('[1]');
+		
+		$testData->bind(array('test', 'data'));
+		$this->assertEquals($testData[0], 'test', 'Data at [0] is "test"');
+		$this->assertEquals($testData[1], 'data', 'Data at [1] is "data"');
+		
+		$testData = new phArrayFormDataItem('test');
+		$testData->registerArrayKeyString('[address][city]');
+		$testData->registerArrayKeyString('[address][zip]');
+		
+		$testData->bind(array(
+			'address' => array (
+				'city' => 'London',
+				'zip' => 90210
+			)
+		));
+		$this->assertEquals($testData['address'], array('city' => 'London', 'zip' => 90210), 'Data at [address] is good');
+		
+		/*
+		 * test that not passing some data still ends with it being set to null
+		 */
+		$testData = new phArrayFormDataItem('test');
+		$testData->registerArrayKeyString('[address][city]');
+		$testData->registerArrayKeyString('[address][zip]');
+		$testData->registerArrayKeyString('[first_name]');
+		
+		$testData->bind(array(
+			'address' => array (
+				'zip' => 90210
+			)
+		));
+		
+		$this->assertEquals($testData['address'], array('city' => null, 'zip' => 90210), 'Data at [address] is good');
+		$this->assertEquals($testData['first_name'], null, 'No first_name data bound');
+	}
+	
+	/**
+     * @expectedException phFormException
+     */
+	public function testBindInvalidData()
+	{
+		$testData = new phArrayFormDataItem('test');
+		$testData->registerArrayKeyString('[0]');
+		$testData->registerArrayKeyString('[1]');
+		
+		$testData->bind(array('test', 'data', '1 too many')); // too much data
+	}
+	
+	/**
+     * @expectedException phFormException
+     */
+	public function testBindInvalidMultiDimData()
+	{
+		$testData = new phArrayFormDataItem('test');
+		$testData->registerArrayKeyString('[address][city]');
+		$testData->registerArrayKeyString('[address][zip]');
+		
+		$testData->bind(array(
+			'address' => array (
+				'city' => 'London',
+				'zip' => 90210,
+				'unknown' => true // invalid data - wasn't registered
+			)
+		));
+	}
+	
+	/**
+     * @expectedException phFormException
+     */
+	public function testBindInvalidScalarData()
+	{
+		$testData = new phArrayFormDataItem('test');
+		$testData->registerArrayKeyString('[0]');
+		$testData->registerArrayKeyString('[1]');
+		
+		$testData->bind('test'); // wrong data type, should be an array
 	}
 }
 
