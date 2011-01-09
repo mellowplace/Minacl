@@ -38,9 +38,20 @@ class phArrayFormDataItemTest extends phTestCase
 	/**
      * @expectedException phFormException
      */
+	public function testAlreadyRegisteredArrayKeys()
+	{
+		$testData = new phArrayFormDataItem('test');
+		
+		$testData->registerArrayKeyString('[1]');
+		$testData->registerArrayKeyString('[1]'); // should throw exception as already registered
+	}
+	
+	/**
+     * @expectedException phFormException
+     */
 	public function testRegisterMixedArrayKeys()
 	{
-		$testData = new phTestArrayFormDataItem('test');
+		$testData = new phArrayFormDataItem('test');
 		
 		$testData->registerArrayKeyString('[]');
 		$testData->registerArrayKeyString('[1]'); // should not be able to have auto key and specified!
@@ -67,10 +78,10 @@ class phArrayFormDataItemTest extends phTestCase
 		$testData->registerArrayKeyString('[]'); // 3
 		
 		$this->assertEquals(sizeof($testData), 4, 'Test data has 4 elements');
-		$this->assertTrue(array_key_exists(0, $testData), 'There is data at [0]');
-		$this->assertTrue(array_key_exists(0, $testData), 'There is data at [1]');
-		$this->assertTrue(array_key_exists(0, $testData), 'There is data at [2]');
-		$this->assertTrue(array_key_exists(0, $testData), 'There is data at [3]');
+		$this->assertEquals($testData[0], 1, 'There is data at [0]');
+		$this->assertEquals($testData[1], 1, 'There is data at [1]');
+		$this->assertEquals($testData[2], 1, 'There is data at [2]');
+		$this->assertEquals($testData[3], 1, 'There is data at [3]');
 	}
 	
 	public function testIsArrayKeysUnregistered()
@@ -80,6 +91,9 @@ class phArrayFormDataItemTest extends phTestCase
 		$testData->_arrayTemplate = array(0=>1);
 		$this->assertFalse($testData->isArrayKeysUnregistered(array(0=>1)), '[0] already registered');
 		
+		$testData->_arrayTemplate = array(1=>1);
+		$this->assertFalse($testData->isArrayKeysUnregistered(array(1=>1)), '[1] already registered');
+		
 		$testData->_arrayTemplate = array(0=>array(0=>1));
 		$this->assertFalse($testData->isArrayKeysUnregistered(array(0=>array(0=>1))), '[0][0] already registered');
 		
@@ -88,6 +102,32 @@ class phArrayFormDataItemTest extends phTestCase
 		
 		$testData->_arrayTemplate = array(0=>array(0=>1));
 		$this->assertTrue($testData->isArrayKeysUnregistered(array(0=>array(1=>1))), '[0][1] not registered');
+	}
+	
+	public function testArraysStoredProperly()
+	{
+		$testData = new phTestArrayFormDataItem('test');
+		$testData->registerArrayKeyString('[0]');
+		$testData->registerArrayKeyString('[1]');
+		$this->assertEquals($testData->_arrayTemplate[0], 1, 'Registered key [0] stored properly');
+		$this->assertEquals($testData->_arrayTemplate[1], 1, '2nd registered key [1] stored properly');
+		
+		$testData = new phTestArrayFormDataItem('test');
+		$testData->registerArrayKeyString('[1]');
+		$this->assertEquals($testData->_arrayTemplate[1], 1, 'Registered key [1] stored properly');
+		
+		$testData->registerArrayKeyString('[2]');
+		$this->assertEquals($testData->_arrayTemplate[2], 1, '2nd registered key [2] stored properly');
+		
+		$testData = new phTestArrayFormDataItem('moo');
+		$testData->registerArrayKeyString('[moo]');
+		$this->assertEquals($testData->_arrayTemplate['moo'], 1, 'Registered key [moo] stored properly');
+		
+		$testData = new phTestArrayFormDataItem('test');
+		$testData->registerArrayKeyString('[data][1]');
+		$testData->registerArrayKeyString('[data][2]');
+		$this->assertEquals($testData->_arrayTemplate['data'][1], 1, 'Registered key [data][1] stored properly');
+		$this->assertEquals($testData->_arrayTemplate['data'][2], 1, '2nd registered key [data][2] stored properly');
 	}
 }
 

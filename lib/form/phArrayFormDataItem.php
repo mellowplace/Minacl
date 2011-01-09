@@ -1,4 +1,11 @@
 <?php
+/**
+ * This data item is used to represent any array type data specified in a form
+ * e.g. <input type="checkbox" name="ids[]" value="1" />
+ * 
+ * @author Rob Graham <htmlforms@mellowplace.com>
+ * @package phform
+ */
 class phArrayFormDataItem extends phFormDataItem implements ArrayAccess, Countable
 {	
 	protected $_autoKeys = array();
@@ -42,7 +49,10 @@ class phArrayFormDataItem extends phFormDataItem implements ArrayAccess, Countab
 			throw new phFormException("The array key {$keyString} has already been registered");
 		}
 		
-		$this->_arrayTemplate = array_merge($this->_arrayTemplate, $builtArray);
+		//echo "GBUILT"; print_r($builtArray);
+		//echo "STORED"; print_r($this->_arrayTemplate);
+		$this->_arrayTemplate = $this->arrayMergeReplaceRecursive($this->_arrayTemplate, $builtArray);
+		
 	}
 	
 	protected function isArrayKeysUnregistered($keys, $currentKeys = null, $currentRegistered = null)
@@ -74,11 +84,27 @@ class phArrayFormDataItem extends phFormDataItem implements ArrayAccess, Countab
 		return $this->isArrayKeysUnregistered($keys, $currentKeys[$k], $currentRegistered[$k]);
 	}
 	
-	protected function buildArray($keys, $level = 0, $builtArray = array())
+	/**
+	 * Recursion alert!
+	 * 
+	 * This recursive function takes in a key array such as
+	 * 
+	 * $keys[0] = 'address'
+	 * $keys[1] = 'ids'
+	 * $keys[2] = 1
+	 * 
+	 * and will return...
+	 * 
+	 * $builtData['address']['ids'][1] = 1;
+	 * 
+	 * @param array $keys single dimensional array of the keys
+	 * @param integer $level keeps track of where we are in the $keys array
+	 */
+	protected function buildArray($keys, $level = 0)
 	{
 		if(!isset($keys[$level]))
 		{
-			return $builtArray;
+			return 1; // we are at the last key so return 1, if it falls to the code below we will return an array
 		}
 		
 		$key = $keys[$level];
@@ -89,9 +115,10 @@ class phArrayFormDataItem extends phFormDataItem implements ArrayAccess, Countab
 			$this->_autoKeys[$level]++;
 		}
 		
-		$builtArray[$key] = 1;
+		$builtArray = array();
+		$builtArray[$key] = $this->buildArray($keys, $level + 1);
 		
-		return $this->buildArray($keys, $level + 1, $builtArray);
+		return $builtArray;
 	}
 	
 	protected function extractArrayKeys($keyString)
@@ -133,5 +160,51 @@ class phArrayFormDataItem extends phFormDataItem implements ArrayAccess, Countab
 		}
 		
 		return sizeof($this->_arrayTemplate);
+	}
+	
+	/**
+	 * Rob Graham - pikied from php.net and modified slightly so it preserves numeric keys
+	 * 
+	 * Merges any number of arrays of any dimensions, the later overwriting
+	 * previous keys, unless the key is numeric, in whitch case, duplicated
+	 * values will not be added.
+	 *
+	 * The arrays to be merged are passed as arguments to the function.
+	 *
+	 * @access private
+	 * @return array Resulting array, once all have been merged
+	 * @author Drvali <drvali@hotmail.com>
+	 * @author Rob Graham <htmlforms@mellowplace.com>
+	 */
+	private function arrayMergeReplaceRecursive() {
+	    // Holds all the arrays passed
+	    $params = & func_get_args ();
+	   
+	    // First array is used as the base, everything else overwrites on it
+	    $return = array_shift ( $params );
+	   
+	    // Merge all arrays on the first array
+	    foreach ( $params as $array ) {
+	        foreach ( $array as $key => $value ) {
+	            // Numeric keyed values are added (unless already there)
+	            if (is_numeric ( $key ) && (! in_array ( $value, $return ))) {
+	                if (is_array ( $value )) {
+	                    $return [$key] = $this->arrayMergeReplaceRecursive ( $return [$key], $value );
+	                } else {
+	                    $return [$key] = $value;
+	                }
+	               
+	            // String keyed values are replaced
+	            } else {
+	                if (isset ( $return [$key] ) && is_array ( $value ) && is_array ( $return [$key] )) {
+	                    $return [$key] = $this->arrayMergeReplaceRecursive ( $return [$key], $value );
+	                } else {
+	                    $return [$key] = $value;
+	                }
+	            }
+	        }
+	    }
+	   
+	    return $return;
 	}
 }

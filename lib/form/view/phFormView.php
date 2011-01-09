@@ -30,6 +30,14 @@ class phFormView
 	 * @var array
 	 */
 	protected $_names = array();
+	/**
+	 * For every registered name this array stores the name only part
+	 * e.g. "ids" if it was "ids[]" as the key and true if the name is
+	 * an array, false otherwise.  It is used in the name() function to
+	 * stop people mixing array names with normal names.
+	 * @var array
+	 */
+	protected $_types = array();
 	
 	protected $_elements = array();
 	/**
@@ -271,7 +279,20 @@ class phFormView
 				/**
 				 * @todo load the array! - think multi-dimensional arrays - this will need recursion!
 				 */
-				$dataItem = new phArrayFormDataItem($name);
+				if(array_key_exists($name, $this->_dataItems))
+				{
+					/*
+					 * we've seen another array name before so get that instance
+					 * rather than create a new one
+					 */
+					$dataItem = $this->_dataItems[$name];
+				}
+				else
+				{
+					$dataItem = new phArrayFormDataItem($name);
+				}
+				
+				$dataItem->registerArrayKeyString($nameParts['arrayParts']);
 			}
 			else if($this->_form->hasForm($name))
 			{
@@ -396,6 +417,16 @@ class phFormView
 			throw new phFormException("'{$name}' is not valid, names must be a-z0-9 or '_' only and contain no spaces and must not start with an '_' (underscore) or number");
 		}
 		
+		$nameOnly = $nameParts['name'];
+		/*
+		 * check if someone is trying to specify 2 names where one is an array and the other isn't
+		 * e.g. name="address" and name="address[zip]"
+		 */
+		if(array_key_exists($nameOnly, $this->_types) && $nameParts['array'] != $this->_types[$nameOnly])
+		{
+			throw new phFormException("Invalid name {$name}, trying to mix array's and normal types");
+		}
+			
 		$key = array_search($name, $this->_names);
 		if($key!==false)
 		{
@@ -403,7 +434,8 @@ class phFormView
 		}
 		else
 		{
-			$nameOnly = $nameParts['name'];
+			$this->_types[$nameOnly] = $nameParts['array'];
+			
 			$newName = sprintf($this->_form->getNameFormat(), $nameOnly);
 			if($nameParts['array'])
 			{
