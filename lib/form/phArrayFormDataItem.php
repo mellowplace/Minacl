@@ -12,8 +12,6 @@ class phArrayFormDataItem extends phFormDataItem implements ArrayAccess, Countab
 	
 	protected $_arrayTemplate = array();
 	
-	protected $_boundData = array();
-	
 	public function bind($value)
 	{
 		if(!is_array($value))
@@ -21,8 +19,38 @@ class phArrayFormDataItem extends phFormDataItem implements ArrayAccess, Countab
 			throw new phFormException("Trying to bind a value that is not an array to {$this->_name}");
 		}
 		
+		/*
+		 * build up an array of values, this will also check data being bound is valid
+		 * and they have not tried to assign a value to a non-existant peice of data
+		 */
 		$data = $this->recursiveBind($this->_arrayTemplate, $value);
-		$this->_boundData = $data;
+		/*
+		 * this actually assigns the data to the phFormDataItem objects
+		 */
+		$this->recursiveAssign($this->_arrayTemplate, $data);
+	}
+	
+	/**
+	 * Clears any given value(s) in this element
+	 */
+	public function clear()
+	{
+		$this->bind(array());
+	}
+	
+	protected function recursiveAssign($dataItems, $data)
+	{
+		foreach($dataItems as $k=>$d)
+		{
+			if(is_array($d))
+			{
+				$this->recursiveAssign($d, $data[$k]);
+			}
+			else
+			{
+				$d->bind($data[$k]);
+			}
+		}
 	}
 	
 	protected function recursiveBind($registeredKeys, $data, $path = '')
@@ -86,17 +114,16 @@ class phArrayFormDataItem extends phFormDataItem implements ArrayAccess, Countab
 			}
 		}
 		
-		$builtArray = $this->buildArray($keys);
+		$builtArray = $this->buildArray($keys, $dataItem);
 		
 		if(!$this->isArrayKeysUnregistered($builtArray))
 		{
 			throw new phFormException("The array key {$keyString} has already been registered");
 		}
 		
-		//echo "GBUILT"; print_r($builtArray);
-		//echo "STORED"; print_r($this->_arrayTemplate);
 		$this->_arrayTemplate = $this->arrayMergeReplaceRecursive($this->_arrayTemplate, $builtArray);
 		
+		return $dataItem;
 	}
 	
 	protected function isArrayKeysUnregistered($keys, $currentKeys = null, $currentRegistered = null)
@@ -142,13 +169,15 @@ class phArrayFormDataItem extends phFormDataItem implements ArrayAccess, Countab
 	 * $builtData['address']['ids'][1] = 1;
 	 * 
 	 * @param array $keys single dimensional array of the keys
+	 * @param phFormDataItem $dataItem a pointer to the data item the keys creates
 	 * @param integer $level keeps track of where we are in the $keys array
 	 */
-	protected function buildArray($keys, $level = 0)
+	protected function buildArray($keys, &$dataItem, $level = 0, $lastKey = null)
 	{
 		if(!isset($keys[$level]))
 		{
-			return 1; // we are at the last key so return 1, if it falls to the code below we will return an array
+			$dataItem = new phFormDataItem($lastKey); // we are at the last key so return 1, if it falls to the code below we will return an array
+			return $dataItem;
 		}
 		
 		$key = $keys[$level];
@@ -160,7 +189,7 @@ class phArrayFormDataItem extends phFormDataItem implements ArrayAccess, Countab
 		}
 		
 		$builtArray = array();
-		$builtArray[$key] = $this->buildArray($keys, $level + 1);
+		$builtArray[$key] = $this->buildArray($keys, $dataItem, $level + 1, $key);
 		
 		return $builtArray;
 	}
@@ -178,12 +207,12 @@ class phArrayFormDataItem extends phFormDataItem implements ArrayAccess, Countab
 	
 	public function offsetExists($offset)
 	{
-		return array_key_exists($offset, $this->_boundData);
+		return array_key_exists($offset, $this->_arrayTemplate);
 	}
 	
 	public function offsetGet($offset)
 	{
-		return $this->_boundData[$offset];
+		return $this->_arrayTemplate[$offset];
 	}
 	
 	public function offsetSet ($offset, $value)
@@ -220,7 +249,8 @@ class phArrayFormDataItem extends phFormDataItem implements ArrayAccess, Countab
 	 * @author Drvali <drvali@hotmail.com>
 	 * @author Rob Graham <htmlforms@mellowplace.com>
 	 */
-	private function arrayMergeReplaceRecursive() {
+	private function arrayMergeReplaceRecursive()
+	{
 	    // Holds all the arrays passed
 	    $params = & func_get_args ();
 	   

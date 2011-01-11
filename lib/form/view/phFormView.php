@@ -274,6 +274,9 @@ class phFormView
 			$nameParts = $this->parseName($name);
 			$name = $nameParts['name'];
 			
+			$dataItem = null;
+			$listenableDataItem = null;
+			
 			if($nameParts['array'])
 			{
 				/**
@@ -292,15 +295,17 @@ class phFormView
 					$dataItem = new phArrayFormDataItem($name);
 				}
 				
-				$dataItem->registerArrayKeyString($nameParts['arrayParts']);
+				$listenableDataItem = $dataItem->registerArrayKeyString($nameParts['arrayParts']);
 			}
 			else if($this->_form->hasForm($name))
 			{
 				$dataItem = $this->_form->getForm($name);
+				$listenableDataItem = $dataItem;
 			}
 			else
 			{
 				$dataItem = new phFormDataItem($name);
+				$listenableDataItem = $dataItem;
 			}
 			
 			$this->_dataItems[$name] = $dataItem;
@@ -316,7 +321,7 @@ class phFormView
 				$phElement = $f->createPhElement($element, $this);
 				if($phElement instanceof phDataChangeListener)
 				{
-					$dataItem->addChangeListener($phElement);
+					$listenableDataItem->addChangeListener($phElement);
 				}
 				
 				if(!strlen((string)$element->attributes()->id))

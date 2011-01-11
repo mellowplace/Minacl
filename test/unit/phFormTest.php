@@ -107,6 +107,45 @@ class phFormTest extends phTestCase
     	$this->assertFalse(isset($elements[0]->attributes()->checked), 'the checkbox1 is not marked as checked');
     }
     
+    /**
+     * Test the fillin works with array type data
+     */
+    public function testArrayFillin()
+    {
+    	$form = new phTestForm('test', 'arrayFillInView');
+    	$form->bind(array(
+    		'ids' => array(0=>'on', 2=>'on'),
+    		'test' => array('name' => 'Rob', 'address' => "A street\nA town")
+    	));
+    	
+    	$xml = new SimpleXMLElement('<xhtml>' . $form->__toString() . '</xhtml>');
+    	
+    	$rewrittenName = $form->getView()->name('test[name]');
+    	$elements = $xml->xpath('//input[@name=\''.$rewrittenName.'\']');
+    	$this->assertEquals(sizeof($elements), 1, 'found an input matching the test[name]');
+    	$this->assertEquals('Rob', (string)$elements[0]->attributes()->value, 'the value attribute was set to Rob');
+    	
+    	$rewrittenName = $form->getView()->name('test[address]');
+    	$elements = $xml->xpath('//textarea[@name=\''.$rewrittenName.'\']');
+    	$this->assertEquals(sizeof($elements), 1, 'found an input matching the test[address]');
+    	$this->assertEquals("A street\nA town", (string)$elements[0], 'the value attribute was set to "A street\nA town"');
+    	
+    	$rewrittenId = $form->getView()->id('ids_1');
+    	$elements = $xml->xpath('//input[@id=\''.$rewrittenId.'\']');
+    	$this->assertEquals(sizeof($elements), 1, 'found an input matching the ids[1]');
+    	$this->assertEquals('checked', (string)$elements[0]->attributes()->checked, 'the ids[1] checkbox is checked');
+    	
+    	$rewrittenId = $form->getView()->id('ids_2');
+    	$elements = $xml->xpath('//input[@id=\''.$rewrittenId.'\']');
+    	$this->assertEquals(sizeof($elements), 1, 'found an input matching the ids[2]');
+    	$this->assertFalse(isset($elements[0]->attributes()->checked), 'the ids[2] checkbox is not checked');
+    	
+    	$rewrittenId = $form->getView()->id('ids_3');
+    	$elements = $xml->xpath('//input[@id=\''.$rewrittenId.'\']');
+    	$this->assertEquals(sizeof($elements), 1, 'found an input matching the ids[3]');
+    	$this->assertEquals('checked', (string)$elements[0]->attributes()->checked, 'the ids[3] checkbox is checked');
+    }
+    
     public function testElementFinder()
     {
     	$form = new phForm('test', 'simpleTestView');

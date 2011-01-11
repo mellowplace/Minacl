@@ -78,10 +78,10 @@ class phArrayFormDataItemTest extends phTestCase
 		$testData->registerArrayKeyString('[]'); // 3
 		
 		$this->assertEquals(sizeof($testData->_arrayTemplate), 4, 'Test data has 4 elements');
-		$this->assertEquals($testData->_arrayTemplate[0], 1, 'There is data at [0]');
-		$this->assertEquals($testData->_arrayTemplate[1], 1, 'There is data at [1]');
-		$this->assertEquals($testData->_arrayTemplate[2], 1, 'There is data at [2]');
-		$this->assertEquals($testData->_arrayTemplate[3], 1, 'There is data at [3]');
+		$this->assertTrue($testData->_arrayTemplate[0] instanceof phFormDataItem, 'There is data at [0]');
+		$this->assertTrue($testData->_arrayTemplate[1] instanceof phFormDataItem, 'There is data at [1]');
+		$this->assertTrue($testData->_arrayTemplate[2] instanceof phFormDataItem, 'There is data at [2]');
+		$this->assertTrue($testData->_arrayTemplate[3] instanceof phFormDataItem, 'There is data at [3]');
 	}
 	
 	public function testIsArrayKeysUnregistered()
@@ -109,25 +109,25 @@ class phArrayFormDataItemTest extends phTestCase
 		$testData = new phTestArrayFormDataItem('test');
 		$testData->registerArrayKeyString('[0]');
 		$testData->registerArrayKeyString('[1]');
-		$this->assertEquals($testData->_arrayTemplate[0], 1, 'Registered key [0] stored properly');
-		$this->assertEquals($testData->_arrayTemplate[1], 1, '2nd registered key [1] stored properly');
+		$this->assertTrue($testData->_arrayTemplate[0] instanceof phFormDataItem, 'Registered key [0] stored properly');
+		$this->assertTrue($testData->_arrayTemplate[1] instanceof phFormDataItem, '2nd registered key [1] stored properly');
 		
 		$testData = new phTestArrayFormDataItem('test');
 		$testData->registerArrayKeyString('[1]');
-		$this->assertEquals($testData->_arrayTemplate[1], 1, 'Registered key [1] stored properly');
+		$this->assertTrue($testData->_arrayTemplate[1] instanceof phFormDataItem, 'Registered key [1] stored properly');
 		
 		$testData->registerArrayKeyString('[2]');
-		$this->assertEquals($testData->_arrayTemplate[2], 1, '2nd registered key [2] stored properly');
+		$this->assertTrue($testData->_arrayTemplate[2] instanceof phFormDataItem, '2nd registered key [2] stored properly');
 		
 		$testData = new phTestArrayFormDataItem('moo');
 		$testData->registerArrayKeyString('[moo]');
-		$this->assertEquals($testData->_arrayTemplate['moo'], 1, 'Registered key [moo] stored properly');
+		$this->assertTrue($testData->_arrayTemplate['moo'] instanceof phFormDataItem, 'Registered key [moo] stored properly');
 		
 		$testData = new phTestArrayFormDataItem('test');
 		$testData->registerArrayKeyString('[data][1]');
 		$testData->registerArrayKeyString('[data][2]');
-		$this->assertEquals($testData->_arrayTemplate['data'][1], 1, 'Registered key [data][1] stored properly');
-		$this->assertEquals($testData->_arrayTemplate['data'][2], 1, '2nd registered key [data][2] stored properly');
+		$this->assertTrue($testData->_arrayTemplate['data'][1] instanceof phFormDataItem, 'Registered key [data][1] stored properly');
+		$this->assertTrue($testData->_arrayTemplate['data'][2] instanceof phFormDataItem, '2nd registered key [data][2] stored properly');
 	}
 	
 	public function testBindData()
@@ -137,8 +137,8 @@ class phArrayFormDataItemTest extends phTestCase
 		$testData->registerArrayKeyString('[1]');
 		
 		$testData->bind(array('test', 'data'));
-		$this->assertEquals($testData[0], 'test', 'Data at [0] is "test"');
-		$this->assertEquals($testData[1], 'data', 'Data at [1] is "data"');
+		$this->assertEquals($testData[0]->getValue(), 'test', 'Data at [0] is "test"');
+		$this->assertEquals($testData[1]->getValue(), 'data', 'Data at [1] is "data"');
 		
 		$testData = new phArrayFormDataItem('test');
 		$testData->registerArrayKeyString('[address][city]');
@@ -150,8 +150,9 @@ class phArrayFormDataItemTest extends phTestCase
 				'zip' => 90210
 			)
 		));
-		$this->assertEquals($testData['address'], array('city' => 'London', 'zip' => 90210), 'Data at [address] is good');
 		
+		$this->assertEquals('London', $testData['address']['city']->getValue(), 'Data at [address][city] is good');
+		$this->assertEquals(90210, $testData['address']['zip']->getValue(), 'Data at [address][zip] is good');
 		/*
 		 * test that not passing some data still ends with it being set to null
 		 */
@@ -166,8 +167,9 @@ class phArrayFormDataItemTest extends phTestCase
 			)
 		));
 		
-		$this->assertEquals($testData['address'], array('city' => null, 'zip' => 90210), 'Data at [address] is good');
-		$this->assertEquals($testData['first_name'], null, 'No first_name data bound');
+		$this->assertEquals(null, $testData['address']['city']->getValue(), 'Data at [address][city] is good');
+		$this->assertEquals(90210, $testData['address']['zip']->getValue(), 'Data at [address][zip] is good');
+		$this->assertEquals($testData['first_name']->getValue(), null, 'No first_name data bound');
 	}
 	
 	/**
