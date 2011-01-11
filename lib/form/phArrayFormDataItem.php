@@ -64,7 +64,7 @@ class phArrayFormDataItem extends phFormDataItem implements ArrayAccess, Countab
 				 * We've come across some data that doesn't exist in
 				 * the template but is trying to be bound to our item
 				 */
-				throw new phFormException("Attempting to bind invalid data, I do not have any registed keys at {$currentPath}");
+				throw new phFormException("Attempting to bind invalid data, I do not have any registered keys at {$currentPath}");
 			}
 		}
 		
