@@ -53,4 +53,13 @@ abstract class phSimpleXmlElement implements phDataChangeListener, phFormViewEle
 	{
 		$this->setValue($item->getValue());
 	}
+	
+	/**
+	 * (non-PHPdoc)
+	 * @see lib/form/phFormViewElement::bindDataItem()
+	 */
+	public function bindDataItem(phFormDataItem $item)
+	{
+		$item->addChangeListener($this);
+	}
 }

@@ -285,26 +285,6 @@ class phViewTest extends phTestCase
     	$username = $this->view->getElement('nonExistantId');
     }
     
-    public function testParseName()
-    {
-    	$view = new phFormViewTest('arrayTestView', new phForm('test', 'arrayTestView'));
-    	
-    	$info = $view->parseName('ids[1]');
-    	$this->assertTrue($info['array'], 'ids[1] has been identified as an array');
-    	$this->assertEquals($info['arrayParts'], '[1]', 'Array parts is [1]');
-    	$this->assertEquals($info['name'], 'ids', 'Name is ids');
-    	
-    	$info = $view->parseName('ids[]');
-    	$this->assertTrue($info['array'], 'ids[] has been identified as an array');
-    	$this->assertEquals($info['arrayParts'], '[]', 'Array parts is []');
-    	$this->assertEquals($info['name'], 'ids', 'Name is ids');
-    	
-    	$info = $view->parseName('ids[1][moo]');
-    	$this->assertTrue($info['array'], 'ids[1][moo] has been identified as an array');
-    	$this->assertEquals($info['arrayParts'], '[1][moo]', 'Array parts is [1][moo]');
-    	$this->assertEquals($info['name'], 'ids', 'Name is ids');
-    }
-    
     public function testArrays()
     {
     	$view = new phFormView('arrayTestView', new phForm('test', 'arrayTestView'));
@@ -318,11 +298,6 @@ class phFormViewTest extends phFormView
 	public function getDom()
 	{
 		return parent::getDom();
-	}
-	
-	public function parseName($name)
-	{
-		return parent::parseName($name);
 	}
 }
 ?>

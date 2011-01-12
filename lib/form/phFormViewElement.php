@@ -1,13 +1,16 @@
 <?php
 /**
- * This class provides a common definition for phForm and phSimpleXmlElement objects, I'm
- * not quite sure of it yet! 
+ * This class provides a common definition for phForm and phSimpleXmlElement objects
  * 
  * @author Rob Graham <htmlforms@mellowplace.com>
  * @package phform
- * @todo Work out if this is a useful interface
  */
 interface phFormViewElement
 {
-	
+	/**
+	 * This method binds the appropriate phFormDataItem to the element
+	 * @param phFormDataItem $item
+	 * @return void
+	 */
+	public function bindDataItem(phFormDataItem $item);
 }

@@ -44,6 +44,8 @@ class phLoader
 		'phFormView'				=> 'view/phFormView.php',
 		'phViewLoader'				=> 'view/phViewLoader.php',
 		'phFileViewLoader'			=> 'view/phFileViewLoader.php',
+		'phNameInfo'				=> 'view/phNameInfo.php',
+		'phFormViewElementBinder'	=> 'view/phFormViewElementBinder.php',
 		'phData'					=> 'phData.php',
 		'phValidatable'				=> 'phValidatable.php',
 		'phFormDataItem'			=> 'phFormDataItem.php',

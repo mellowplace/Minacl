@@ -262,8 +262,11 @@ class phFormView
 			return;
 		}
 		
+		$binder = phFormViewElementBinder::createInstance();
+		
 		foreach($this->_names as $rewrittenName=>$name)
 		{
+			$nameInfo = new phNameInfo($name);
 			$elements = $this->getDom()->xpath("//*[@name='{$rewrittenName}']");
 			
 			if(!sizeof($elements))
@@ -271,45 +274,7 @@ class phFormView
 				throw new phFormException("No elements found with the name of '{$name}'");
 			}
 			
-			$nameParts = $this->parseName($name);
-			$name = $nameParts['name'];
-			
-			$dataItem = null;
-			$listenableDataItem = null;
-			
-			if($nameParts['array'])
-			{
-				/**
-				 * @todo load the array! - think multi-dimensional arrays - this will need recursion!
-				 */
-				if(array_key_exists($name, $this->_dataItems))
-				{
-					/*
-					 * we've seen another array name before so get that instance
-					 * rather than create a new one
-					 */
-					$dataItem = $this->_dataItems[$name];
-				}
-				else
-				{
-					$dataItem = new phArrayFormDataItem($name);
-				}
-				
-				$listenableDataItem = $dataItem->registerArrayKeyString($nameParts['arrayParts']);
-			}
-			else if($this->_form->hasForm($name))
-			{
-				$dataItem = $this->_form->getForm($name);
-				$listenableDataItem = $dataItem;
-			}
-			else
-			{
-				$dataItem = new phFormDataItem($name);
-				$listenableDataItem = $dataItem;
-			}
-			
-			$this->_dataItems[$name] = $dataItem;
-			
+			$phElements = array();
 			foreach($elements as $element)
 			{
 				$f = phElementFactory::getFactory($element);
@@ -319,18 +284,20 @@ class phFormView
 				}
 				
 				$phElement = $f->createPhElement($element, $this);
-				if($phElement instanceof phDataChangeListener)
-				{
-					$listenableDataItem->addChangeListener($phElement);
-				}
 				
 				if(!strlen((string)$element->attributes()->id))
 				{
-					throw new phFormException("You must specify an id for the element with name '{$name}'");
+					throw new phFormException("You must specify an id for the element with name '{$nameInfo->getName()}'");
 				}
 				
 				$this->_elements[$this->getRealId((string)$element->attributes()->id)] = $phElement;
+				
+				$phElements[] = $phElement;
 			}
+			
+			$dataItem = $binder->createAndBindDataItems($phElements, $nameInfo, $this->_form);
+			
+			$this->_dataItems[$nameInfo->getName()] = $dataItem;
 		}
 		
 		$this->_initialized = true;
@@ -416,18 +383,18 @@ class phFormView
 		 * following the first letter can be alpha, numeric or underscores (but need'nt be present, a valid name can be 1 character)
 		 * the second parahenthises check, if an array is present that it is valid
 		 */
-		$nameParts = $this->parseName($name);
-		if($nameParts===null)
+		$nameInfo = new phNameInfo($name);
+		if(!$nameInfo->isValid())
 		{
 			throw new phFormException("'{$name}' is not valid, names must be a-z0-9 or '_' only and contain no spaces and must not start with an '_' (underscore) or number");
 		}
 		
-		$nameOnly = $nameParts['name'];
+		$nameOnly = $nameInfo->getName();
 		/*
 		 * check if someone is trying to specify 2 names where one is an array and the other isn't
 		 * e.g. name="address" and name="address[zip]"
 		 */
-		if(array_key_exists($nameOnly, $this->_types) && $nameParts['array'] != $this->_types[$nameOnly])
+		if(array_key_exists($nameOnly, $this->_types) && $nameInfo->isArray() != $this->_types[$nameOnly])
 		{
 			throw new phFormException("Invalid name {$name}, trying to mix array's and normal types");
 		}
@@ -439,44 +406,18 @@ class phFormView
 		}
 		else
 		{
-			$this->_types[$nameOnly] = $nameParts['array'];
+			$this->_types[$nameOnly] = $nameInfo->isArray();
 			
 			$newName = sprintf($this->_form->getNameFormat(), $nameOnly);
-			if($nameParts['array'])
+			if($nameInfo->isArray())
 			{
-				$newName .= $nameParts['arrayParts'];
+				$newName .= $nameInfo->getArrayKeyString();
 			}
 				
 			$this->_names[$newName] = $name;
 			
 			return $newName;
 		}
-	}
-	
-	protected function parseName($name)
-	{
-		$numMatched = preg_match('/^([a-zA-Z\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*?)((\[[a-zA-Z0-9_\x7f-\xff]*?\])*)?$/', $name, $matches);
-		
-		if($numMatched===0)
-		{
-			return null;
-		}
-		
-		$name = $matches[1];
-		$array = false;
-		$arrayParts = '';
-		
-		if(isset($matches[2]) && strlen($matches[2]) > 0)
-		{
-			$array = true;
-			$arrayParts = $matches[2];
-		}
-		
-		return array(
-			'name' => $name,
-			'array' => $array,
-			'arrayParts' => $arrayParts
-		);
 	}
 	
 	/**

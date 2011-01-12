@@ -273,6 +273,18 @@ class phForm implements phFormViewElement, phData
 	{
 		$this->setValue($item->getValue());
 	}
+	
+	/**
+	 * (non-PHPdoc)
+	 * @see lib/form/phFormViewElement::bindDataItem()
+	 */
+	public function bindDataItem(phFormDataItem $item)
+	{
+		/*
+		 * don't want to do anything, the passed phFormDataItem will
+		 * be this very same object
+		 */
+	}
 }
 
 /**
