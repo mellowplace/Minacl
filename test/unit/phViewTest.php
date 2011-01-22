@@ -313,6 +313,28 @@ class phViewTest extends phTestCase
     	$this->assertTrue($view->ids instanceof phArrayFormDataItem, 'The ids data is accessible and is an instance of phArrayFormDataItem');
     	$this->assertEquals(sizeof($view->ids), 5, 'There are 5 elements in ids');
     }
+    
+    /**
+     * @expectedException phFormException
+     */
+    public function testElementsWithSameNameCannotAppearTwiceException()
+    {
+    	$view = new phFormView('elementsAppearingMultipleTimesTestView', new phForm('test', 'elementsAppearingMultipleTimesTestView'));
+    	// need to do something that triggers initialize
+    	$view->getAllData();
+    }
+    
+    /**
+     * Tests that elements that must be unique but have an array
+     * name with an auto key - i.e. "ids[]" doesn't throw an 
+     * exception
+     */
+    public function testValidMultipleElementsWithAutoArray()
+    {
+    	$view = new phFormView('validMultipleElementsTestView', new phForm('test', 'validMultipleElementsTestView'));
+    	// need to do something that triggers initialize
+    	$view->getAllData();
+    }
 }
 
 class phFormViewTest extends phFormView

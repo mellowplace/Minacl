@@ -20,45 +20,21 @@
  * License along with phForms.  If not, see 
  * <http://www.gnu.org/licenses/>.
  */
-
-/**
- * This class provides handling for checkboxes 
- * 
+ 
+ /**
+ * Tests that array names don't get accused of being not unique for
+ * elements that must have unique names
+ *
  * @author Rob Graham <htmlforms@mellowplace.com>
  * @package phform
- * @subpackage element
+ * @subpackage test
  */
-class phCheckboxElement extends phInputElement
-{
-	public function setValue($value)
-	{
-		$e = $this->getElement();
-		
-		if($value==$this->getRawValue())
-		{
-			/*
-			 * value being set to same as our elements
-			 * value="" attribute, therefore we need to
-			 * be marked as checked
-			 */
-			unset($e->attributes()->checked);
-			$e->addAttribute('checked','checked');
-		}
-		else
-		{
-			/*
-			 * make sure we are not checked
-			 */
-			unset($e->attributes()->checked);
-		}
-	}
-	
-	/**
-	 * Checkboxes are allowed to appear multiple times with the same name
-	 * @return boolean always false
-	 */
-	public function needsUniqueName()
-	{
-		return false;
-	}
-}
+?>
+<input 	type="file" 
+				id="<?php echo $this->id('testFile'); ?>" 
+				name="<?php echo $this->name('testFile[]'); ?>" 
+				value="" />
+<input 	type="file" 
+				id="<?php echo $this->id('testFile2'); ?>" 
+				name="<?php echo $this->name('testFile[]'); ?>" 
+				value="" />

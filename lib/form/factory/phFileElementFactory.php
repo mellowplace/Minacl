@@ -3,12 +3,12 @@
  * phForms Project: An HTML forms library for PHP
  *          https://github.com/mellowplace/PHP-HTML-Driven-Forms/
  * Copyright (c) 2010, 2011 Rob Graham
- * 
+ *
  * This file is part of phForms.
  *
  * phForms is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 3 of 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of
  * the License, or (at your option) any later version.
  *
  * phForms is distributed in the hope that it will be useful, but
@@ -16,20 +16,25 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public 
- * License along with phForms.  If not, see 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with phForms.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
 
 /**
- * This factory can handle all input elements bar if they are a checkbox
- * 
+ * Knows how to handle file upload elements i.e.
+ * 		<input type="file" ...
+ *
  * @author Rob Graham <htmlforms@mellowplace.com>
  * @package phform
  * @subpackage factory
  */
-class phInputElementFactory extends phElementFactory
+class phFileElementFactory extends phElementFactory
 {
+	/**
+	 * (non-PHPdoc)
+	 * @see lib/form/factory/phElementFactory::canHandle()
+	 */
 	public function canHandle(SimpleXMLElement $e)
 	{
 		if($e->getName()=='input')
@@ -37,7 +42,7 @@ class phInputElementFactory extends phElementFactory
 			$attributes = $e->attributes();
 			foreach($attributes as $name=>$value)
 			{
-				if($name=='type' && $value!='checkbox' && $value!='file')
+				if($name=='type' && $value=='file')
 				{
 					return true;
 				}
@@ -46,8 +51,12 @@ class phInputElementFactory extends phElementFactory
 		return false;
 	}
 	
+	/**
+	 * (non-PHPdoc)
+	 * @see lib/form/factory/phElementFactory::createPhElement()
+	 */
 	public function createPhElement(SimpleXMLElement $e, phFormView $view)
 	{
-		return new phInputElement($e, $view);
+		return new phFileElement($e, $view);
 	}
 }

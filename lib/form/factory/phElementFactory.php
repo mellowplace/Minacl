@@ -33,6 +33,12 @@ abstract class phElementFactory
 {
 	private static $_factories = null;
 	
+	/**
+	 * Gets the correct phElementFactory instance for creating
+	 * the right phElement for $e
+	 * @param SimpleXMLElement $e
+	 * @return phElementFactory
+	 */
 	public static function getFactory(SimpleXMLElement $e)
 	{
 		if(self::$_factories===null)
@@ -81,7 +87,7 @@ abstract class phElementFactory
 	 * 
 	 * @param SimpleXMLElement $e
 	 * @param phFormView $view the view the element appears on
-	 * @return phElement
+	 * @return phFormViewElement
 	 */
 	public abstract function createPhElement(SimpleXMLElement $e, phFormView $view);
 }

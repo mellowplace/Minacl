@@ -20,45 +20,15 @@
  * License along with phForms.  If not, see 
  * <http://www.gnu.org/licenses/>.
  */
-
-/**
- * This class provides handling for checkboxes 
- * 
+ 
+ /**
+ * Exception class used by phFileFormDataItem 
+ *
  * @author Rob Graham <htmlforms@mellowplace.com>
  * @package phform
- * @subpackage element
  */
-class phCheckboxElement extends phInputElement
+class phFileDataException extends Exception
 {
-	public function setValue($value)
-	{
-		$e = $this->getElement();
-		
-		if($value==$this->getRawValue())
-		{
-			/*
-			 * value being set to same as our elements
-			 * value="" attribute, therefore we need to
-			 * be marked as checked
-			 */
-			unset($e->attributes()->checked);
-			$e->addAttribute('checked','checked');
-		}
-		else
-		{
-			/*
-			 * make sure we are not checked
-			 */
-			unset($e->attributes()->checked);
-		}
-	}
-	
-	/**
-	 * Checkboxes are allowed to appear multiple times with the same name
-	 * @return boolean always false
-	 */
-	public function needsUniqueName()
-	{
-		return false;
-	}
+	const INVALID_FILE_DATA = 1;
+	const TEMP_FILE_NOT_FOUND = 2;
 }

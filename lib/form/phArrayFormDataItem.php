@@ -116,7 +116,7 @@ class phArrayFormDataItem extends phFormDataItem implements ArrayAccess, Countab
 		return $boundData;
 	}
 	
-	public function registerArrayKeyString($keyString)
+	public function registerArrayKeyString($keyString, phSimpleXmlElement $element)
 	{
 		$keys = $this->extractArrayKeys($keyString);
 		
@@ -136,7 +136,7 @@ class phArrayFormDataItem extends phFormDataItem implements ArrayAccess, Countab
 			}
 		}
 		
-		$builtArray = $this->buildArray($keys, $dataItem);
+		$builtArray = $this->buildArray($keys, $dataItem, $element);
 		
 		if(!$this->isArrayKeysUnregistered($builtArray))
 		{
@@ -192,13 +192,15 @@ class phArrayFormDataItem extends phFormDataItem implements ArrayAccess, Countab
 	 * 
 	 * @param array $keys single dimensional array of the keys
 	 * @param phFormDataItem $dataItem a pointer to the data item the keys creates
+	 * @param phSimpleXmlElement $element the element in the view that triggered the registering of an array key
 	 * @param integer $level keeps track of where we are in the $keys array
 	 */
-	protected function buildArray($keys, &$dataItem, $level = 0, $lastKey = null)
+	protected function buildArray($keys, &$dataItem, phSimpleXmlElement $element, $level = 0, $lastKey = null)
 	{
 		if(!isset($keys[$level]))
 		{
-			$dataItem = new phFormDataItem($lastKey); // we are at the last key so return 1, if it falls to the code below we will return an array
+			$class = $element->getDataItemClassName();
+			$dataItem = new $class($lastKey); // we are at the last key so return 1, if it falls to the code below we will return an array
 			return $dataItem;
 		}
 		
@@ -211,7 +213,7 @@ class phArrayFormDataItem extends phFormDataItem implements ArrayAccess, Countab
 		}
 		
 		$builtArray = array();
-		$builtArray[$key] = $this->buildArray($keys, $dataItem, $level + 1, $key);
+		$builtArray[$key] = $this->buildArray($keys, $dataItem, $element, $level + 1, $key);
 		
 		return $builtArray;
 	}

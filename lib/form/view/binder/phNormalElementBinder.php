@@ -46,9 +46,23 @@ class phNormalElementBinder extends phFormViewElementBinder
 	 */
 	public function createAndBindDataItems($elements, phNameInfo $name, phForm $form)
 	{
-		$dataItem = new phFormDataItem($name->getName());
+		$dataItem = null; // new phFormDataItem($name->getName());
+		
 		foreach($elements as $e)
 		{
+			$class = $e->getDataItemClassName();
+			if($dataItem===null)
+			{
+				$dataItem = new $class($name->getName());
+			}
+			else if(strtolower(get_class($dataItem)) != strtolower($class))
+			{
+				/*
+				 * someones trying to mix elements that need different phFormDataItem
+				 * classes. Not allowed!
+				 */
+				throw new phFormException("There are multiple elements registered for the name \"{$name->getName()}\" that use different data types. You cannot mix elements that need different data types, please rename.");
+			}
 			$e->bindDataItem($dataItem);
 		}
 		

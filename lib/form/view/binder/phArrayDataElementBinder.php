@@ -63,7 +63,7 @@ class phArrayDataElementBinder extends phFormViewElementBinder
 		
 		foreach($elements as $e)
 		{
-			$d = $dataItem->registerArrayKeyString($name->getArrayKeyString());
+			$d = $dataItem->registerArrayKeyString($name->getArrayKeyString(), $e);
 			$e->bindDataItem($d);
 		}
 		

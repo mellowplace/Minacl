@@ -28,11 +28,11 @@
  * @package phform
  */
 interface phFormViewElement
-{
+{	
 	/**
-	 * This method binds the appropriate phFormDataItem to the element
-	 * @param phFormDataItem $item
-	 * @return void
+	 * If the element is not allowed in the view multiple times with the same
+	 * name as other elements then you should return false here
+	 * @return boolean
 	 */
-	public function bindDataItem(phFormDataItem $item);
+	public function needsUniqueName();
 }

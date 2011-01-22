@@ -299,20 +299,31 @@ class phFormView
 			$phElements = array();
 			foreach($elements as $element)
 			{
-				$f = phElementFactory::getFactory($element);
-				if($f===null)
-				{
-					throw new phFormException("no factory exists for handling the '{$element->getName()}' element");
-				}
-				
-				$phElement = $f->createPhElement($element, $this);
-				
 				if(!strlen((string)$element->attributes()->id))
 				{
 					throw new phFormException("You must specify an id for the element with name '{$nameInfo->getName()}'");
 				}
 				
+				$f = phElementFactory::getFactory($element);
+				if($f===null)
+				{
+					$realId = $this->getRealId((string)$element->attributes()->id);
+					throw new phFormException("no factory exists for handling the element with ID '{$realId}' which is of the type '{$element->getName()}'");
+				}
+				
+				$phElement = $f->createPhElement($element, $this);
+				
 				$this->_elements[$this->getRealId((string)$element->attributes()->id)] = $phElement;
+				
+				if(sizeof($elements)>1 && $phElement->needsUniqueName() && $nameInfo->getArrayKeyString()!='[]')
+				{
+					/*
+					 * there are multiple elements with the same name and this phElement
+					 * is not allowed to appear multiple times in a view with the same
+					 * name.
+					 */
+					throw new phFormException("There are multiple elements with the name \"{$name}\" and one or more of those elements must have a unique name", $code);
+				}
 				
 				$phElements[] = $phElement;
 			}

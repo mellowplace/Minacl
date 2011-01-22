@@ -307,6 +307,18 @@ class phForm implements phFormViewElement, phData
 		 * be this very same object
 		 */
 	}
+	
+	/**
+	 * (non-PHPdoc)
+	 * @see lib/form/phFormViewElement::canAppearMultipleTimesWithSameName()
+	 */
+	public function needsUniqueName()
+	{
+		/*
+		 * multiple forms are not allowed in the view with the same name 
+		 */
+		return true; 
+	}
 }
 
 /**
