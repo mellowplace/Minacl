@@ -34,9 +34,13 @@ class phNameInfo
 	protected $_array = false;
 	protected $_arrayKeyString = null;
 	protected $_valid = false;
+	protected $_arrayInfo = null;
+	protected $_nameString = '';
 	
 	public function __construct($nameString)
 	{
+		$this->_nameString = $nameString;
+		
 		$numMatched = preg_match('/^([a-zA-Z\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*?)((\[[a-zA-Z0-9_\x7f-\xff]*?\])*)?$/', $nameString, $matches);
 		
 		if($numMatched!==0)
@@ -49,6 +53,7 @@ class phNameInfo
 			{
 				$array = true;
 				$arrayParts = $matches[2];
+				$this->_arrayInfo = new phArrayInfo($arrayParts);
 			}
 			
 			$this->_name = $name;
@@ -73,8 +78,21 @@ class phNameInfo
 		return $this->_arrayKeyString;
 	}
 	
+	/**
+	 * @return phArrayInfo
+	 */
+	public function getArrayInfo()
+	{
+		return $this->_arrayInfo;
+	}
+	
 	public function isValid()
 	{
 		return $this->_valid;
+	}
+	
+	public function __toString()
+	{
+		return $this->_nameString;
 	}
 }

@@ -40,15 +40,15 @@
 
 <input 	type="checkbox" 
 		id="<?php echo $this->id('checkbox1'); ?>"
-		name="<?php echo $this->name('checkbox'); ?>"
+		name="<?php echo $this->name('checkbox[0]'); ?>"
 		value="1" checked="checked" />
 
 <input 	type="checkbox" 
 		id="<?php echo $this->id('checkbox2'); ?>"
-		name="<?php echo $this->name('checkbox'); ?>"
+		name="<?php echo $this->name('checkbox[1]'); ?>"
 		value="2" />
 		
 <input 	type="checkbox" 
 		id="<?php echo $this->id('checkbox3'); ?>"
-		name="<?php echo $this->name('checkbox'); ?>"
+		name="<?php echo $this->name('checkbox[2]'); ?>"
 		value="3" />

@@ -89,24 +89,8 @@ abstract class phSimpleXmlElement implements phDataChangeListener, phFormViewEle
 	 * (non-PHPdoc)
 	 * @see lib/form/phFormViewElement::canAppearMultipleTimesWithSameName()
 	 */
-	public function needsUniqueName()
+	public function createDataCollection()
 	{
-		/*
-		 * most elements do need a unique name, any that
-		 * dont should override this method
-		 */
-		return true;
+		return new phSimpleDataCollection();
 	}
-	
-	/**
-	 * This gets the classname of a phFormDataItem like class to handle
-	 * this elements data
-	 * 
-	 * @return string the classname of the correct phFormDataItem instance
-	 */
-	public function getDataItemClassName()
-	{
-		return 'phFormDataItem';
-	}
-	
 }

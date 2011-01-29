@@ -64,9 +64,9 @@ class phFormView
 	protected $_elements = array();
 	/**
 	 * Holds all the phFormDataItem objects on the view
-	 * @var array
+	 * @var phFormDataCollection
 	 */
-	protected $_dataItems = array();
+	protected $_dataCollection = array();
 	/**
 	 * Holds the document type declaration which allows us to include
 	 * definitions for xhtml entities like &nbsp; that would be unparsable
@@ -198,12 +198,15 @@ class phFormView
 	{
 		$this->initialize();
 		
-		if(!isset($this->_dataItems[$name]))
+		$info = new phNameInfo($name);
+		$dataItem = $this->_dataCollection->find($info->getName());
+		
+		if($dataItem===null)
 		{
 			throw new phFormException("The data item \"{$name}\" is not registered in this view", $code);
 		}
 		
-		return $this->_dataItems[$name];
+		return $dataItem;
 	}
 	
 	/**
@@ -284,7 +287,7 @@ class phFormView
 			return;
 		}
 		
-		$binder = phFormViewElementBinder::createInstance();
+		$this->_dataCollection = new phCompositeDataCollection();
 		
 		foreach($this->_names as $rewrittenName=>$name)
 		{
@@ -315,22 +318,8 @@ class phFormView
 				
 				$this->_elements[$this->getRealId((string)$element->attributes()->id)] = $phElement;
 				
-				if(sizeof($elements)>1 && $phElement->needsUniqueName() && $nameInfo->getArrayKeyString()!='[]')
-				{
-					/*
-					 * there are multiple elements with the same name and this phElement
-					 * is not allowed to appear multiple times in a view with the same
-					 * name.
-					 */
-					throw new phFormException("There are multiple elements with the name \"{$name}\" and one or more of those elements must have a unique name", $code);
-				}
-				
-				$phElements[] = $phElement;
+				$this->_dataCollection->register($phElement, $nameInfo);
 			}
-			
-			$dataItem = $binder->createAndBindDataItems($phElements, $nameInfo, $this->_form);
-			
-			$this->_dataItems[$nameInfo->getName()] = $dataItem;
 		}
 		
 		$this->_initialized = true;
@@ -371,7 +360,7 @@ class phFormView
 	{
 		$this->initialize();
 		
-		return $this->_dataItems;
+		return $this->_dataCollection->createIterator();
 	}
 	
 	/*

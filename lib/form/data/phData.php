@@ -22,29 +22,28 @@
  */
 
 /**
- * This class can bind form elements in a view
+ * This represents some data, it can have values bound to it and 
+ * can be cleared of data.  It can also be validated.
  * 
  * @author Rob Graham <htmlforms@mellowplace.com>
  * @package phform
- * @subpackage view.binder
+ * @subpackage data
  */
-class phFormElementBinder extends phFormViewElementBinder
+interface phData extends phValidatable
 {
 	/**
-	 * (non-PHPdoc)
-	 * @see lib/form/view/phFormViewElementBinder::canBindFor()
+	 * @return string a name to identify this data with
 	 */
-	public function canBindFor(phNameInfo $name, phForm $form)
-	{
-		return $form->hasForm($name->getName());
-	}
+	public function getName();
 	
 	/**
-	 * (non-PHPdoc)
-	 * @see lib/form/view/phFormViewElementBinder::createAndBindDataItems()
+	 * Binds a value to the data
+	 * @param $values mixed the data to be bound
 	 */
-	public function createAndBindDataItems($elements, phNameInfo $name, phForm $form)
-	{
-		return $form->getForm($name->getName());
-	}
+	public function bind($values);
+	
+	/**
+	 * clears any bound values
+	 */
+	public function clear();
 }

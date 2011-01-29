@@ -59,6 +59,7 @@ class phCheckboxElement extends phInputElement
 	 */
 	public function needsUniqueName()
 	{
-		return false;
+		$e = $this->getElement();
+		return (strtolower((string)$e->attributes()->type) != 'radio');
 	}
 }

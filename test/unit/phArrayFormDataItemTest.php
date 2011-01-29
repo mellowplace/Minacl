@@ -28,35 +28,7 @@ phLoader::registerAutoloader();
 require_once realpath(dirname(__FILE__)) . '/../resources/phTestForm.php';
  
 class phArrayFormDataItemTest extends phTestCase
-{
-	public function testExtractArrayKeys()
-	{
-		$testData = new phTestArrayFormDataItem('test');
-		
-		$keys = $testData->extractArrayKeys('[1][2]');
-		
-		$keys = $testData->extractArrayKeys('[]');
-		$this->assertTrue(is_array($keys), 'returned keys is an array');
-		$this->assertEquals(sizeof($keys), 1, 'keys has 1 element');
-		$this->assertEquals($keys[0], '', 'key for [] is an empty string');
-		
-		$keys = $testData->extractArrayKeys('[1]');
-		$this->assertTrue(is_array($keys), 'returned keys is an array');
-		$this->assertEquals(sizeof($keys), 1, 'keys has 1 element');
-		$this->assertEquals($keys[0], 1, 'key for [1] is 1');
-		
-		$keys = $testData->extractArrayKeys('[moo]');
-		$this->assertTrue(is_array($keys), 'returned keys is an array');
-		$this->assertEquals(sizeof($keys), 1, 'keys has 1 element');
-		$this->assertEquals($keys[0], 'moo', 'key for [moo] is moo');
-		
-		$keys = $testData->extractArrayKeys('[1][2]');
-		$this->assertTrue(is_array($keys), 'returned keys is an array');
-		$this->assertEquals(sizeof($keys), 2, 'keys has 2 elements');
-		$this->assertEquals($keys[0], 1, 'key for [1] is 1');
-		$this->assertEquals($keys[1], 2, 'key for [2] is 2');
-	}
-	
+{	
 	/**
      * @expectedException phFormException
      */
@@ -64,145 +36,107 @@ class phArrayFormDataItemTest extends phTestCase
 	{
 		$testData = new phArrayFormDataItem('test');
 		
-		$testData->registerArrayKeyString('[1]', new phTestFormElement());
-		$testData->registerArrayKeyString('[1]', new phTestFormElement()); // should throw exception as already registered
+		$info = new phArrayInfo('[1]');
+		$data = new phFormDataItem('1');
+		$testData->registerArrayKey($info->getKeyInfo(0), $data);
+		$testData->registerArrayKey($info->getKeyInfo(0), $data); // should throw exception as already registered
 	}
 	
 	/**
+	 * Test a normal key then an auto key fails
      * @expectedException phFormException
      */
 	public function testRegisterMixedArrayKeys()
 	{
 		$testData = new phArrayFormDataItem('test');
 		
-		$testData->registerArrayKeyString('[]', new phTestFormElement());
-		$testData->registerArrayKeyString('[1]', new phTestFormElement()); // should not be able to have auto key and specified!
+		$info = new phArrayKeyInfo('1', false, phArrayKeyInfo::NUMERIC);
+		$testData->registerArrayKey($info, $testData);
+		
+		$info = new phArrayKeyInfo('', true, phArrayKeyInfo::NUMERIC);
+		$testData->registerArrayKey($info, $testData); // should not be able to have auto key and specified!
 	}
 	
 	/**
+	 * Test an auto key first then a normal key fails
+	 * 
      * @expectedException phFormException
      */
-	public function testRegisterMixedArrayKeysAtSecondLevel()
+	public function testRegisterMixedArrayKeysReverse()
 	{
-		$testData = new phTestArrayFormDataItem('test');
+		$testData = new phArrayFormDataItem('test');
 		
-		$testData->registerArrayKeyString('[moo][]', new phTestFormElement());
-		$testData->registerArrayKeyString('[moo][test]', new phTestFormElement()); // should not be able to have auto key and specified!
+		$info = new phArrayKeyInfo('', true, phArrayKeyInfo::NUMERIC);
+		$testData->registerArrayKey($info, $testData); // should not be able to have auto key and specified!
+		
+		$info = new phArrayKeyInfo('1', false, phArrayKeyInfo::NUMERIC);
+		$testData->registerArrayKey($info, $testData);
 	}
 	
 	public function testRegisterAutoKeys()
 	{
-		$testData = new phTestArrayFormDataItem('test');
+		$testData = new phArrayFormDataItem('test');
 		
-		$testData->registerArrayKeyString('[]', new phTestFormElement()); // 0
-		$testData->registerArrayKeyString('[]', new phTestFormElement()); // 1
-		$testData->registerArrayKeyString('[]', new phTestFormElement()); // 2
-		$testData->registerArrayKeyString('[]', new phTestFormElement()); // 3
+		$info = new phArrayKeyInfo('', true, phArrayKeyInfo::NUMERIC);
+		$testData->registerArrayKey($info, new phFormDataItem('test')); // 0
+		$testData->registerArrayKey($info, new phFormDataItem('test')); // 1
+		$testData->registerArrayKey($info, new phFormDataItem('test')); // 2
+		/*
+		 * test a different type
+		 */
+		$fileType = new phFileFormDataItem('test');
+		$testData->registerArrayKey($info, $fileType); // 3
 		
-		$this->assertEquals(sizeof($testData->_arrayTemplate), 4, 'Test data has 4 elements');
-		$this->assertTrue($testData->_arrayTemplate[0] instanceof phFormDataItem, 'There is data at [0]');
-		$this->assertTrue($testData->_arrayTemplate[1] instanceof phFormDataItem, 'There is data at [1]');
-		$this->assertTrue($testData->_arrayTemplate[2] instanceof phFormDataItem, 'There is data at [2]');
-		$this->assertTrue($testData->_arrayTemplate[3] instanceof phFormDataItem, 'There is data at [3]');
-	}
-	
-	
-	public function testRegisterKeysCreatesDifferentDataTypes()
-	{
-		$testData = new phTestArrayFormDataItem('test');
-		
-		$dataItem = $testData->registerArrayKeyString('[0]', new phTestFormElement());
-		$this->assertTrue($dataItem instanceof phFormDataItem, 'Created data item is a phFormDataItem');
-		
-		$dataItem = $testData->registerArrayKeyString('[1]', new phTestFormElement('phFileFormDataItem'));
-		$this->assertTrue($dataItem instanceof phFileFormDataItem, 'Created data item is a phFileFormDataItem');
-	}
-	
-	public function testIsArrayKeysUnregistered()
-	{
-		$testData = new phTestArrayFormDataItem('test');
-		
-		$testData->_arrayTemplate = array(0=>1);
-		$this->assertFalse($testData->isArrayKeysUnregistered(array(0=>1)), '[0] already registered');
-		
-		$testData->_arrayTemplate = array(1=>1);
-		$this->assertFalse($testData->isArrayKeysUnregistered(array(1=>1)), '[1] already registered');
-		
-		$testData->_arrayTemplate = array(0=>array(0=>1));
-		$this->assertFalse($testData->isArrayKeysUnregistered(array(0=>array(0=>1))), '[0][0] already registered');
-		
-		$testData->_arrayTemplate = array(0=>1);
-		$this->assertTrue($testData->isArrayKeysUnregistered(array(1=>1)), '[1] not registered');
-		
-		$testData->_arrayTemplate = array(0=>array(0=>1));
-		$this->assertTrue($testData->isArrayKeysUnregistered(array(0=>array(1=>1))), '[0][1] not registered');
-	}
-	
-	public function testArraysStoredProperly()
-	{
-		$testData = new phTestArrayFormDataItem('test');
-		$testData->registerArrayKeyString('[0]', new phTestFormElement());
-		$testData->registerArrayKeyString('[1]', new phTestFormElement());
-		$this->assertTrue($testData->_arrayTemplate[0] instanceof phFormDataItem, 'Registered key [0] stored properly');
-		$this->assertTrue($testData->_arrayTemplate[1] instanceof phFormDataItem, '2nd registered key [1] stored properly');
-		
-		$testData = new phTestArrayFormDataItem('test');
-		$testData->registerArrayKeyString('[1]', new phTestFormElement());
-		$this->assertTrue($testData->_arrayTemplate[1] instanceof phFormDataItem, 'Registered key [1] stored properly');
-		
-		$testData->registerArrayKeyString('[2]', new phTestFormElement());
-		$this->assertTrue($testData->_arrayTemplate[2] instanceof phFormDataItem, '2nd registered key [2] stored properly');
-		
-		$testData = new phTestArrayFormDataItem('moo');
-		$testData->registerArrayKeyString('[moo]', new phTestFormElement());
-		$this->assertTrue($testData->_arrayTemplate['moo'] instanceof phFormDataItem, 'Registered key [moo] stored properly');
-		
-		$testData = new phTestArrayFormDataItem('test');
-		$testData->registerArrayKeyString('[data][1]', new phTestFormElement());
-		$testData->registerArrayKeyString('[data][2]', new phTestFormElement());
-		$this->assertTrue($testData->_arrayTemplate['data'][1] instanceof phFormDataItem, 'Registered key [data][1] stored properly');
-		$this->assertTrue($testData->_arrayTemplate['data'][2] instanceof phFormDataItem, '2nd registered key [data][2] stored properly');
+		$this->assertEquals(sizeof($testData), 4, 'Test data has 4 elements');
+		$this->assertTrue($testData[0] instanceof phFormDataItem, 'There is data at [0]');
+		$this->assertTrue($testData[1] instanceof phFormDataItem, 'There is data at [1]');
+		$this->assertTrue($testData[2] instanceof phFormDataItem, 'There is data at [2]');
+		$this->assertSame($testData[3], $fileType, 'There is data at [3]');
 	}
 	
 	public function testBindData()
 	{
 		$testData = new phArrayFormDataItem('test');
-		$testData->registerArrayKeyString('[0]', new phTestFormElement());
-		$testData->registerArrayKeyString('[1]', new phTestFormElement());
+		
+		$info = new phArrayKeyInfo(0, false, phArrayKeyInfo::NUMERIC);
+		$testData->registerArrayKey($info, new phFormDataItem('test')); 
+		$info = new phArrayKeyInfo(1, false, phArrayKeyInfo::NUMERIC);
+		$testData->registerArrayKey($info, new phFormDataItem('test')); 
 		
 		$testData->bind(array('test', 'data'));
 		$this->assertEquals($testData[0]->getValue(), 'test', 'Data at [0] is "test"');
 		$this->assertEquals($testData[1]->getValue(), 'data', 'Data at [1] is "data"');
 		
 		$testData = new phArrayFormDataItem('test');
-		$testData->registerArrayKeyString('[address][city]', new phTestFormElement());
-		$testData->registerArrayKeyString('[address][zip]', new phTestFormElement());
-		
+		$info = new phArrayKeyInfo('city', false, phArrayKeyInfo::STRING);
+		$testData->registerArrayKey($info, new phFormDataItem('test')); 
+		$info = new phArrayKeyInfo('zip', false, phArrayKeyInfo::STRING);
+		$testData->registerArrayKey($info, new phFormDataItem('test')); 
+				
 		$testData->bind(array(
-			'address' => array (
 				'city' => 'London',
 				'zip' => 90210
-			)
 		));
 		
-		$this->assertEquals('London', $testData['address']['city']->getValue(), 'Data at [address][city] is good');
-		$this->assertEquals(90210, $testData['address']['zip']->getValue(), 'Data at [address][zip] is good');
+		$this->assertEquals('London', $testData['city']->getValue(), 'Data at [city] is good');
+		$this->assertEquals(90210, $testData['zip']->getValue(), 'Data at [zip] is good');
 		/*
 		 * test that not passing some data still ends with it being set to null
 		 */
 		$testData = new phArrayFormDataItem('test');
-		$testData->registerArrayKeyString('[address][city]', new phTestFormElement());
-		$testData->registerArrayKeyString('[address][zip]', new phTestFormElement());
-		$testData->registerArrayKeyString('[first_name]', new phTestFormElement());
+		$info = new phArrayKeyInfo('city', false, phArrayKeyInfo::STRING);
+		$testData->registerArrayKey($info, new phFormDataItem('test')); 
+		$info = new phArrayKeyInfo('zip', false, phArrayKeyInfo::STRING);
+		$testData->registerArrayKey($info, new phFormDataItem('test')); 
+		$info = new phArrayKeyInfo('first_name', false, phArrayKeyInfo::STRING);
+		$testData->registerArrayKey($info, new phFormDataItem('test'));
 		
 		$testData->bind(array(
-			'address' => array (
 				'zip' => 90210
-			)
 		));
 		
-		$this->assertEquals(null, $testData['address']['city']->getValue(), 'Data at [address][city] is good');
-		$this->assertEquals(90210, $testData['address']['zip']->getValue(), 'Data at [address][zip] is good');
+		$this->assertEquals(null, $testData['city']->getValue(), 'Data at [address][city] is good');
+		$this->assertEquals(90210, $testData['zip']->getValue(), 'Data at [address][zip] is good');
 		$this->assertEquals($testData['first_name']->getValue(), null, 'No first_name data bound');
 	}
 	
@@ -212,28 +146,12 @@ class phArrayFormDataItemTest extends phTestCase
 	public function testBindInvalidData()
 	{
 		$testData = new phArrayFormDataItem('test');
-		$testData->registerArrayKeyString('[0]', new phTestFormElement());
-		$testData->registerArrayKeyString('[1]', new phTestFormElement());
+		$info = new phArrayKeyInfo(0, false, phArrayKeyInfo::NUMERIC);
+		$testData->registerArrayKey($info, new phFormDataItem('test')); 
+		$info = new phArrayKeyInfo(1, false, phArrayKeyInfo::NUMERIC);
+		$testData->registerArrayKey($info, new phFormDataItem('test')); 
 		
 		$testData->bind(array('test', 'data', '1 too many')); // too much data
-	}
-	
-	/**
-     * @expectedException phFormException
-     */
-	public function testBindInvalidMultiDimData()
-	{
-		$testData = new phArrayFormDataItem('test');
-		$testData->registerArrayKeyString('[address][city]', new phTestFormElement());
-		$testData->registerArrayKeyString('[address][zip]', new phTestFormElement());
-		
-		$testData->bind(array(
-			'address' => array (
-				'city' => 'London',
-				'zip' => 90210,
-				'unknown' => true // invalid data - wasn't registered
-			)
-		));
 	}
 	
 	/**
@@ -242,25 +160,27 @@ class phArrayFormDataItemTest extends phTestCase
 	public function testBindInvalidScalarData()
 	{
 		$testData = new phArrayFormDataItem('test');
-		$testData->registerArrayKeyString('[0]', new phTestFormElement());
-		$testData->registerArrayKeyString('[1]', new phTestFormElement());
+		$info = new phArrayKeyInfo(0, false, phArrayKeyInfo::NUMERIC);
+		$testData->registerArrayKey($info, new phFormDataItem('test')); 
+		$info = new phArrayKeyInfo(1, false, phArrayKeyInfo::NUMERIC);
+		$testData->registerArrayKey($info, new phFormDataItem('test')); 
 		
 		$testData->bind('test'); // wrong data type, should be an array
 	}
-}
-
-class phTestArrayFormDataItem extends phArrayFormDataItem
-{
-	public $_arrayTemplate = array();
 	
-	public function extractArrayKeys($keyString)
+	/**
+	 * tests the auto key calcs properly
+	 */
+	public function testAutoKeys()
 	{
-		return parent::extractArrayKeys($keyString);
-	}
-	
-	public function isArrayKeysUnregistered($keys, $currentKeys = null, $currentRegistered = null)
-	{
-		return parent::isArrayKeysUnregistered($keys, $currentKeys, $currentRegistered);
+		$testData = new phArrayFormDataItem('test');
+		$this->assertEquals($testData->getNextAutoKey(), 0, 'auto key before registering anything is 0');
+		$info = new phArrayKeyInfo('', true, phArrayKeyInfo::NUMERIC);
+		$testData->registerArrayKey($info, new phFormDataItem('test'));
+		$this->assertEquals($testData->getNextAutoKey(), 1, 'auto key after one register is 1');
+		$info = new phArrayKeyInfo('', true, phArrayKeyInfo::NUMERIC);
+		$testData->registerArrayKey($info, new phFormDataItem('test'));
+		$this->assertEquals($testData->getNextAutoKey(), 2, 'auto key after two register is 2');
 	}
 }
 
@@ -278,9 +198,9 @@ class phTestFormElement extends phSimpleXmlElement
 		
 	}
 	
-	public function needsUniqueName()
+	public function createDataCollection()
 	{
-		return false;
+		return new phSimpleDataCollection();
 	}
 	
 	public function getDataItemClassName()

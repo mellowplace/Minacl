@@ -30,9 +30,17 @@
 interface phFormViewElement
 {	
 	/**
-	 * If the element is not allowed in the view multiple times with the same
-	 * name as other elements then you should return false here
-	 * @return boolean
+	 * Creates an instance of a phFormDataCollection object that can
+	 * create and store the implementing classes instances
+	 * 
+	 * @return phFormDataCollection
 	 */
-	public function needsUniqueName();
+	public function createDataCollection();
+	
+	/**
+	 * Binds an item of data to this element
+	 * 
+	 * @param phFormDataItem $item
+	 */
+	public function bindDataItem(phFormDataItem $item);
 }

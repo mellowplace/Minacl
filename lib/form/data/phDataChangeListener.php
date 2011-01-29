@@ -20,15 +20,21 @@
  * License along with phForms.  If not, see 
  * <http://www.gnu.org/licenses/>.
  */
- 
- /**
- * Exception class used by phFileFormDataItem 
- *
+
+/**
+ * A data change listener provides a way for an object to recieve a notification when the value
+ * of a phFormDataItem changes
+ * 
  * @author Rob Graham <htmlforms@mellowplace.com>
  * @package phform
+ * @subpackage data
  */
-class phFileDataException extends Exception
+interface phDataChangeListener
 {
-	const INVALID_FILE_DATA = 1;
-	const TEMP_FILE_NOT_FOUND = 2;
+	/**
+	 * called when the data in a phFormDataItem changes
+	 * 
+	 * @param phFormDataItem $item the item in which data changed
+	 */
+	public function dataChanged(phFormDataItem $item);
 }

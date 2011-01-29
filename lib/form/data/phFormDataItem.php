@@ -26,6 +26,7 @@
  * 
  * @author Rob Graham <htmlforms@mellowplace.com>
  * @package phform
+ * @subpackage data
  */
 class phFormDataItem implements phData
 {
