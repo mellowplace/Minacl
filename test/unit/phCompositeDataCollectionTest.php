@@ -84,18 +84,30 @@ class phCompositeDataCollectionTest extends phTestCase
 	}
 	
 	/**
+	 * @expectedException phFormException
+	 */
+	public function testValidateFail()
+	{
+		$info = new phNameInfo('address');
+		$collection1 = new phTestDataCollection(true);
+		$element1 = new phTestElement($collection1);
+		
+		$this->collection->register($element1, $info);
+	}
+	
+	/**
 	 * Tests that, when an array is split across 2 collections that array is combined
 	 * and returned properly
 	 */
 	public function testCombineArrays()
 	{
 		$info = new phNameInfo('ids[]');
-		$collection1 = new phTestDataCollection();
+		$collection1 = new phSimpleDataCollection();
 		$element1 = new phTestElement($collection1);
 		
 		$this->collection->register($element1, $info);
 		
-		$collection2 = new phTestDataCollection();
+		$collection2 = new phSimpleDataCollection();
 		$element2 = new phTestElement2($collection2);
 		$info = new phNameInfo('ids[]');
 		
@@ -113,7 +125,7 @@ class phTestElement implements phFormViewElement
 	protected $_dataCollection = null;
 	public $_boundDataItem = null;
 	
-	public function __construct(phTestDataCollection $collection)
+	public function __construct(phDataCollection $collection)
 	{
 		$this->_dataCollection = $collection;
 	}
@@ -137,6 +149,12 @@ class phTestElement2 extends phTestElement
 class phTestDataCollection implements phDataCollection
 {
 	public $_dataItems = array();
+	public $_failValidate = false;
+	
+	public function __construct($failValidate = false)
+	{
+		$this->_failValidate = $failValidate;
+	}
 	
 	/**
 	 * Registers an element with this collection
@@ -144,11 +162,23 @@ class phTestDataCollection implements phDataCollection
 	 * @param phFormViewElement $element
 	 * @param phNameInfo $name
 	 */
-	public function register(phFormViewElement $element, phNameInfo $name)
+	public function register(phFormViewElement $element, phNameInfo $name, phCompositeDataCollection $collection)
 	{
 		$item = new phFormDataItem($name->getName());
 		$this->_dataItems[$name->getName()] = $item;
 		$element->bindDataItem($item);
+	}
+	
+	/**
+	 * (non-PHPdoc)
+	 * @see lib/form/data/collection/phDataCollection::validate()
+	 */
+	public function validate(phFormViewElement $element, phNameInfo $name, phCompositeDataCollection $collection)
+	{
+		if($this->_failValidate)
+		{
+			throw new phFormException("Validate has failed!");
+		}
 	}
 	
 	/**

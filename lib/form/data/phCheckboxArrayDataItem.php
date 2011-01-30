@@ -20,45 +20,16 @@
  * License along with phForms.  If not, see 
  * <http://www.gnu.org/licenses/>.
  */
-
+ 
 /**
- * This class provides handling for checkboxes 
+ * This data item is used to represent any array type data specified in a form
+ * e.g. <input type="checkbox" name="ids[]" value="1" />
  * 
  * @author Rob Graham <htmlforms@mellowplace.com>
  * @package phform
- * @subpackage element
+ * @subpackage data
  */
-class phCheckboxElement extends phInputElement
+class phCheckboxArrayDataItem extends phArrayFormDataItem
 {
-	public function setValue($value)
-	{
-		$e = $this->getElement();
-		
-		if($value==$this->getRawValue())
-		{
-			/*
-			 * value being set to same as our elements
-			 * value="" attribute, therefore we need to
-			 * be marked as checked
-			 */
-			unset($e->attributes()->checked);
-			$e->addAttribute('checked','checked');
-		}
-		else
-		{
-			/*
-			 * make sure we are not checked
-			 */
-			unset($e->attributes()->checked);
-		}
-	}
 	
-	/**
-	 * (non-PHPdoc)
-	 * @see lib/form/element/phSimpleXmlElement::createDataCollection()
-	 */
-	public function createDataCollection()
-	{
-		return new phCheckboxDataCollection();
-	}
 }

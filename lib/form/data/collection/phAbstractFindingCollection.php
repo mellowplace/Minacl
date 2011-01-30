@@ -29,7 +29,76 @@
  * @package phform
  * @subpackage data.collection
  */
-abstract class phAbstractFindingcollection implements phDataCollection
+abstract class phAbstractFindingCollection implements phDataCollection
 {
+	protected $_dataItems = array();
 	
+	/**
+	 * (non-PHPdoc)
+	 * @see lib/form/data/collection/phDataCollection::find()
+	 */
+	public function find($name)
+	{
+		$info = new phNameInfo($name);
+		
+		if($info->isArray())
+		{
+			// if the $name specifies any auto keys then they will not be able to be found
+			$keys = $info->getArrayInfo()->getKeys();
+			foreach($keys as $k)
+			{
+				if($k->isAutoKey())
+				{
+					throw new phFormException("{$name} is ambiguous as it specifies an auto key ([])");
+				}
+			}
+		}
+		
+		if(!array_key_exists($info->getName(), $this->_dataItems))
+		{
+			return null;
+		}
+		
+		$dataItem = $this->_dataItems[$info->getName()];
+		if($info->isArray() && !($dataItem instanceof phArrayFormDataItem))
+		{
+			/*
+			 * name is an array but the data type registered there is not
+			 * an array type
+			 */
+			return null;
+		}
+		
+		if($info->isArray())
+		{
+			$dataItem = $this->recurseArray($dataItem, $info->getArrayInfo()->getKeys());
+		}
+		
+		return $dataItem;
+	}
+	
+	protected function recurseArray($item, $keys, $currentKey = 0)
+	{
+		if(!($item instanceof phArrayFormDataItem))
+		{
+			return null;
+		}
+		
+		$keyString = $keys[$currentKey]->getKey();
+		
+		if(!isset($item[$keyString]))
+		{
+			return null;
+		}
+		
+		if($currentKey == (sizeof($keys)-1))
+		{
+			// on the last key
+			return $item[$keyString];
+		}
+		else
+		{
+			return $this->recurseArray($item[$keyString], $keys, ++$currentKey);
+		}
+	}
 }

@@ -22,21 +22,19 @@
  */
 
 /**
- *
+ * Collection for handling phForm instances
  *
  * @author Rob Graham <htmlforms@mellowplace.com>
  * @package phform
  * @subpackage data.collection
  */
-class phFormDataCollection implements phDataCollection
+class phFormDataCollection extends phAbstractFindingCollection
 {
-	protected $_forms = array();
-	
 	/**
 	 * (non-PHPdoc)
 	 * @see lib/form/data/collection/phSimpleDataCollection::register()
 	 */
-	public function register(phFormViewElement $element, phNameInfo $name)
+	public function register(phFormViewElement $element, phNameInfo $name, phCompositeDataCollection $collection)
 	{
 		if(!($element instanceof phForm))
 		{
@@ -48,21 +46,23 @@ class phFormDataCollection implements phDataCollection
 			throw new phFormException("The name {$name} is invalid, you cannot use array names with forms");
 		}
 		
-		$this->_forms[$name->getName()] = $element;
+		$this->_dataItems[$name->getName()] = $element;
 	}
 	
 	/**
 	 * (non-PHPdoc)
-	 * @see lib/form/data/collection/phDataCollection::find()
+	 * @see lib/form/data/collection/phDataCollection::validate()
 	 */
-	public function find($name)
+	public function validate(phFormViewElement $element, phNameInfo $name, phCompositeDataCollection $collection)
 	{
-		if(!array_key_exists($name, $this->_forms))
+		if($element instanceof phForm)
 		{
-			return null;
+			$data = $collection->find($name->getFullName());
+			if($data !== null)
+			{
+				throw new phFormException("There is already a data item registered with the name {$name->getFullName()}");
+			}
 		}
-		
-		return $this->_forms[$name];
 	}
 	
 	/**
@@ -71,6 +71,6 @@ class phFormDataCollection implements phDataCollection
 	 */
 	public function createIterator()
 	{
-		return new ArrayIterator($this->_forms);
+		return new ArrayIterator($this->_dataItems);
 	}
 }

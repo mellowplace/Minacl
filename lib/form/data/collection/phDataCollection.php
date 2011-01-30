@@ -22,7 +22,8 @@
  */
 
 /**
- * The data collection interface creates data items for elements registered with it
+ * This class provides a common interface for any collection that is
+ * to be used in the phCompositeDataCollection class
  *
  * @author Rob Graham <htmlforms@mellowplace.com>
  * @package phform
@@ -35,8 +36,20 @@ interface phDataCollection
 	 * 
 	 * @param phFormViewElement $element
 	 * @param phNameInfo $name
+	 * @param phCompositeDataCollection $collection all the currently registered data items will be in here
 	 */
-	public function register(phFormViewElement $element, phNameInfo $name);
+	public function register(phFormViewElement $element, phNameInfo $name, phCompositeDataCollection $collection);
+	
+	/**
+	 * Gives a chance for all currently registered collections in the composite to
+	 * throw an exception if the element in the form is in an illegal configuration
+	 * 
+	 * @param phFormViewElement $element
+	 * @param phNameInfo $name
+	 * @param phCompositeDataCollection $collection
+	 * @throws phFormException if there is a problem with the element
+	 */
+	public function validate(phFormViewElement $element, phNameInfo $name, phCompositeDataCollection $collection);
 	
 	/**
 	 * @return Iterator an iterator for going over the phData objects in this collection

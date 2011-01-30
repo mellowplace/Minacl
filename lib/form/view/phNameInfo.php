@@ -91,6 +91,11 @@ class phNameInfo
 		return $this->_valid;
 	}
 	
+	public function getFullName()
+	{
+		return $this->_nameString;
+	}
+	
 	public function __toString()
 	{
 		return $this->_nameString;

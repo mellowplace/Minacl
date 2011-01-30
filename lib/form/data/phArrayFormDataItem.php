@@ -23,7 +23,7 @@
 
 /**
  * This data item is used to represent any array type data specified in a form
- * e.g. <input type="checkbox" name="ids[]" value="1" />
+ * e.g. <input type="input" name="address[city]" value="" />
  * 
  * @author Rob Graham <htmlforms@mellowplace.com>
  * @package phform

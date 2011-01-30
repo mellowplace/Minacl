@@ -40,19 +40,20 @@ class phSimpleDataCollectionTest extends phTestCase
 		
 		$element = new phSimpleTestElement();
 		$nameInfo = new phNameInfo('test');
-		$collection->register($element, $nameInfo);
+		$collection->register($element, $nameInfo, new phCompositeDataCollection());
 		
 		// test the data was bound to the element
 		$dataItem = $element->boundDataItem;
 		
 		$element2 = new phSimpleTestElement();
 		$nameInfo = new phNameInfo('test2');
-		$collection->register($element, $nameInfo);
+		$collection->register($element, $nameInfo, new phCompositeDataCollection());
 		
 		// test the data was bound to the element
 		$dataItem2 = $element->boundDataItem;
 		
 		$this->assertTrue($dataItem instanceof phFormDataItem, 'A data item was bound to the element');
+		$this->assertEquals('test', $dataItem->getName(), 'data items name is set properly');
 		
 		// test the data is findable and was the same item that was bound to 'test'
 		$this->assertSame($collection->find('test'), $dataItem, 'Data was registered at \'test\' and is the same instance as the data item bound to the element');
@@ -70,11 +71,13 @@ class phSimpleDataCollectionTest extends phTestCase
 		$element = new phSimpleTestElement();
 		
 		$nameInfo = new phNameInfo('test[name]');
-		$collection->register($element, $nameInfo);
+		$collection->register($element, $nameInfo, new phCompositeDataCollection());
 		
 		$dataItem = $element->boundDataItem;
 		$this->assertTrue($dataItem instanceof phFormDataItem, 'A data item was bound to the element');
+		$this->assertEquals('name', $dataItem->getName(), 'data items name is set properly');
 		$this->assertNotSame($dataItem, $collection->find('test'), 'Bound data item is different to array item at \'test\'');
+		$this->assertEquals('test', $collection->find('test')->getName(), 'array items name is set properly');
 		$this->assertTrue($collection->find('test') instanceof phArrayFormDataItem, 'test is a phArrayFormDataItem');		
 	}
 	
@@ -85,7 +88,7 @@ class phSimpleDataCollectionTest extends phTestCase
 		$element = new phSimpleTestElement();
 		
 		$nameInfo = new phNameInfo('test[address][city]');
-		$collection->register($element, $nameInfo);
+		$collection->register($element, $nameInfo, new phCompositeDataCollection());
 		
 		$dataItem = $element->boundDataItem;
 		$this->assertTrue($dataItem instanceof phFormDataItem, 'A data item was bound to the element');
@@ -95,8 +98,11 @@ class phSimpleDataCollectionTest extends phTestCase
 		 * assert the recursion has happened correctly
 		 */
 		$this->assertTrue($arrayDataItem instanceof phArrayFormDataItem, 'test is an phArrayFormDataItem');
+		$this->assertEquals('test', $arrayDataItem->getName(), 'name was set properly for test');
 		$this->assertTrue($arrayDataItem['address'] instanceof phArrayFormDataItem, 'test[address] is an phArrayFormDataItem');
+		$this->assertEquals('address', $arrayDataItem['address']->getName(), 'name was set properly for address');
 		$this->assertSame($dataItem, $arrayDataItem['address']['city'], 'bound data item is the same object that is registered at test[address][city]');
+		$this->assertEquals('city', $arrayDataItem['address']['city']->getName(), 'name was set properly for city');
 	}
 	
 	/**
@@ -104,7 +110,7 @@ class phSimpleDataCollectionTest extends phTestCase
 	 */
 	public function testRegisterSameNormalTypeTwice()
 	{
-		$collection = new phSimpleDataCollection();
+		$collection = new phCompositeDataCollection();
 		
 		$element = new phSimpleTestElement();
 		
@@ -123,7 +129,7 @@ class phSimpleDataCollectionTest extends phTestCase
 	 */
 	public function testRegisterArrayTypeThenNormalType()
 	{
-		$collection = new phSimpleDataCollection();
+		$collection = new phCompositeDataCollection();
 		$element = new phSimpleTestElement();
 		
 		$nameInfo = new phNameInfo('test');
@@ -142,7 +148,7 @@ class phSimpleDataCollectionTest extends phTestCase
 	 */
 	public function testRegisterArrayTypeThenNormalTypeAtDeeperLevel()
 	{
-		$collection = new phSimpleDataCollection();
+		$collection = new phCompositeDataCollection();
 		$element = new phSimpleTestElement();
 		
 		$nameInfo = new phNameInfo('test[address]');
@@ -152,39 +158,42 @@ class phSimpleDataCollectionTest extends phTestCase
 		$collection->register($element, $nameInfo);
 	}
 	
-	public function testFind()
+	/**
+	 * Test when a non array name is registered in another collection an exception is thrown
+	 * 
+	 * @expectedException phFormException
+	 */
+	public function testValidate()
 	{
 		$collection = new phSimpleDataCollection();
+		$composite = new phSimpleTestCompositeDataCollection();
+		$composite->_collections[] = $collection;
 		
 		$element = new phSimpleTestElement();
-		$nameInfo = new phNameInfo('test[address]');
-		$collection->register($element, $nameInfo);
+		$nameInfo = new phNameInfo('test');
+		$collection->register($element, $nameInfo, $composite);
 		
-		$element2 = new phSimpleTestElement();
-		$nameInfo = new phNameInfo('ids[]');
-		$collection->register($element2, $nameInfo);
-		
-		$this->assertSame($element->boundDataItem, $collection->find('test[address]'));
-		$this->assertSame($element2->boundDataItem, $collection->find('ids[0]'));
-		$this->assertTrue($collection->find('ids') instanceof phArrayFormDataItem, 'ids is an array data type');
+		$collection2 = new phSimpleDataCollection();
+		$collection2->validate($element, $nameInfo, $composite);
 	}
 	
-	/**
-	 * @expectedException phFormException
-	 */
-	public function testAmbiguousFind()
+	public function testValidateArrayOk()
 	{
 		$collection = new phSimpleDataCollection();
-		$collection->find('ids[]');
-	}
-	
-	/**
-	 * @expectedException phFormException
-	 */
-	public function testAmbiguousFind2()
-	{
-		$collection = new phSimpleDataCollection();
-		$collection->find('address[city][]');
+		$composite = new phSimpleTestCompositeDataCollection();
+		$composite->_collections[] = $collection;
+		
+		$element = new phSimpleTestElement();
+		$nameInfo = new phNameInfo('test[]');
+		$collection->register($element, $nameInfo, $composite);
+		/*
+		 * check name set properly
+		 */
+		$this->assertEquals('test', $collection->find('test')->getName(), 'name of array data typr set properly');
+		$collection2 = new phSimpleDataCollection();
+		$collection2->validate($element, $nameInfo, $composite);
+		
+		$this->assertTrue(true, 'validate passed an array, recognising it is different');
 	}
 }
 
@@ -209,4 +218,9 @@ class phSimpleTestElement implements phFormViewElement
 	{
 		$this->boundDataItem = $item;
 	}
+}
+
+class phSimpleTestCompositeDataCollection extends phCompositeDataCollection
+{
+	public $_collections = array();
 }

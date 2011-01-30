@@ -29,23 +29,44 @@
  * @package phform
  * @subpackage data.collection
  */
-class phSimpleDataCollection implements phDataCollection
-{
-	protected $_dataItems = array();
-	
+class phSimpleDataCollection extends phAbstractFindingCollection
+{	
 	/**
 	 * (non-PHPdoc)
 	 * @see lib/form/data/collection/phDataCollection::register()
 	 */
-	public function register(phFormViewElement $element, phNameInfo $name)
+	public function register(phFormViewElement $element, phNameInfo $name, phCompositeDataCollection $collection)
 	{
 		if($name->isArray())
 		{
-			$this->registerArray($element, $name);
+			$this->registerArray($element, $name, $collection);
 		}
 		else
 		{
-			$this->registerNormal($element, $name);
+			$this->registerNormal($element, $name, $collection);
+		}
+	}
+	
+	/**
+	 * (non-PHPdoc)
+	 * @see lib/form/data/collection/phDataCollection::validate()
+	 */
+	public function validate(phFormViewElement $element, phNameInfo $name, phCompositeDataCollection $collection)
+	{
+		// make sure this data item doesn't exist already
+		$item = $collection->find($name->getName());
+		if($item===null)
+		{
+			return; // no problems, the data doesn't exist
+		}
+		
+		if($name->isArray() && !($item instanceof phArrayFormDataItem))
+		{
+			throw new phFormException("There is already a data item registered at {$name->getName()} and it is not an array data type so I cannot add to it!");
+		}
+		else if(!$name->isArray())
+		{
+			throw new phFormException("Cannot register normal data at {$name->getFullName()}, there is already a data item registered there");
 		}
 	}
 	
@@ -58,34 +79,19 @@ class phSimpleDataCollection implements phDataCollection
 		return new ArrayIterator($this->_dataItems);
 	}
 	
-	/**
-	 * (non-PHPdoc)
-	 * @see lib/form/data/collection/phDataCollection::find()
-	 */
-	public function find($name)
+	protected function registerArray(phFormViewElement $element, phNameInfo $name, phCompositeDataCollection $collection)
 	{
-		if(!array_key_exists($name, $this->_dataItems))
-		{
-			return null;
-		}
+		/*
+		 * if the array has already been registered in another collection
+		 * then we need to add to the same data instance hence why we use 
+		 * find on the composite
+		 */
+		$currentDataItem = $collection->find($name->getName());
 		
-		return $this->_dataItems[$name];
-	}
-	
-	protected function registerArray(phFormViewElement $element, phNameInfo $name)
-	{
-		if(!array_key_exists($name->getName(), $this->_dataItems))
+		if($currentDataItem===null)
 		{
-			$currentDataItem = new phArrayFormDataItem($name->getName());
+			$currentDataItem = $this->createArrayDataItem($name->getArrayInfo()->getKeyInfo(0), $name->getName());
 			$this->_dataItems[$name->getName()] = $currentDataItem;
-		}
-		else
-		{
-			$currentDataItem = $this->_dataItems[$name->getName()];
-			if(!($currentDataItem instanceof phArrayFormDataItem))
-			{
-				throw new phFormException("There is already a data item registered at {$name->getName()} and it is not an array data type so I cannot add to it!");
-			}
 		}
 			
 		$finalItem = $this->getOrCreateArrayDataType($name, $name->getArrayInfo()->getKeys(), 0, $element, $currentDataItem);
@@ -105,7 +111,7 @@ class phSimpleDataCollection implements phDataCollection
 			}
 			else
 			{
-				$finalItem = new phFormDataItem($currentKey);
+				$finalItem = $this->createNormalDataItem($currentKey);
 				$currentDataItem->registerArrayKey($keys[$currentKeyIndex], $finalItem);
 			}
 			
@@ -128,7 +134,7 @@ class phSimpleDataCollection implements phDataCollection
 			}
 			else
 			{
-				$nextDataItem = new phArrayFormDataItem($keys[$currentKeyIndex]->getKey());
+				$nextDataItem = $this->createArrayDataItem($keys[$currentKeyIndex]);
 				$currentDataItem->registerArrayKey($keys[$currentKeyIndex], $nextDataItem);
 			}
 			
@@ -136,15 +142,30 @@ class phSimpleDataCollection implements phDataCollection
 		}
 	}
 	
-	protected function registerNormal(phFormViewElement $element, phNameInfo $name)
+	protected function registerNormal(phFormViewElement $element, phNameInfo $name, phCompositeDataCollection $collection)
 	{
-		if(array_key_exists($name->getName(), $this->_dataItems))
-		{
-			throw new phFormException("Cannot register normal data at {$name->getName()}, there is already a data item registered there");
-		}
-		
-		$data = new phFormDataItem($name->getName());
+		$data = $this->createNormalDataItem($name->getName());
 		$this->_dataItems[$name->getName()] = $data;
 		$element->bindDataItem($data);
+	}
+	
+	/**
+	 * @return phData
+	 */
+	protected function createNormalDataItem($name)
+	{
+		return new phFormDataItem($name);
+	}
+	
+	/**
+	 * @return phArrayFormDataItem
+	 */
+	protected function createArrayDataItem(phArrayKeyInfo $info, $name = null)
+	{
+		if($name === null)
+		{
+			$name = $info->getKey();
+		}
+		return new phArrayFormDataItem($name);
 	}
 }

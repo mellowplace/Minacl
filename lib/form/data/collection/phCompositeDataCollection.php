@@ -31,13 +31,15 @@
  * @package phform
  * @subpackage data.collection
  */
-class phCompositeDataCollection implements phDataCollection
+class phCompositeDataCollection
 {
 	protected $_collections = array();
 	
 	/**
-	 * (non-PHPdoc)
-	 * @see lib/form/data/collection/phDataCollection::register()
+	 * Registers an element with the composite
+	 * 
+	 * @param phFormViewElement $element
+	 * @param phNameInfo $name
 	 */
 	public function register(phFormViewElement $element, phNameInfo $name)
 	{
@@ -47,13 +49,21 @@ class phCompositeDataCollection implements phDataCollection
 			$this->_collections[$elementClass] = $element->createDataCollection(); 
 		}
 		
+		/*
+		 * make sure the element is valid, call validate for each of
+		 * our registered collections
+		 */
+		foreach($this->_collections as $c)
+		{
+			$c->validate($element, $name, $this);
+		}
+		
 		$collection = $this->_collections[$elementClass];
-		$collection->register($element, $name);
+		$collection->register($element, $name, $this);
 	}
 	
 	/**
-	 * (non-PHPdoc)
-	 * @see lib/form/data/collection/phDataCollection::createIterator()
+	 * @return Iterator an iterator to go through all the data items in the collection
 	 */
 	public function createIterator()
 	{
@@ -67,8 +77,10 @@ class phCompositeDataCollection implements phDataCollection
 	}
 	
 	/**
-	 * (non-PHPdoc)
-	 * @see lib/form/data/collection/phDataCollection::find()
+	 * Finds a phData instance in the collection
+	 * 
+	 * @param string $name the name by which the phData instance is identified
+	 * @return phData the phData instance identified by $name
 	 */
 	public function find($name)
 	{
@@ -82,6 +94,18 @@ class phCompositeDataCollection implements phDataCollection
 		}
 		
 		return null;
+	}
+	
+	/**
+	 * Gets a phFormDataCollection instance who is the owner of the data item defined
+	 * by $name
+	 * 
+	 * @param string $name
+	 * @return phFormDataCollection the collection who owns the data item defined by $name
+	 */
+	public function getOwner($name)
+	{
+		
 	}
 }
 

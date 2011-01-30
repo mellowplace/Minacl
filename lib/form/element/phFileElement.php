@@ -41,8 +41,8 @@ class phFileElement extends phSimpleXmlElement
 		throw new phFormException('A file upload element cannot have its value set');
 	}
 	
-	public function getDataItemClassName()
+	public function createDataCollection()
 	{
-		return 'phFileFormDataItem';
+		return new phFileDataCollection();
 	}
 }

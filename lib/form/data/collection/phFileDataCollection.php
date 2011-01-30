@@ -20,45 +20,18 @@
  * License along with phForms.  If not, see 
  * <http://www.gnu.org/licenses/>.
  */
-
+ 
 /**
- * This class provides handling for checkboxes 
- * 
+ * Collection for handling phFileElement instances
+ *
  * @author Rob Graham <htmlforms@mellowplace.com>
  * @package phform
- * @subpackage element
+ * @subpackage data.collection
  */
-class phCheckboxElement extends phInputElement
+class phFileDataCollection extends phSimpleDataCollection
 {
-	public function setValue($value)
+	protected function createNormalDataItem($name)
 	{
-		$e = $this->getElement();
-		
-		if($value==$this->getRawValue())
-		{
-			/*
-			 * value being set to same as our elements
-			 * value="" attribute, therefore we need to
-			 * be marked as checked
-			 */
-			unset($e->attributes()->checked);
-			$e->addAttribute('checked','checked');
-		}
-		else
-		{
-			/*
-			 * make sure we are not checked
-			 */
-			unset($e->attributes()->checked);
-		}
-	}
-	
-	/**
-	 * (non-PHPdoc)
-	 * @see lib/form/element/phSimpleXmlElement::createDataCollection()
-	 */
-	public function createDataCollection()
-	{
-		return new phCheckboxDataCollection();
+		return new phFileFormDataItem($name);
 	}
 }

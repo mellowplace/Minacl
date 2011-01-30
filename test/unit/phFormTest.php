@@ -136,7 +136,7 @@ class phFormTest extends phTestCase
     {
     	$form = new phTestForm('test', 'arrayFillInView');
     	$form->bind(array(
-    		'ids' => array(0=>'on', 2=>'on'),
+    		'ids' => array(0=>'1', 2=>'3'),
     		'test' => array('name' => 'Rob', 'address' => "A street\nA town")
     	));
     	
