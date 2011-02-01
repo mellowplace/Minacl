@@ -75,6 +75,11 @@ class phFormDataItem implements phData
 		$this->_name = $name;
 	}
 	
+	/**
+	 * Set a validator to validate what is bound to this object
+	 * 
+	 * @param phValidator $validator
+	 */
 	public function setValidator(phValidator $validator)
 	{
 		$this->_validator = $validator;
@@ -88,6 +93,10 @@ class phFormDataItem implements phData
 		return $this->_validator;
 	}
 	
+	/**
+	 * (non-PHPdoc)
+	 * @see lib/form/phValidatable::validate()
+	 */
 	public function validate()
 	{
 		if($this->_validator!==null)

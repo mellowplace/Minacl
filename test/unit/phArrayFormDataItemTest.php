@@ -21,13 +21,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-require_once 'phTestCase.php';
-require_once dirname(__FILE__) . '/../../lib/form/phLoader.php';
-phLoader::registerAutoloader();
-
+require_once 'phBaseArrayFormDataItemTest.php';
 require_once realpath(dirname(__FILE__)) . '/../resources/phTestForm.php';
  
-class phArrayFormDataItemTest extends phTestCase
+class phArrayFormDataItemTest extends phBaseArrayFormDataItemTest
 {	
 	/**
      * @expectedException phFormException
@@ -141,6 +138,58 @@ class phArrayFormDataItemTest extends phTestCase
 	}
 	
 	/**
+	 * Tests that when the data is not posted back - i.e. with a check box with a name like ids[0] that
+	 * hasn't been checked - it still calls bind on that item
+	 */
+	public function testBindForCheckboxes()
+	{
+		$testData = new phArrayFormDataItem('test');
+		// add test[0]
+		$info = new phArrayKeyInfo(0, false, phArrayKeyInfo::NUMERIC);
+		$data0 = new phTestFormDataItem(0);
+		$testData->registerArrayKey($info, $data0); 
+		// add test[1]
+		$info = new phArrayKeyInfo(1, false, phArrayKeyInfo::NUMERIC);
+		$data1 = new phTestFormDataItem(1);
+		$testData->registerArrayKey($info, $data1);
+		// bind only 0
+		$testData->bind(array(0=>'test'));
+		// make sure both where bound
+		$this->assertTrue($data0->wasBound, 'data0 was bound');
+		$this->assertEquals($data0->getValue(), 'test', 'data0 was bound with test');
+		$this->assertTrue($data1->wasBound, 'data1 was bound');
+		$this->assertEquals($data1->getValue(), null, 'data1 was bound with test');
+		
+		/*
+		 * test 2 levels of array
+		 * 
+		 * i.e...
+		 * 
+		 * test[ids][0]
+		 * test[ids][1]
+		 */
+		$testData = new phArrayFormDataItem('test');
+		$info = new phArrayKeyInfo('ids', false, phArrayKeyInfo::STRING);
+		$arrayData = new phArrayFormDataItem('ids');
+		$testData->registerArrayKey($info, $arrayData);
+		// add test[ids][0]
+		$info = new phArrayKeyInfo(0, false, phArrayKeyInfo::NUMERIC);
+		$data0 = new phTestFormDataItem(0);
+		$arrayData->registerArrayKey($info, $data0);
+		// add test[ids][1]
+		$info = new phArrayKeyInfo(1, false, phArrayKeyInfo::NUMERIC);
+		$data1 = new phTestFormDataItem(1);
+		$arrayData->registerArrayKey($info, $data1);
+		// bind nothing
+		$testData->bind(array());
+		// make sure both where bound
+		$this->assertTrue($data0->wasBound, 'data0 was bound');
+		$this->assertEquals($data0->getValue(), null, 'data0 was bound with test');
+		$this->assertTrue($data1->wasBound, 'data1 was bound');
+		$this->assertEquals($data1->getValue(), null, 'data1 was bound with test');
+	}
+	
+	/**
      * @expectedException phFormException
      */
 	public function testBindInvalidData()
@@ -182,39 +231,20 @@ class phArrayFormDataItemTest extends phTestCase
 		$testData->registerArrayKey($info, new phFormDataItem('test'));
 		$this->assertEquals($testData->getNextAutoKey(), 2, 'auto key after two register is 2');
 	}
+	
+	protected function createArrayDataItem($name)
+	{
+		return new phArrayFormDataItem($name);
+	}
 }
 
-class phTestFormElement extends phSimpleXmlElement
+class phTestFormDataItem extends phFormDataItem
 {
-	private $dataClass = null;
+	public $wasBound = false;
 	
-	public function __construct($dataClass = 'phFormDataItem')
+	public function bind($value)
 	{
-		$this->dataClass = $dataClass;
-	}
-	
-	public function bindDataItem(phFormDataItem $item)
-	{
-		
-	}
-	
-	public function createDataCollection()
-	{
-		return new phSimpleDataCollection();
-	}
-	
-	public function getDataItemClassName()
-	{
-		return $this->dataClass;
-	}
-	
-	public function getRawValue()
-	{
-		
-	}
-	
-	public function setRawValue($value)
-	{
-		
+		$this->wasBound = true;
+		parent::bind($value);
 	}
 }

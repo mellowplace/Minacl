@@ -35,21 +35,47 @@ class phArrayFormDataItem extends phFormDataItem implements ArrayAccess, Countab
 	
 	protected $_arrayTemplate = array();
 	
-	public function bind($value)
+	public function bind($values)
 	{
-		if(!is_array($value))
+		if($values===null)
+		{
+			$values = array();
+		}
+		
+		if(!is_array($values))
 		{
 			throw new phFormException("Trying to bind a value that is not an array to {$this->_name}");
 		}
 		
-		foreach($value as $k=>$v)
+		/*
+		 * check all array keys registered
+		 */
+		foreach($values as $k=>$v)
 		{
 			if(!array_key_exists($k, $this->_arrayTemplate))
 			{
 				throw new phFormException("Attempting to bind invalid data, I do not have any registered keys at {$k}");
 			}
+		}
+		
+		/*
+		 * now bind including values that have not been posted
+		 * (checkboxes don't send values if they are not checked
+		 * but we still need to bind nothing to the dataitems so
+		 * the elements can uncheck etc)
+		 */
+		foreach ($this->_arrayTemplate as $k=>$v)
+		{
+			if(array_key_exists($k, $values))
+			{
+				$value = $values[$k];
+			}
+			else
+			{
+				$value = null;
+			}
 			
-			$this[$k]->bind($v);
+			$v->bind($value);
 		}
 	}
 	
@@ -123,11 +149,6 @@ class phArrayFormDataItem extends phFormDataItem implements ArrayAccess, Countab
 	
 	public function count()
 	{
-		if(!is_array($this->_arrayTemplate))
-		{
-			return 0;
-		}
-		
 		return sizeof($this->_arrayTemplate);
 	}
 }

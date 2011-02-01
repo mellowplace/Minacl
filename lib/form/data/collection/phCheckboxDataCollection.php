@@ -129,6 +129,28 @@ class phCheckboxDataCollection extends phSimpleDataCollection
 	
 	/**
 	 * (non-PHPdoc)
+	 * @see lib/form/data/collection/phSimpleDataCollection::getOrCreateArrayDataType()
+	 */
+	protected function getOrCreateArrayDataType(phNameInfo $name, $keys, $currentKeyIndex, phFormViewElement $element, phArrayFormDataItem $currentDataItem)
+	{
+		if($currentDataItem instanceof phCheckboxArrayDataItem)
+		{
+			/*
+			 * a checkbox array data type has been created or gotten. This
+			 * means we have come across an auto key like '[]' which means
+			 * we are at the end of the array and cannot go any further down
+			 * so we should return this data item.
+			 */
+			return $currentDataItem;
+		}
+		else
+		{
+			return parent::getOrCreateArrayDataType($name, $keys, $currentKeyIndex, $element, $currentDataItem);
+		}
+	}
+	
+	/**
+	 * (non-PHPdoc)
 	 * @see lib/form/data/collection/phSimpleDataCollection::createArrayDataItem()
 	 */
 	protected function createArrayDataItem(phArrayKeyInfo $info, $name = null)

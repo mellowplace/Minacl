@@ -151,10 +151,58 @@ class phCheckboxDataCollectionTest extends phTestCase
 		$this->assertEquals('ids', $type->getName(), 'name override set properly');
 	}
 	
+	public function testRegisterArrayKeys()
+	{
+		$info = new phNameInfo('ids[]');
+		$ids1 = $this->createCheckboxElement('ids', '1');
+		$this->composite->register($ids1, $info);
+		$ids2 = $this->createCheckboxElement('ids', '2');
+		$this->composite->register($ids2, $info);
+		
+		$idsData = $this->collection->find('ids');
+		
+		$this->assertTrue($idsData instanceof phCheckboxArrayDataItem, 'ids is a checkbox data array');
+		$this->assertSame($idsData, $ids1->boundData, 'data item bound to ids1 is the ids data array');
+		$this->assertSame($idsData, $ids2->boundData, 'data item bound to ids2 is the ids data array');
+		
+		$info = new phNameInfo('test[ids][]');
+		$ids1 = $this->createCheckboxElement('ids', '1');
+		$this->composite->register($ids1, $info);
+		$ids2 = $this->createCheckboxElement('ids', '2');
+		$this->composite->register($ids2, $info);
+		
+		$testData = $this->collection->find('test');
+		$this->assertTrue($testData instanceof phArrayFormDataItem, 'test is a normal data array');
+		$this->assertTrue($testData['ids'] instanceof phCheckboxArrayDataItem, 'test[ids] is a checkbox data array');
+		$this->assertSame($testData['ids'], $ids1->boundData, 'data item bound to ids1 is the ids data array');
+		$this->assertSame($testData['ids'], $ids2->boundData, 'data item bound to ids2 is the ids data array');
+	}
+	
+	/**
+	 * Test if binding autokeys and form fillin works
+	 */
+	public function testSpecialAutoKeyBinding()
+	{
+		$info = new phNameInfo('ids[]');
+		$ids1 = $this->createCheckboxElement('ids', '1');
+		$this->composite->register($ids1, $info);
+		$ids2 = $this->createCheckboxElement('ids', '2');
+		$this->composite->register($ids2, $info);
+		
+		$this->assertFalse($ids1->isChecked(), 'ids1 is not checked');
+		$this->assertFalse($ids2->isChecked(), 'ids2 is not checked');
+		
+		$idsData = $this->collection->find('ids');
+		$idsData->bind(array('1'));
+		
+		$this->assertTrue($ids1->isChecked(), 'ids1 *is* checked');
+		$this->assertFalse($ids2->isChecked(), 'ids2 is still not checked');
+	}
+	
 	private function createCheckboxElement($name, $value)
 	{
 		$xmlElement = new SimpleXMLElement("<input type=\"checkbox\" name=\"{$name}\" value=\"{$value}\" />");
-		$phElement = new phCheckboxElement($xmlElement, new phTestFormView());
+		$phElement = new phTestCheckboxElement($xmlElement, new phTestFormView());
 		return $phElement;
 	}
 	
@@ -163,6 +211,17 @@ class phCheckboxDataCollectionTest extends phTestCase
 		$xmlElement = new SimpleXMLElement("<input type=\"text\" name=\"{$name}\" value=\"{$value}\" />");
 		$phElement = new phInputElement($xmlElement, new phTestFormView());
 		return $phElement;
+	}
+}
+
+class phTestCheckboxElement extends phCheckboxElement
+{
+	public $boundData = null;
+	
+	public function bindDataItem(phFormDataItem $item)
+	{
+		$this->boundData = $item;
+		parent::bindDataItem($item);
 	}
 }
 
@@ -186,6 +245,6 @@ class phTestCheckboxCompositeDataCollection extends phCompositeDataCollection
 {
 	public function __construct(phCheckboxDataCollection $collection)
 	{
-		$this->_collections['phCheckboxElement'] = $collection;
+		$this->_collections['phTestCheckboxElement'] = $collection;
 	}
 }

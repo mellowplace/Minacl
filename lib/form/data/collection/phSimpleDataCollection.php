@@ -134,7 +134,7 @@ class phSimpleDataCollection extends phAbstractFindingCollection
 			}
 			else
 			{
-				$nextDataItem = $this->createArrayDataItem($keys[$currentKeyIndex]);
+				$nextDataItem = $this->createArrayDataItem($keys[$currentKeyIndex+1], $keys[$currentKeyIndex]->getKey());
 				$currentDataItem->registerArrayKey($keys[$currentKeyIndex], $nextDataItem);
 			}
 			

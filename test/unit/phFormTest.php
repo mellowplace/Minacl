@@ -98,7 +98,7 @@ class phFormTest extends phTestCase
     	$form->bind(array(
     		'username'=>'the username',
     		'password'=>'the password',
-    		'checkbox'=>array('3')
+    		'checkbox'=>array(2=>'3')
     	));
     	
     	$xml = new SimpleXMLElement('<xhtml>' . $form->__toString() . '</xhtml>');

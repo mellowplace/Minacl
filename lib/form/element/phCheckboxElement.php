@@ -41,15 +41,44 @@ class phCheckboxElement extends phInputElement
 			 * value="" attribute, therefore we need to
 			 * be marked as checked
 			 */
-			unset($e->attributes()->checked);
-			$e->addAttribute('checked','checked');
+			$this->checkOn();
 		}
 		else
 		{
 			/*
 			 * make sure we are not checked
 			 */
-			unset($e->attributes()->checked);
+			$this->checkOff();
+		}
+	}
+	
+	/**
+	 * (non-PHPdoc)
+	 * @see lib/form/phDataChangeListener::dataChanged()
+	 */
+	public function dataChanged(phFormDataItem $item)
+	{
+		if($item instanceof phCheckboxArrayDataItem)
+		{
+			/*
+			 * $item->getValue will be an array, we need to see if our 
+			 * value is in it - if so set ourselves to checked by calling
+			 * $this->setValue
+			 */
+			$values = $item->getValue();
+			$ourValue = $this->getRawValue();
+			if(in_array($ourValue, $values))
+			{
+				$this->checkOn();
+			}
+			else
+			{
+				$this->checkOff();
+			}
+		}
+		else
+		{
+			parent::dataChanged($item);
 		}
 	}
 	
@@ -60,5 +89,33 @@ class phCheckboxElement extends phInputElement
 	public function createDataCollection()
 	{
 		return new phCheckboxDataCollection();
+	}
+	
+	/**
+	 * @return boolean true if the checkbox is checked
+	 */
+	public function isChecked()
+	{
+		$e = $this->getElement();
+		return (isset($e->attributes()->checked) && ((string)$e->attributes()->checked=='checked'));
+	}
+	
+	/**
+	 * Marks the checkbox as checked
+	 */
+	protected function checkOn()
+	{
+		$e = $this->getElement();
+		unset($e->attributes()->checked);
+		$e->addAttribute('checked','checked');
+	}
+	
+	/**
+	 * Marks the checkbox as unchecked
+	 */
+	protected function checkOff()
+	{
+		$e = $this->getElement();
+		unset($e->attributes()->checked);
 	}
 }

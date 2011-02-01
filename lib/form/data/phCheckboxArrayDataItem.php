@@ -31,5 +31,37 @@
  */
 class phCheckboxArrayDataItem extends phArrayFormDataItem
 {
+	/**
+	 * (non-PHPdoc)
+	 * @see lib/form/data/phArrayFormDataItem::registerArrayKey()
+	 */
+	public function registerArrayKey(phArrayKeyInfo $key, phData $dataItem)
+	{
+		throw new phFormException("You cannot register array keys with this object, it is only for handling the special case of chekboxes with auto keys");
+	}
 	
+	/**
+	 * (non-PHPdoc)
+	 * @see lib/form/data/phArrayFormDataItem::bind()
+	 */
+	public function bind($value)
+	{
+		if($values===null)
+		{
+			$values = array();
+		}
+		
+		if(!is_array($value))
+		{
+			throw new phFormException("Trying to bind a value that is not an array to {$this->_name}");
+		}
+		
+		$this->_value = $value;
+		
+		foreach($this->_listeners as $l)
+		{
+			$l->dataChanged($this);
+		}
+	}
+		
 }
