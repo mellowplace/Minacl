@@ -1,28 +1,28 @@
 <?php
 /*
- * phForms Project: An HTML forms library for PHP
+ * Minacl Project: An HTML forms library for PHP
  *          https://github.com/mellowplace/PHP-HTML-Driven-Forms/
  * Copyright (c) 2010, 2011 Rob Graham
  * 
- * This file is part of phForms.
+ * This file is part of Minacl.
  *
- * phForms is free software: you can redistribute it and/or modify
+ * Minacl is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as 
  * published by the Free Software Foundation, either version 3 of 
  * the License, or (at your option) any later version.
  *
- * phForms is distributed in the hope that it will be useful, but
+ * Minacl is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public 
- * License along with phForms.  If not, see 
+ * License along with Minacl.  If not, see 
  * <http://www.gnu.org/licenses/>.
  */
 
 /**
- * This class acts as an autoloader for the phforms framework.  It should have its 
+ * This class acts as an autoloader for the Minacl framework.  It should have its 
  * registerAutoloader function called by anyone who wants to use this library
  * 
  * @author Rob Graham <htmlforms@mellowplace.com>
