@@ -28,30 +28,8 @@
  * @package phform
  * @subpackage element
  */
-class phCheckboxElement extends phInputElement
-{
-	public function setValue($value)
-	{
-		$e = $this->getElement();
-		
-		if($value==$this->getRawValue())
-		{
-			/*
-			 * value being set to same as our elements
-			 * value="" attribute, therefore we need to
-			 * be marked as checked
-			 */
-			$this->checkOn();
-		}
-		else
-		{
-			/*
-			 * make sure we are not checked
-			 */
-			$this->checkOff();
-		}
-	}
-	
+class phCheckboxElement extends phCheckableElement
+{	
 	/**
 	 * (non-PHPdoc)
 	 * @see lib/form/phDataChangeListener::dataChanged()
@@ -89,33 +67,5 @@ class phCheckboxElement extends phInputElement
 	public function createDataCollection()
 	{
 		return new phCheckboxDataCollection();
-	}
-	
-	/**
-	 * @return boolean true if the checkbox is checked
-	 */
-	public function isChecked()
-	{
-		$e = $this->getElement();
-		return (isset($e->attributes()->checked) && ((string)$e->attributes()->checked=='checked'));
-	}
-	
-	/**
-	 * Marks the checkbox as checked
-	 */
-	protected function checkOn()
-	{
-		$e = $this->getElement();
-		unset($e->attributes()->checked);
-		$e->addAttribute('checked','checked');
-	}
-	
-	/**
-	 * Marks the checkbox as unchecked
-	 */
-	protected function checkOff()
-	{
-		$e = $this->getElement();
-		unset($e->attributes()->checked);
 	}
 }

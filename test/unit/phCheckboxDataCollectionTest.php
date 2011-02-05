@@ -24,6 +24,7 @@
 require_once 'phTestCase.php';
 require_once realpath(dirname(__FILE__)) . '/../../lib/form/phLoader.php';
 phLoader::registerAutoloader();
+require_once realpath(dirname(__FILE__)) . '/../resources/phTestFormView.php';
 
 /**
  * Tests the phCheckboxDataCollection class
@@ -222,14 +223,6 @@ class phTestCheckboxElement extends phCheckboxElement
 	{
 		$this->boundData = $item;
 		parent::bindDataItem($item);
-	}
-}
-
-class phTestFormView extends phFormView
-{
-	public function __construct()
-	{
-
 	}
 }
 

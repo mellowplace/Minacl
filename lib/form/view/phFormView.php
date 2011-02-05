@@ -24,10 +24,9 @@
 /**
  * This class is responsible for rendering the form and providing an API to access
  * its elements
- * 
+ *
  * @author Rob Graham <htmlforms@mellowplace.com>
- * @package phform
- * @subpackage view
+ * @package phform.view
  */
 class phFormView
 {

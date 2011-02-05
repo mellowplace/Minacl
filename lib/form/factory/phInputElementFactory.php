@@ -37,7 +37,7 @@ class phInputElementFactory extends phElementFactory
 			$attributes = $e->attributes();
 			foreach($attributes as $name=>$value)
 			{
-				if($name=='type' && $value!='checkbox' && $value!='file')
+				if($name=='type' && $value!='checkbox' && $value!='file' && $value!='radio')
 				{
 					return true;
 				}
