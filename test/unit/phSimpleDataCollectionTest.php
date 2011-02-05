@@ -159,22 +159,68 @@ class phSimpleDataCollectionTest extends phTestCase
 	}
 	
 	/**
-	 * Test when a non array name is registered in another collection an exception is thrown
+	 * Test that when some data with the same name as the one being validated is registered
+	 * in another collection, and the item being validated would be stored in this collection
+	 * that an error is thrown
 	 * 
 	 * @expectedException phFormException
 	 */
 	public function testValidate()
 	{
-		$collection = new phSimpleDataCollection();
-		$composite = new phSimpleTestCompositeDataCollection();
-		$composite->_collections[] = $collection;
+		$element = new phAnotherTestElement();
+		$nameInfo = new phNameInfo('test');
 		
+		$composite = new phSimpleTestCompositeDataCollection();
+		$composite->register($element, $nameInfo); // will go into a phTestAnotherDataCollection
+		
+		$collection = new phSimpleDataCollection();
+		$element = new phSimpleTestElement();
+		$collection->validate($element, $nameInfo, $composite);
+	}
+	
+	/**
+	 * Same as above but in the reverse - so when we have the item in our collection and the
+	 * item being validated is for another collection
+	 * 
+	 * @expectedException phFormException
+	 */
+	public function testValidateReverse()
+	{
+		$collection = new phSimpleDataCollection();
+		
+		$composite = new phSimpleTestCompositeDataCollection();
+		$composite->_collections['phSimpleTestElement'] = $collection;
+		/*
+		 * add the element to the simple data collection
+		 */
 		$element = new phSimpleTestElement();
 		$nameInfo = new phNameInfo('test');
-		$collection->register($element, $nameInfo, $composite);
+		$composite->register($element, $nameInfo);
+		/*
+		 * test an element with the same name but different data collection
+		 * causes validate on the simple data collection to fail
+		 */
+		$element = new phAnotherTestElement();
+		$collection->validate($element, $nameInfo, $composite);
+	}
+	
+	/**
+	 * Test that when the item is in another data collection and one with the same name is
+	 * validated but would not be stored in this collection that everything is ok
+	 */
+	public function testSameNameButNotStoredInThisCollectionOk()
+	{
+		$element = new phAnotherTestElement();
+		$nameInfo = new phNameInfo('test');
 		
-		$collection2 = new phSimpleDataCollection();
-		$collection2->validate($element, $nameInfo, $composite);
+		$composite = new phSimpleTestCompositeDataCollection();
+		$composite->register($element, $nameInfo); // will go into a phTestAnotherDataCollection
+		
+		$element2 = new phAnotherTestElement();
+		$collection = new phSimpleDataCollection();
+		$collection->validate($element2, $nameInfo, $composite);
+		
+		$this->assertTrue(true, 'simple data collection does not error for elements with the same name that are not stored in the collection');
 	}
 	
 	public function testValidateArrayOk()
@@ -189,7 +235,7 @@ class phSimpleDataCollectionTest extends phTestCase
 		/*
 		 * check name set properly
 		 */
-		$this->assertEquals('test', $collection->find('test')->getName(), 'name of array data typr set properly');
+		$this->assertEquals('test', $collection->find('test')->getName(), 'name of array data type set properly');
 		$collection2 = new phSimpleDataCollection();
 		$collection2->validate($element, $nameInfo, $composite);
 		
@@ -223,4 +269,21 @@ class phSimpleTestElement implements phFormViewElement
 class phSimpleTestCompositeDataCollection extends phCompositeDataCollection
 {
 	public $_collections = array();
+}
+
+class phTestAnotherDataCollection extends phSimpleDataCollection
+{
+	
+}
+
+class phAnotherTestElement extends phSimpleTestElement
+{
+	/**
+	 * (non-PHPdoc)
+	 * @see lib/form/phFormViewElement::needsUniqueName()
+	 */
+	public function createDataCollection()
+	{
+		return new phTestAnotherDataCollection();
+	}
 }

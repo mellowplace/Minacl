@@ -175,6 +175,20 @@ class phFormTest extends phTestCase
     	$this->assertTrue($form->element()->username instanceof phInputElement, '$form->element()->username returns a phInputElement object');
     }
     
+    public function testRadioButtons()
+    {
+    	$form = new phForm('test', 'radioButtonTestView');
+    	$form->bind(array(
+    		'name' => 'Rob',
+    		'type' => '2'
+    	));
+    	
+    	$this->assertEquals($form->element()->name->getRawValue(), 'Rob', 'name has been set to Rob');
+    	$this->assertEquals($form->element()->type1->isChecked(), false, 'type1 is NOT checked');
+    	$this->assertEquals($form->element()->type2->isChecked(), true, 'type2 is checked');
+    	$this->assertEquals($form->element()->type3->isChecked(), false, 'type3 is NOT checked');
+    }
+    
     /**
      * tests that textareas are dealt with properly
      */

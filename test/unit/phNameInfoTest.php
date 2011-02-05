@@ -71,4 +71,16 @@ class phNameInfoTest extends phTestCase
     	$this->assertEquals($info->getKeyInfo(1)->getKey(), 'first', 'Key at 1 returned correctly');
     	$this->assertTrue($info->getKeyInfo(2)->isAutoKey(), 'Key at 2 returned correctly');
     }
+    
+    public function testInvalidNames()
+    {
+    	$info = new phNameInfo('ids['); // unclosed array
+    	$this->assertFalse($info->isValid(), 'ids[ is not valid');
+    	
+    	$info = new phNameInfo('ids[][name]'); // auto keys must be at the very end of the name
+    	$this->assertFalse($info->isValid(), 'ids[][name] is not valid');
+    	
+    	$info = new phNameInfo('ids$%'); // invalid characters
+    	$this->assertFalse($info->isValid(), 'ids$% is not valid');
+    }
 }

@@ -53,20 +53,37 @@ class phSimpleDataCollection extends phAbstractFindingCollection
 	 */
 	public function validate(phFormViewElement $element, phNameInfo $name, phCompositeDataCollection $collection)
 	{
-		// make sure this data item doesn't exist already
-		$item = $collection->find($name->getName());
-		if($item===null)
+		/*
+		 * check uniqueness of name
+		 */
+		if(!$name->hasAutoKey()) // if a name has an auto key it will always be unique
 		{
-			return; // no problems, the data doesn't exist
+			$elementsCollection = $element->createDataCollection();
+			$ourItem = $this->find($name->getFullName());
+			
+			if($ourItem)
+			{
+				// we already have an item registered in this collection with this name
+				throw new phFormException("The element with name {$name->getFullName()} is not unique");
+			}
+			else if(get_class($elementsCollection)==get_class($this))
+			{
+				// the item will be stored in this collection - check uniqueness of name
+				$item = $collection->find($name->getFullName());
+				if($item)
+				{
+					throw new phFormException("The element with name {$name->getFullName()} is not unique");
+				}
+			}
 		}
 		
-		if($name->isArray() && !($item instanceof phArrayFormDataItem))
+		/*
+		 * make sure we are not mixing arrays and normal types
+		 */
+		$rootItem = $collection->find($name->getName());
+		if($rootItem && $name->isArray() && !($rootItem instanceof phArrayFormDataItem))
 		{
-			throw new phFormException("There is already a data item registered at {$name->getName()} and it is not an array data type so I cannot add to it!");
-		}
-		else if(!$name->isArray())
-		{
-			throw new phFormException("Cannot register normal data at {$name->getFullName()}, there is already a data item registered there");
+			throw new phFormException("There is already a data item registered at {$name->getFullName()} and it is not an array data type so I cannot add to it!");
 		}
 	}
 	

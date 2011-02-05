@@ -61,6 +61,20 @@ class phNameInfo
 			$this->_array = $array;
 			$this->_valid = true;
 		}
+		
+		/*
+		 * test if the name is an array and has any auto key that it is at the end
+		 */
+		if($this->hasAutoKey())
+		{
+			$keys = $this->getArrayInfo()->getKeys();
+			$lastKey = array_pop($keys);
+			if(!$lastKey->isAutoKey())
+			{
+				// auto keys must always be at the end of the array string!
+				$this->_valid = false;
+			}
+		}
 	}
 	
 	public function getName()
@@ -94,6 +108,25 @@ class phNameInfo
 	public function getFullName()
 	{
 		return $this->_nameString;
+	}
+	
+	public function hasAutoKey()
+	{
+		if(!$this->isArray())
+		{
+			return false;
+		}
+		
+		$keys = $this->getArrayInfo()->getKeys();
+		foreach($keys as $k)
+		{
+			if($k->isAutoKey())
+			{
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	public function __toString()
