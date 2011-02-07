@@ -93,6 +93,7 @@ class phLoader
 		'phCheckboxElement'				=> 'element/phCheckboxElement.php',
 		'phRadioButtonElement'			=> 'element/phRadioButtonElement.php',
 		'phFileElement'					=> 'element/phFileElement.php',
+		'phSelectListElement'			=> 'element/phSelectListElement.php',
 		'phValidator'					=> 'validator/phValidator.php',
 		'phValidatorCommon'				=> 'validator/phValidatorCommon.php',
 		'phValidatorException'			=> 'validator/phValidatorException.php',
