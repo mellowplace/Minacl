@@ -22,14 +22,18 @@
  */
  
 /**
- * This data item is used to represent any array type data specified in a form
- * e.g. <input type="checkbox" name="ids[]" value="1" />
+ * This data item is a more simple array type, it expects an array to
+ * be bound to it but other than that does no checking to see if the key
+ * exists.  It is used with checkboxes with name like ids[] because they
+ * do not post consistant data (only checked checkboxes send data back)
+ * and is also used with multi select lists because they also send back
+ * varying data that wouldn't work with the normal array types.
  * 
  * @author Rob Graham <htmlforms@mellowplace.com>
  * @package phform
  * @subpackage data
  */
-class phCheckboxArrayDataItem extends phArrayFormDataItem
+class phSimpleArrayDataItem extends phArrayFormDataItem
 {
 	/**
 	 * (non-PHPdoc)
@@ -37,7 +41,7 @@ class phCheckboxArrayDataItem extends phArrayFormDataItem
 	 */
 	public function registerArrayKey(phArrayKeyInfo $key, phData $dataItem)
 	{
-		throw new phFormException("You cannot register array keys with this object, it is only for handling the special case of chekboxes with auto keys");
+		throw new phFormException("You cannot register array keys with this object");
 	}
 	
 	/**

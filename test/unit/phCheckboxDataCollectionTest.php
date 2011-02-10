@@ -135,20 +135,20 @@ class phCheckboxDataCollectionTest extends phTestCase
 	public function testCreateArrayDataItem()
 	{
 		$info = new phArrayKeyInfo('', true, phArrayKeyInfo::NUMERIC);
-		$type = $this->collection->createArrayDataItem($info);
-		$this->assertTrue($type instanceof phCheckboxArrayDataItem, 'when an auto key is specified the data item is a phCheckboxArrayDataItem instance');
+		$type = $this->collection->createArrayDataItem($info, $this->createCheckboxElement('test[]', '1'));
+		$this->assertTrue($type instanceof phSimpleArrayDataItem, 'when an auto key is specified the data item is a phSimpleArrayDataItem instance');
 		
 		$info = new phArrayKeyInfo('test', false, phArrayKeyInfo::STRING);
-		$type = $this->collection->createArrayDataItem($info);
+		$type = $this->collection->createArrayDataItem($info, $this->createCheckboxElement('test[t]', '1'));
 		$this->assertTrue($type instanceof phArrayFormDataItem, 'when a string key is specified the data item is a phArrayFormDataItem instance');
 		
 		$info = new phArrayKeyInfo(0, false, phArrayKeyInfo::NUMERIC);
-		$type = $this->collection->createArrayDataItem($info);
+		$type = $this->collection->createArrayDataItem($info, $this->createCheckboxElement('test[0]', '1'));
 		$this->assertTrue($type instanceof phArrayFormDataItem, 'when a numeric key is specified the data item is a phArrayFormDataItem instance');
 		
 		// test when name specified it uses that
 		$info = new phArrayKeyInfo('', true, phArrayKeyInfo::NUMERIC);
-		$type = $this->collection->createArrayDataItem($info, 'ids');
+		$type = $this->collection->createArrayDataItem($info, $this->createCheckboxElement('ids[0]', '1'), 'ids');
 		$this->assertEquals('ids', $type->getName(), 'name override set properly');
 	}
 	
@@ -162,7 +162,7 @@ class phCheckboxDataCollectionTest extends phTestCase
 		
 		$idsData = $this->collection->find('ids');
 		
-		$this->assertTrue($idsData instanceof phCheckboxArrayDataItem, 'ids is a checkbox data array');
+		$this->assertTrue($idsData instanceof phSimpleArrayDataItem, 'ids is a checkbox data array');
 		$this->assertSame($idsData, $ids1->boundData, 'data item bound to ids1 is the ids data array');
 		$this->assertSame($idsData, $ids2->boundData, 'data item bound to ids2 is the ids data array');
 		
@@ -174,7 +174,7 @@ class phCheckboxDataCollectionTest extends phTestCase
 		
 		$testData = $this->collection->find('test');
 		$this->assertTrue($testData instanceof phArrayFormDataItem, 'test is a normal data array');
-		$this->assertTrue($testData['ids'] instanceof phCheckboxArrayDataItem, 'test[ids] is a checkbox data array');
+		$this->assertTrue($testData['ids'] instanceof phSimpleArrayDataItem, 'test[ids] is a checkbox data array');
 		$this->assertSame($testData['ids'], $ids1->boundData, 'data item bound to ids1 is the ids data array');
 		$this->assertSame($testData['ids'], $ids2->boundData, 'data item bound to ids2 is the ids data array');
 	}
@@ -228,9 +228,9 @@ class phTestCheckboxElement extends phCheckboxElement
 
 class phTestCheckboxDataCollection extends phCheckboxDataCollection
 {
-	public function createArrayDataItem(phArrayKeyInfo $info, $name = null)
+	public function createArrayDataItem(phArrayKeyInfo $info, phFormViewElement $e, $name = null)
 	{
-		return parent::createArrayDataItem($info, $name);
+		return parent::createArrayDataItem($info, $e, $name);
 	}
 }
 

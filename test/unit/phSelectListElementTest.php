@@ -21,10 +21,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-require_once 'phTestCase.php';
-require_once realpath(dirname(__FILE__)) . '/../../lib/form/phLoader.php';
-phLoader::registerAutoloader();
-require_once realpath(dirname(__FILE__)) . '/../resources/phTestFormView.php';
+require_once 'phAbstractSelectListTest.php';
 
 /**
  * Tests the phSelectListElement class
@@ -33,7 +30,7 @@ require_once realpath(dirname(__FILE__)) . '/../resources/phTestFormView.php';
  * @package phform
  * @subpackage test
  */
-class phSelectListElementTest extends phTestCase
+class phSelectListElementTest extends phAbstractSelectListTest
 {
 	public function testIsMultiple()
 	{
@@ -129,23 +126,5 @@ class phSelectListElementTest extends phTestCase
 	{
 		$single = $this->createSelectListElement('test', array('test'=>'test', 'test2'=>'test2'), true);
 		$single->setValue('test2');
-	}
-	
-	/**
-	 * @return phSelectListElement
-	 */
-	private function createSelectListElement($name, $options, $multiple = false, $selectedOptions = array())
-	{
-		$html = "<select name=\"{$name}\" " . ($multiple ? 'multiple="multiple"':'') . ">";
-		foreach($options as $value=>$desc)
-		{
-			$selected = in_array($value, $selectedOptions);
-			$html .= "<option value=\"{$value}\" " . ($selected ? 'selected="selected"' : '') . ">{$desc}</option>";
-		}
-		$html .= "</select>";
-		
-		$e = new SimpleXMLElement($html);
-		
-		return new phSelectListElement($e, new phTestFormView());
 	}
 }

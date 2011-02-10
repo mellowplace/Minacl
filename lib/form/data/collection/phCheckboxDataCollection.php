@@ -35,7 +35,7 @@
  * @package phform
  * @subpackage data.collection
  */
-class phCheckboxDataCollection extends phSimpleDataCollection
+class phCheckboxDataCollection extends phSimpleArrayDataCollection
 {
 	/**
 	 * Used to store all the values of a checkbox on a name by name basis.
@@ -92,13 +92,13 @@ class phCheckboxDataCollection extends phSimpleDataCollection
 		
 		if($hasAutoKey && $item!==null)
 		{
-			if(!($element instanceof phCheckboxElement) && $item instanceof phCheckboxArrayDataItem)
+			if(!($element instanceof phCheckboxElement) && $item instanceof phSimpleArrayDataItem)
 			{
 				// not ok - checkbox registered here previously and someone is trying to add another datatype to the same array
 				throw new phFormException("Trying to mix checkboxes with auto keys with another type of element at {$name}");
 			}
 			
-			if($element instanceof phCheckboxElement && !($item instanceof phCheckboxArrayDataItem))
+			if($element instanceof phCheckboxElement && !($item instanceof phSimpleArrayDataItem))
 			{
 				// not ok - checkbox with auto key trying to be registered to a normal array type
 				throw new phFormException("Trying to mix checkboxes with auto keys with another type of element at {$name}");
@@ -127,46 +127,8 @@ class phCheckboxDataCollection extends phSimpleDataCollection
 		}
 	}
 	
-	/**
-	 * (non-PHPdoc)
-	 * @see lib/form/data/collection/phSimpleDataCollection::getOrCreateArrayDataType()
-	 */
-	protected function getOrCreateArrayDataType(phNameInfo $name, $keys, $currentKeyIndex, phFormViewElement $element, phArrayFormDataItem $currentDataItem)
+	protected function needsSimpleArrayType(phArrayKeyInfo $info, phFormViewElement $element)
 	{
-		if($currentDataItem instanceof phCheckboxArrayDataItem)
-		{
-			/*
-			 * a checkbox array data type has been created or gotten. This
-			 * means we have come across an auto key like '[]' which means
-			 * we are at the end of the array and cannot go any further down
-			 * so we should return this data item.
-			 */
-			return $currentDataItem;
-		}
-		else
-		{
-			return parent::getOrCreateArrayDataType($name, $keys, $currentKeyIndex, $element, $currentDataItem);
-		}
-	}
-	
-	/**
-	 * (non-PHPdoc)
-	 * @see lib/form/data/collection/phSimpleDataCollection::createArrayDataItem()
-	 */
-	protected function createArrayDataItem(phArrayKeyInfo $info, $name = null)
-	{
-		if($name===null)
-		{
-			$name = $info->getKey();
-		}
-		
-		if($info->isAutoKey())
-		{
-			return new phCheckboxArrayDataItem($name);
-		}
-		else
-		{
-			return new phArrayFormDataItem($name);
-		}
+		return $info->isAutoKey();
 	}
 }

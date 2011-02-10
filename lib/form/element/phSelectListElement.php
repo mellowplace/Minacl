@@ -112,4 +112,9 @@ class phSelectListElement extends phSimpleXmlElement
 			}
 		}
 	}
+	
+	public function createDataCollection()
+	{
+		return new phSelectListDataCollection();
+	}
 }

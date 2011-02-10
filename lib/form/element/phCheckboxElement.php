@@ -36,7 +36,7 @@ class phCheckboxElement extends phCheckableElement
 	 */
 	public function dataChanged(phFormDataItem $item)
 	{
-		if($item instanceof phCheckboxArrayDataItem)
+		if($item instanceof phSimpleArrayDataItem)
 		{
 			/*
 			 * $item->getValue will be an array, we need to see if our 

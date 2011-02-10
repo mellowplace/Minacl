@@ -25,6 +25,8 @@ require_once 'phTestCase.php';
 require_once realpath(dirname(__FILE__)) . '/../../lib/form/phLoader.php';
 phLoader::registerAutoloader();
 
+require_once realpath(dirname(__FILE__)) . '/../resources/phSimpleTestElement.php';
+
 /**
  * Tests the phSimpleDataCollection class
  *
@@ -240,29 +242,6 @@ class phSimpleDataCollectionTest extends phTestCase
 		$collection2->validate($element, $nameInfo, $composite);
 		
 		$this->assertTrue(true, 'validate passed an array, recognising it is different');
-	}
-}
-
-class phSimpleTestElement implements phFormViewElement
-{
-	public $boundDataItem = null;
-	
-	/**
-	 * (non-PHPdoc)
-	 * @see lib/form/phFormViewElement::needsUniqueName()
-	 */
-	public function createDataCollection()
-	{
-		return new phSimpleDataCollection();
-	}
-	
-	/**
-	 * (non-PHPdoc)
-	 * @see lib/form/phFormViewElement::bindDataItem()
-	 */
-	public function bindDataItem(phFormDataItem $item)
-	{
-		$this->boundDataItem = $item;
 	}
 }
 

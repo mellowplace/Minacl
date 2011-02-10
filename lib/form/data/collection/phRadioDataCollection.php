@@ -87,7 +87,7 @@ class phRadioDataCollection extends phSimpleDataCollection
 	{
 		if(!array_key_exists($name->getName(), $this->_dataItems))
 		{
-			$item = $this->createNormalDataItem($name->getName());
+			$item = $this->createNormalDataItem($name->getName(), $element);
 			$this->_dataItems[$name->getName()] = $item;
 		}
 		

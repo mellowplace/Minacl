@@ -107,7 +107,7 @@ class phSimpleDataCollection extends phAbstractFindingCollection
 		
 		if($currentDataItem===null)
 		{
-			$currentDataItem = $this->createArrayDataItem($name->getArrayInfo()->getKeyInfo(0), $name->getName());
+			$currentDataItem = $this->createArrayDataItem($name->getArrayInfo()->getKeyInfo(0), $element, $name->getName());
 			$this->_dataItems[$name->getName()] = $currentDataItem;
 		}
 			
@@ -128,7 +128,7 @@ class phSimpleDataCollection extends phAbstractFindingCollection
 			}
 			else
 			{
-				$finalItem = $this->createNormalDataItem($currentKey);
+				$finalItem = $this->createNormalDataItem($currentKey, $element);
 				$currentDataItem->registerArrayKey($keys[$currentKeyIndex], $finalItem);
 			}
 			
@@ -151,7 +151,7 @@ class phSimpleDataCollection extends phAbstractFindingCollection
 			}
 			else
 			{
-				$nextDataItem = $this->createArrayDataItem($keys[$currentKeyIndex+1], $keys[$currentKeyIndex]->getKey());
+				$nextDataItem = $this->createArrayDataItem($keys[$currentKeyIndex+1], $element, $keys[$currentKeyIndex]->getKey());
 				$currentDataItem->registerArrayKey($keys[$currentKeyIndex], $nextDataItem);
 			}
 			
@@ -161,7 +161,7 @@ class phSimpleDataCollection extends phAbstractFindingCollection
 	
 	protected function registerNormal(phFormViewElement $element, phNameInfo $name, phCompositeDataCollection $collection)
 	{
-		$data = $this->createNormalDataItem($name->getName());
+		$data = $this->createNormalDataItem($name->getName(), $element);
 		$this->_dataItems[$name->getName()] = $data;
 		$element->bindDataItem($data);
 	}
@@ -169,7 +169,7 @@ class phSimpleDataCollection extends phAbstractFindingCollection
 	/**
 	 * @return phData
 	 */
-	protected function createNormalDataItem($name)
+	protected function createNormalDataItem($name, phFormViewElement $element)
 	{
 		return new phFormDataItem($name);
 	}
@@ -177,7 +177,7 @@ class phSimpleDataCollection extends phAbstractFindingCollection
 	/**
 	 * @return phArrayFormDataItem
 	 */
-	protected function createArrayDataItem(phArrayKeyInfo $info, $name = null)
+	protected function createArrayDataItem(phArrayKeyInfo $info, phFormViewElement $element, $name = null)
 	{
 		if($name === null)
 		{
