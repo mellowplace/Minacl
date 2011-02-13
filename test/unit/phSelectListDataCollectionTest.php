@@ -160,7 +160,7 @@ class phSelectListDataCollectionTest extends phAbstractSelectListTest
 		);
 		$info = new phNameInfo('options[]');
 		$this->composite->register(new phSimpleTestElement(), $info);
-		$this->collection->validate($this->createSelectListElement('options[]', $options, false), $info, $this->composite);
+		$this->collection->validate($this->createSelectListElement('options[]', $options, true), $info, $this->composite);
 	}
 	
 	/**
@@ -175,8 +175,24 @@ class phSelectListDataCollectionTest extends phAbstractSelectListTest
 			'B' => 'Option B'
 		);
 		$info = new phNameInfo('options[]');
-		$this->composite->register($this->createSelectListElement('options[]', $options, false), $info);
+		$this->composite->register($this->createSelectListElement('options[]', $options, true), $info);
 		$this->collection->validate(new phSimpleTestElement(), $info, $this->composite);
+	}
+	
+	/**
+	 * Make sure the collection doesn't error for other element types
+	 */
+	public function testIgnoresOtherElements()
+	{
+		$info = new phNameInfo('options[]');
+		$this->composite->register(new phSimpleTestElement(), $info);
+		$this->collection->validate(new phSimpleTestElement(), $info, $this->composite);
+		
+		$info = new phNameInfo('ids');
+		$this->composite->register(new phSimpleTestElement(), $info);
+		$this->collection->validate(new phSimpleTestElement(), $info, $this->composite);
+		
+		$this->assertTrue(true, 'collection ignores other element types');
 	}
 }
 

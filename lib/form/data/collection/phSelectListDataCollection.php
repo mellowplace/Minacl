@@ -1,23 +1,23 @@
 <?php
 /*
- * phForms Project: An HTML forms library for PHP
+ * Minacl Project: An HTML forms library for PHP
  *          https://github.com/mellowplace/PHP-HTML-Driven-Forms/
  * Copyright (c) 2010, 2011 Rob Graham
  *
- * This file is part of phForms.
+ * This file is part of Minacl.
  *
- * phForms is free software: you can redistribute it and/or modify
+ * Minacl is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 3 of
  * the License, or (at your option) any later version.
  *
- * phForms is distributed in the hope that it will be useful, but
+ * Minacl is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with phForms.  If not, see
+ * License along with Minacl.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
 
@@ -30,11 +30,32 @@
  */
 class phSelectListDataCollection extends phSimpleArrayDataCollection
 {
+	/**
+	 * Stores the select list elements that have been registered and are multi arrays
+	 * @var array
+	 */
+	protected $_multipleElements = array();
 	
+	/**
+	 * (non-PHPdoc)
+	 * @see lib/form/data/collection/phSimpleDataCollection::register()
+	 */
+	public function register(phFormViewElement $element, phNameInfo $name, phCompositeDataCollection $collection)
+	{
+		if($element instanceof phSelectListElement && $element->isMultiple())
+		{
+			$this->_multipleElements[$name->getFullName()] = $element;
+		}
+		
+		parent::register($element, $name, $collection);
+	}
+	
+	/**
+	 * (non-PHPdoc)
+	 * @see lib/form/data/collection/phSimpleDataCollection::validate()
+	 */
 	public function validate(phFormViewElement $element, phNameInfo $name, phCompositeDataCollection $collection)
 	{
-		parent::validate($element, $name, $collection);
-		
 		/*
 		 * go through the name and, if it's an array, build it back up, BUT - skip
 		 * the last key if it's an auto key.  We do this because checkboxes with auto 
@@ -57,22 +78,34 @@ class phSelectListDataCollection extends phSimpleArrayDataCollection
 			}
 		}
 		
-		if($element instanceof phSelectListElement && $element->isMultiple() && !$hasAutoKey)
+		if($element instanceof phSelectListElement && $element->isMultiple())
 		{
-			throw new phFormException("Invalid name \"{$name->getFullName()}\" - Multi select list elements must use a name with an auto key");
+			if(!$hasAutoKey)
+			{
+				throw new phFormException("Invalid name \"{$name->getFullName()}\" - Multi select list elements must use a name with an auto key");
+			}
+			else 
+			{
+				$data = $collection->find($nameString);
+				if($data!==null)
+				{
+					throw new phFormException("Cannot register multi-select list at {$name->getFullName()} another data item exists there");
+				}
+			}
 		}
 		
-		$item = $collection->find($nameString);
+		if(array_key_exists($name->getFullName(), $this->_multipleElements))
+		{
+			throw new phFormException("There is a multi-select list registered at \"{$name->getFullName()}\", you cannot register any other types of data here");
+		}
 		
-		/**
-		 * @todo 
-		 * 
-		 * 1. If a we already have a multi select autokey checkbox at $name check no other element
-		 * is trying to register there we must throw an exception
-		 * 
-		 * 2. If we are trying to register a multi select autokey but there exists another data item there
-		 * then we must throw an exception
-		 */
+		if($element instanceof phSelectListElement)
+		{
+			/*
+			 * also do uniqueness checks if we are registering a select element
+			 */
+			parent::validate($element, $name, $collection);
+		}
 	}
 	
 	/**

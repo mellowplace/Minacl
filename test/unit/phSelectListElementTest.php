@@ -1,23 +1,23 @@
 <?php
 /*
- * phForms Project: An HTML forms library for PHP
+ * Minacl Project: An HTML forms library for PHP
  *          https://github.com/mellowplace/PHP-HTML-Driven-Forms/
  * Copyright (c) 2010, 2011 Rob Graham
  * 
- * This file is part of phForms.
+ * This file is part of Minacl.
  *
- * phForms is free software: you can redistribute it and/or modify
+ * Minacl is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as 
  * published by the Free Software Foundation, either version 3 of 
  * the License, or (at your option) any later version.
  *
- * phForms is distributed in the hope that it will be useful, but
+ * Minacl is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public 
- * License along with phForms.  If not, see 
+ * License along with Minacl.  If not, see 
  * <http://www.gnu.org/licenses/>.
  */
 
@@ -88,6 +88,11 @@ class phSelectListElementTest extends phAbstractSelectListTest
 		{
 			$this->assertFalse(isset($e->attributes()->selected), 'the "' . (string)$e->attributes()->value . '" option is *not* selected');
 		}
+		
+		$multiple->setValue(array('test'));
+		// assert one option is selected
+		$elements = $multiple->getElement()->xpath("//option[@selected='selected']");
+		$this->assertEquals(1, sizeof($elements), 'one option selected');
 	}
 	
 	
@@ -104,6 +109,9 @@ class phSelectListElementTest extends phAbstractSelectListTest
 		
 		$multiple = $this->createSelectListElement('test', array('test'=>'test', 'test2'=>'test2'), true, array('test', 'test2'));
 		$this->assertEquals(array('test', 'test2'), $multiple->getRawValue(), 'when both options are selected in a multiple list the value is array(test, test2)');
+		
+		$multiple = $this->createSelectListElement('test', array('test'=>'test', 'test2'=>'test2'), true, array('test2'));
+		$this->assertEquals(array('test2'), $multiple->getRawValue(), 'when one options is selected in a multiple list the value is array(test2)');
 	}
 	
 	/**

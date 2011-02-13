@@ -21,34 +21,22 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-require_once 'phTestCase.php';
-require_once realpath(dirname(__FILE__)) . '/../../lib/form/phLoader.php';
-phLoader::registerAutoloader();
-require_once realpath(dirname(__FILE__)) . '/../resources/phTestFormView.php';
-
 /**
- * Base class for select list tests
+ * Factory for dealing with <select ...> tags
  *
  * @author Rob Graham <htmlforms@mellowplace.com>
  * @package phform
+ * @subpackage factory
  */
-abstract class phAbstractSelectListTest extends phTestCase
+class phSelectListElementFactory extends phElementFactory
 {
-	/**
-	 * @return phSelectListElement
-	 */
-	protected function createSelectListElement($name, $options, $multiple = false, $selectedOptions = array())
+	public function canHandle(SimpleXMLElement $e)
 	{
-		$html = "<select name=\"{$name}\" " . ($multiple ? 'multiple="multiple"':'') . ">";
-		foreach($options as $value=>$desc)
-		{
-			$selected = in_array($value, $selectedOptions);
-			$html .= "<option value=\"{$value}\" " . ($selected ? 'selected="selected"' : '') . ">{$desc}</option>";
-		}
-		$html .= "</select>";
-
-		$e = new SimpleXMLElement($html);
-
-		return new phSelectListElement($e, new phTestFormView());
+		return ($e->getName()=='select');
+	}
+	
+	public function createPhElement(SimpleXMLElement $e, phFormView $view)
+	{
+		return new phSelectListElement($e, $view);
 	}
 }

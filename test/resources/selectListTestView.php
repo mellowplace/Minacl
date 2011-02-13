@@ -20,34 +20,16 @@
  * License along with Minacl.  If not, see 
  * <http://www.gnu.org/licenses/>.
  */
- 
- /**
- * This factory can handle radio elements
- * 
- * @author Rob Graham <htmlforms@mellowplace.com>
- * @package phform
- * @subpackage factory
- */
-class phRadioButtonElementFactory extends phElementFactory
-{
-	public function canHandle(SimpleXMLElement $e)
-	{
-		if($e->getName()=='input')
-		{
-			$attributes = $e->attributes();
-			foreach($attributes as $name=>$value)
-			{
-				if($name=='type' && $value=='radio')
-				{
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-	
-	public function createPhElement(SimpleXMLElement $e, phFormView $view)
-	{
-		return new phRadioButtonElement($e, $view);
-	}
-}
+?>
+<select id="<?php echo $this->id('options'); ?>" name="<?php echo $this->name('options[]'); ?>" multiple="multiple">
+	<option value="A">Option A</option>
+	<option value="B">Option B</option>
+	<option value="C">Option C</option>
+</select>
+
+
+<select id="<?php echo $this->id('single'); ?>" name="<?php echo $this->name('single'); ?>">
+	<option value="A">Option A</option>
+	<option value="B">Option B</option>
+	<option value="C">Option C</option>
+</select>

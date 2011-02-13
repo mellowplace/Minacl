@@ -207,6 +207,18 @@ class phFormTest extends phTestCase
     	$this->assertEquals((string)$form->element()->textarea->getElement(), 'test value', 'the textareas value was set properly');
     }
     
+    public function testSelectList()
+    {
+    	$form = new phTestForm('test', 'selectListTestView');
+    	$form->bind(array(
+    		'options' => array('A', 'C'),
+    		'single' => 'C'
+    	));
+    	
+    	$this->assertEquals(array('A', 'C'), $form->element()->options->getRawValue(), 'options has both A and C selected');
+    	$this->assertEquals('C', $form->element()->single->getRawValue(), 'single has B selected');
+    }
+    
     private function addForm($name)
     {
     	$this->form = new phForm('test', 'viewTestView');
