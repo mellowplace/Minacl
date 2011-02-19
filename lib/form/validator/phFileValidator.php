@@ -50,12 +50,16 @@ class phFileValidator extends phValidatorCommon
 	
 	protected function getValidErrorCodes()
 	{
-		return array(self::REQUIRED);
+		return array(self::REQUIRED, self::FILE_ERROR, self::INVALID_MIME_TYPE);
 	}
 	
 	protected function getDefaultErrorMessages()
 	{
-		return array(self::REQUIRED=>'This file is required, please upload something');
+		return array(
+			self::REQUIRED=>'This file is required, please upload something',
+			self::FILE_ERROR=>'There was an error while trying to upload the file, the error was: %error%',
+			self::INVALID_MIME_TYPE=>'Incorrect file type, valid types are: %types%',
+		);
 	}
 	
 	public function validate($value, phValidatable $errors)
@@ -78,7 +82,7 @@ class phFileValidator extends phValidatorCommon
 		}
 		catch(phFileDataException $e)
 		{
-			$errors->addError($this->getError(self::FILE_ERROR));
+			$errors->addError($this->getError(self::FILE_ERROR, array('%error%'=>'invalid file data')));
 			return; // no point in going further, bad data
 		}
 		
@@ -90,13 +94,18 @@ class phFileValidator extends phValidatorCommon
 		
 		if($data->hasError())
 		{
-			$errors->addError($this->getError(self::FILE_ERROR));
+			$errors->addError($this->getError(self::FILE_ERROR, array('%error%'=>$data->getFileErrorString())));
 			return; // no point in going further, bad data
 		}
 		
 		if(sizeof($this->_mimeTypes)>0 && !in_array($data->getMimeType(), $this->_mimeTypes))
 		{
-			$errors->addError($this->getError(self::INVALID_MIME_TYPE));
+			$validTypes = '';
+			foreach($this->_mimeTypes as $m)
+			{
+				$validTypes .= $m . ', ';
+			}
+			$errors->addError($this->getError(self::INVALID_MIME_TYPE, array('%types%'=>substr($validTypes, 0, -2))));
 			return;
 		}
 	}

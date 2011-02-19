@@ -61,6 +61,11 @@ class phValidatorError
 		return $this->_message;
 	}
 	
+	public function setMessage($message)
+	{
+		$this->_message = $message;
+	}
+	
 	/**
 	 * @return int the error code
 	 */

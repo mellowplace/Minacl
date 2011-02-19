@@ -54,15 +54,28 @@ abstract class phValidatorCommon implements phValidator
 	 * @param integer $code
 	 * @return phValidatorError
 	 */
-	protected function getError($code)
+	protected function getError($code, $replacements = array())
 	{
 		if(isset($this->_errors[$code]))
 		{
-			return $this->_errors[$code];
+			$error = $this->_errors[$code];
+		}
+		else
+		{
+			$defaults = $this->getDefaultErrorMessages();
+			$error = new phValidatorError($defaults[$code], $code, $this);
 		}
 		
-		$defaults = $this->getDefaultErrorMessages();
-		return new phValidatorError($defaults[$code], $code, $this);
+		$message = $error->getMessage();
+		
+		foreach($replacements as $search=>$replace)
+		{
+			$message = str_replace($search, $replace, $message);
+		}
+		
+		$error->setMessage($message);
+		
+		return $error;
 	}
 	
 	protected abstract function getValidErrorCodes();

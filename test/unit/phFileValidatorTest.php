@@ -103,6 +103,7 @@ class phFileValidatorTest extends phTestCase
 		$errors = $this->_testValidatable->getErrors();
 		$this->assertEquals(1, sizeof($errors), 'there is one error');
 		$this->assertEquals(phFileValidator::FILE_ERROR, $errors[0]->getCode(), 'the error triggered is the "file error"');
+		$this->assertTrue(strstr($errors[0]->getMessage(), 'The uploaded file exceeds the upload_max_filesize directive in php.ini')!==false, 'The PHP error message was written in to the error');
 	}
 	
 	public function testMimeType()
@@ -122,8 +123,9 @@ class phFileValidatorTest extends phTestCase
 		$errors = $this->_testValidatable->getErrors();
 		$this->assertEquals(1, sizeof($errors), 'there is 1 error for an invalid mime type');
 		$this->assertEquals(phFileValidator::INVALID_MIME_TYPE, $errors[0]->getCode(), 'the error triggered is the invalid mime error');
+		$this->assertTrue(strstr($errors[0]->getMessage(), 'valid types are: text/html, text/plain')!==false, 'The valid types were written into the error');
 	}
-	
+		
 	protected function getTestData()
 	{
 		return array(
