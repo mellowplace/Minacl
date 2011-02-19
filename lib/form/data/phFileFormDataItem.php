@@ -57,6 +57,8 @@ class phFileFormDataItem extends phFormDataItem
 		{
 			throw new phFileDataException("Temp file \"{$this->_value['tmp_name']}\" does not exist", phFileDataException::TEMP_FILE_NOT_FOUND);
 		}
+		
+		move_uploaded_file($this->_value['tmp_name'], $location);
 	}
 	
 	/**

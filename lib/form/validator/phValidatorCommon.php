@@ -47,9 +47,13 @@ abstract class phValidatorCommon implements phValidator
 			throw new phValidatorException("The error code '{$code}' is not valid for this validator");
 		}
 		
-		$this->_errors[$code] = $message;
+		$this->_errors[$code] = new phValidatorError($message, $code, $this);
 	}
 	
+	/**
+	 * @param integer $code
+	 * @return phValidatorError
+	 */
 	protected function getError($code)
 	{
 		if(isset($this->_errors[$code]))
@@ -58,7 +62,7 @@ abstract class phValidatorCommon implements phValidator
 		}
 		
 		$defaults = $this->getDefaultErrorMessages();
-		return $defaults[$code];
+		return new phValidatorError($defaults[$code], $code, $this);
 	}
 	
 	protected abstract function getValidErrorCodes();

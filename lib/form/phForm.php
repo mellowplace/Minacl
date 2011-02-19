@@ -209,7 +209,7 @@ class phForm implements phFormViewElement, phData
 	 * (non-PHPdoc)
 	 * @see lib/form/phElement::addError()
 	 */
-	public function addError($message)
+	public function addError(phValidatorError $message)
 	{
 		$this->_errors[] = $message;
 	}

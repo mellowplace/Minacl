@@ -32,9 +32,9 @@ interface phValidatable
 	public function validate();
 	/**
 	 * allows a validator to attach an error message to this element
-	 * @param unknown_type $message
+	 * @param phValidatorError $error
 	 */
-	public function addError($message);
+	public function addError(phValidatorError $error);
 	
 	/**
 	 * resets any error messages this element might have

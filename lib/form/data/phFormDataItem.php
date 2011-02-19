@@ -117,10 +117,10 @@ class phFormDataItem implements phData
 	}
 	
 	/**
-	 * allows a validator to attach an error message to this item of data
-	 * @param unknown_type $message
+	 * (non-PHPdoc)
+	 * @see lib/form/phValidatable::addError()
 	 */
-	public function addError($message)
+	public function addError(phValidatorError $message)
 	{
 		$this->_errors[] = $message;
 	}

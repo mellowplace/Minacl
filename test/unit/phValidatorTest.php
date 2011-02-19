@@ -24,6 +24,7 @@
 require_once 'phTestCase.php';
 require_once realpath(dirname(__FILE__)) . '/../../lib/form/phLoader.php';
 phLoader::registerAutoloader();
+require_once realpath(dirname(__FILE__)) . '/../resources/phTestValidatable.php';
 
 class phValidatorTest extends phTestCase
 {
@@ -60,7 +61,10 @@ class phValidatorTest extends phTestCase
 			'password'=>'fail'
 		));
 		
-		$this->assertTrue(in_array('This field is required', $this->form->username->getErrors()), 
+		$errors = $this->form->username->getErrors();
+		$messages = $this->extractErrorMessages($errors);
+		
+		$this->assertTrue(in_array('This field is required', $messages), 
 			'The error message is returned in form->username->getErrors');
 	}
 	
@@ -72,7 +76,9 @@ class phValidatorTest extends phTestCase
 			'password'=>'fail'
 		));
 		
-		$this->assertTrue(in_array('This field is required', $this->form->getErrors()), 
+		$errors = $this->form->getErrors();
+		$messages = $this->extractErrorMessages($errors);
+		$this->assertTrue(in_array('This field is required', $messages), 
 			'The error message is returned in form->getErrors');
 	}
 	
@@ -110,7 +116,8 @@ class phValidatorTest extends phTestCase
 		));
 		
 		$this->assertFalse($this->form->username->validate(), 'The username is correctly invalid');
-		$this->assertTrue(in_array('Username is required', $this->form->username->getErrors()),
+		$messages = $this->extractErrorMessages($this->form->username->getErrors());
+		$this->assertTrue(in_array('Username is required', $messages),
 			'The username required validator error was set properly');
 	}
 	
@@ -139,8 +146,9 @@ class phValidatorTest extends phTestCase
 		
 		$username->bind('short');
 		$this->assertFalse($strVal->validate($username->getValue(), $username), 'The validator is correctly not valid');
+		$messages = $this->extractErrorMessages($username->getErrors());
 		$this->assertTrue(in_array('Please enter a string between 6 and 8 characters long', 
-							$username->getErrors()), 'error message set properly');
+							$messages), 'error message set properly');
 		
 		$username->bind('tooloooooooong');
 		$this->assertFalse($strVal->validate($username->getValue(), $username), 'The validator is correctly not valid');
@@ -177,8 +185,9 @@ class phValidatorTest extends phTestCase
 		));
 		
 		$this->assertFalse($compareVal->validate('notequal', $password), 'The validator is correctly not valid');
+		$messages = $this->extractErrorMessages($password->getErrors());
 		$this->assertTrue(in_array('The passwords are not the same', 
-							$password->getErrors()), 'error message set properly');
+							$messages), 'error message set properly');
 							
 		$this->assertTrue($compareVal->validate('password', $password), 'The validator is correctly valid');
 		
@@ -234,9 +243,21 @@ class phValidatorTest extends phTestCase
 		$this->assertEquals(sizeof($errors->getErrors()), 2, 'The 2 fails messages where added');
 		
 	}
+	
 	public function testUnboundFormFail()
 	{
 		$this->assertFalse($this->form->isValid(), 'Unbound form is not valid');
+	}
+	
+	protected function extractErrorMessages($errors)
+	{
+		$messages = array();
+		foreach($errors as $e)
+		{
+			$messages[] = $e->getMessage();
+		}
+		
+		return $messages;
 	}
 }
 
@@ -253,6 +274,8 @@ class TestForm extends phForm
 
 class TestValidatorFail implements phValidator
 {
+	const FAIL_CODE = 1;
+	
 	public function __construct($message)
 	{
 		$this->_message = $message;
@@ -260,7 +283,7 @@ class TestValidatorFail implements phValidator
 	
 	public function validate($value, phValidatable $item)
 	{
-		$item->addError($this->_message);
+		$item->addError(new phValidatorError($this->_message, self::FAIL_CODE, $this));
 		return false;
 	}
 }
@@ -270,46 +293,5 @@ class TestValidatorPass implements phValidator
 	public function validate($value, phValidatable $item)
 	{
 		return true;
-	}
-}
-
-class phTestValidatable implements phValidatable
-{
-	protected $_errors = array();
-	
-	/**
-	 * (non-PHPdoc)
-	 * @see lib/form/phValidatable::addError()
-	 */
-	public function addError($message)
-	{
-		$this->_errors[] = $message;
-	}
-	
-	/**
-	 * (non-PHPdoc)
-	 * @see lib/form/phValidatable::resetErrors()
-	 */
-	public function resetErrors()
-	{
-		$this->_errors = array();
-	}
-	
-	/**
-	 * (non-PHPdoc)
-	 * @see lib/form/phValidatable::getErrors()
-	 */
-	public function getErrors()
-	{
-		return $this->_errors;
-	}
-	
-	/**
-	 * (non-PHPdoc)
-	 * @see lib/form/phValidatable::validate()
-	 */
-	public function validate()
-	{
-		return sizeof($this->_errors)==0;
 	}
 }

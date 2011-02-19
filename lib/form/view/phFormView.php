@@ -470,7 +470,13 @@ class phFormView
 			$errors = $e->getErrors();
 		}
 		
-		return $errors;
+		$messages = array();
+		foreach($errors as $e)
+		{
+			$messages[] = $e->getMessage();
+		}
+		
+		return $messages;
 	}
 	
 	/**

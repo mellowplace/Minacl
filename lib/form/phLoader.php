@@ -103,6 +103,8 @@ class phLoader
 		'phStringLengthValidator'		=> 'validator/phStringLengthValidator.php',
 		'phRequiredValidator'			=> 'validator/phRequiredValidator.php',
 		'phCompareValidator'			=> 'validator/phCompareValidator.php',
+		'phFileValidator'				=> 'validator/phFileValidator.php',
+		'phValidatorError'				=> 'validator/phValidatorError.php',
 		'phTextAreaElementFactory'		=> 'factory/phTextAreaElementFactory.php',
 		'phTextAreaElement' 			=> 'element/phTextAreaElement.php',
 	);
