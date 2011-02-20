@@ -26,7 +26,8 @@
  * its elements
  *
  * @author Rob Graham <htmlforms@mellowplace.com>
- * @package phform.view
+ * @package phform
+ * @subpackage view
  */
 class phFormView
 {
