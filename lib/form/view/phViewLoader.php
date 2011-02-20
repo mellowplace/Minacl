@@ -50,7 +50,7 @@ abstract class phViewLoader
 		return self::$instance;
 	}
 	
-	public function setInstance(phViewLoader $instance)
+	public static function setInstance(phViewLoader $instance)
 	{
 		self::$instance = $instance;
 	}

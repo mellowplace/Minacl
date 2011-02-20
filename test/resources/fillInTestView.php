@@ -38,6 +38,10 @@
 	</dd>
 </dl>
 
+<input 	type="text" 
+		id="<?php echo $this->id('noValue'); ?>" 
+		name="<?php echo $this->name('noValue'); ?>" />
+
 <input 	type="checkbox" 
 		id="<?php echo $this->id('checkbox1'); ?>"
 		name="<?php echo $this->name('checkbox[0]'); ?>"

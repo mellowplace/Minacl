@@ -455,18 +455,18 @@ class phFormView
 	}
 	
 	/**
-	 * Returns any errors for the element with $id
+	 * Returns any errors for the data identified by $name
 	 * 
-	 * @param string $id
+	 * @param string $name
 	 * @return array list of errors
 	 */
-	public function error($id)
+	public function error($name)
 	{
 		$errors = array();
 		
 		if($this->getDom())
 		{
-			$e = $this->$id;
+			$e = $this->$name;
 			$errors = $e->getErrors();
 		}
 		
@@ -493,13 +493,13 @@ class phFormView
 	/**
 	 * Gets an html <ul> list of errors
 	 * 
-	 * @param string $id optional id to get only errors from one field
+	 * @param string $name optional id to get only errors from one data item
 	 */
-	public function errorList($id = null)
+	public function errorList($name = null)
 	{
 		if($this->getDom())
 		{
-			$errors = $id===null ? $this->allErrors() : $this->error($id);
+			$errors = $name===null ? $this->allErrors() : $this->error($name);
 			$html = sizeof($errors)>0 ? '<ul>' : '';
 			foreach($errors as $e)
 			{

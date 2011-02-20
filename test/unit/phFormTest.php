@@ -98,6 +98,7 @@ class phFormTest extends phTestCase
     	$form->bind(array(
     		'username'=>'the username',
     		'password'=>'the password',
+    		'noValue' => 'no value fill in',
     		'checkbox'=>array(2=>'3')
     	));
     	
@@ -127,6 +128,14 @@ class phFormTest extends phTestCase
     	
     	$this->assertEquals(sizeof($elements), 1, 'found the checkbox1');
     	$this->assertFalse(isset($elements[0]->attributes()->checked), 'the checkbox1 is not marked as checked');
+    	
+    	/*
+    	 * test fillin works for an element without a value attribute
+    	 */
+    	$rewrittenId = $form->getView()->id('noValue');
+    	$elements = $xml->xpath("//input[@value='no value fill in']");
+    	
+    	$this->assertEquals(sizeof($elements), 1, 'noValue had its values filled in');
     }
     
     /**
