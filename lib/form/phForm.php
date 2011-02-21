@@ -64,7 +64,7 @@ class phForm implements phFormViewElement, phData
 	/**
 	 * A handy method subclasses can override to do specific setup
 	 */
-	public function configure()
+	protected function configure()
 	{
 		
 	}
