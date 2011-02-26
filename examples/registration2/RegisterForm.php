@@ -31,7 +31,7 @@
  */
 class RegisterForm extends phForm
 {
-	protected function configure()
+	public function configure()
 	{
 		$this->fullname->setValidator(new phRequiredValidator(array(
 											phRequiredValidator::REQUIRED => 'Please enter your full name'

@@ -228,6 +228,17 @@ class phFormTest extends phTestCase
     	$this->assertEquals('C', $form->element()->single->getRawValue(), 'single has B selected');
     }
     
+    public function testFormDataItemToString()
+    {
+    	$i = new phFormDataItem('test');
+    	$i->bind('hello world');
+    	
+    	$this->assertEquals('hello world', (string)$i, 'phFormDataItem __toString works');
+    	
+    	$i->bind(null);
+    	$this->assertEquals('', (string)$i, 'phFormDataItem __toString works with nulls');
+    }
+    
     private function addForm($name)
     {
     	$this->form = new phForm('test', 'viewTestView');

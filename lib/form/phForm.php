@@ -57,20 +57,30 @@ class phForm implements phFormViewElement, phData
 		
 		$this->_view = new phFormView($template, $this);
 		$this->_elementFinder = new phElementFinder($this->_view);
-		
-		$this->configure();
 	}
 	
 	/**
-	 * A handy method subclasses can override to do specific setup
+	 * A handy method subclasses can override to do specific setup, it's called by the view
+	 * once the form is initialised.  This is so if you are using subforms the form isn't
+	 * initialised to early.
 	 */
-	protected function configure()
+	public function configure()
 	{
 		
 	}
 	
 	public function addForm(phForm $form)
 	{
+		/*
+		 * check the form has not been initialised, if it has then we
+		 * must throw an exception because the names will be written
+		 * wrong
+		 */
+		if($form->isInitialized())
+		{
+			throw new phFormException("The form {$form->getName()} has already been initialized.  You must add a subform straight after creation.");
+		}
+		
 		$name = $form->getName();
 		
 		if($this->entityExists($name))
@@ -82,7 +92,7 @@ class phForm implements phFormViewElement, phData
 		 * setup the name format for the sub form
 		 */
 		$form->setNameFormat(sprintf($this->getNameFormat(), $name) . '[%s]');
-		$form->setIdFormat(sprintf($this->getNameFormat(), $name) . '_%s');
+		$form->setIdFormat(sprintf($this->getIdFormat(), $name) . '_%s');
 		$this->_forms[$name] = $form;
 	}
 	
@@ -256,6 +266,15 @@ class phForm implements phFormViewElement, phData
 	public function getIdFormat()
 	{
 		return $this->_idFormat;
+	}
+	
+	/**
+	 * Returns true if the forms view has been initialised
+	 * @return boolean
+	 */
+	public function isInitialized()
+	{
+		return $this->_view->isInitialized();
 	}
 	
 	public function isValidId($id)

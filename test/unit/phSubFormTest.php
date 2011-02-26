@@ -42,6 +42,7 @@ class phSubFormTest extends phTestCase
 		
 		$this->form = new phTestForm('test', 'subFormTestView');
 		$addressForm = new phTestForm('address', 'addressTestView');
+		$this->addressForm = $addressForm;
 		$this->form->addForm($addressForm);
 	}
 	
@@ -49,6 +50,23 @@ class phSubFormTest extends phTestCase
 	{
 		$this->assertTrue($this->form->address->address instanceof phFormDataItem, 'Address on the subform is accessible');
 		$this->assertTrue($this->form->address->postal_code instanceof phFormDataItem, 'Postal code on the subform is accessible');
+	}
+	
+	public function testNameRewrite()
+	{
+		$this->assertEquals('test[%s]', $this->form->getNameFormat());
+		$this->assertEquals('test[address][%s]', $this->addressForm->getNameFormat());
+		
+		$contents = $this->form->__toString();
+		
+		$this->assertEquals(1, preg_match_all('/name="test\[first_name\]"/i', $contents, $matches), 'first name field has name set properly');
+		$this->assertEquals(1, preg_match_all('/name="test\[address\]\[address\]"/i', $contents, $matches), 'address field has name set properly');
+	}
+	
+	public function testIdRewrite()
+	{
+		$this->assertEquals('test_firstName', (string)$this->form->element()->firstName->getElement()->attributes()->id, 'first_name id rewritten properly');
+		$this->assertEquals('test_address_address', (string)$this->form->address->element()->address->getElement()->attributes()->id, 'address id rewritten properly');
 	}
 	
 	public function testSubFormFillin()
@@ -108,5 +126,16 @@ class phSubFormTest extends phTestCase
 		));
 		$this->form->bind(array());
 		$this->assertFalse($this->form->isValid(), 'Form is not valid');
+	}
+	
+	/**
+	 * Make sure an initialised form cannot be added as a sub-form
+	 * @expectedException phFormException
+	 */
+	public function testInitializedFormCannotBeAdded()
+	{
+		$form = new phForm('address2', 'addressTestView');
+		$form->address; // will trigger initialisation
+		$this->form->addForm($form);
 	}
 }

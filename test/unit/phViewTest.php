@@ -276,18 +276,29 @@ class phViewTest extends phTestCase
     public function testCrapHtml()
     {
     	$template = 'crapHtmlView';
-    	new phFormView($template, new phForm('test', $template));
+    	$view = new phFormView($template, new phForm('test', $template));
+    	$view->rubbish; // trigger the initialise
     }
     
     public function testErrorListing()
     {
-    	$username = $this->view->username;
+    	/*
+    	 * Had a bug with initialize and errorList together that resulted in
+    	 * a call to a method on a non object. So I'm replicating here, that
+    	 * for a form with a configure method on first pass no error is 
+    	 * rendered and that no exceptions/php errors happen
+    	 */
+    	$form = new phTestErrorsConfigureForm('test', $this->template);
+    	$content = (string)$form;
+    	$this->assertEquals(0, preg_match_all('/<ul>/', $content, $matches), 'no error lists rendered');
+    	
+    	$username = $form->username;
     	$username->setValidator(new phRequiredValidator(array(phRequiredValidator::REQUIRED=>'Field is required')));
     	$username->bind('');
     	$username->validate();
     	
-    	$errorList = $this->view->errorList('username');
-    	$this->assertTrue(strstr($errorList, 'Field is required')!==false, 'The required error was listed in the view');
+    	$content = (string)$form;
+    	$this->assertEquals(1, preg_match_all('/<li>Field is required<\/li>/', $content, $matches), 'Error rendered properly');
     }
     
     public function testGetElement()
@@ -342,6 +353,18 @@ class phFormViewTest extends phFormView
 	public function getDom()
 	{
 		return parent::getDom();
+	}
+}
+
+/**
+ * This is used in the testErrorListing method, see the
+ * comment there for why it is here
+ */
+class phTestErrorsConfigureForm extends phForm
+{
+	public function configure()
+	{
+		$this->username;
 	}
 }
 ?>

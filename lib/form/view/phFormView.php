@@ -85,8 +85,6 @@ class phFormView
 		{
 			throw new phFormException('Cannot find xhtml entities definitions');
 		}
-		
-		$this->_dom = $this->parseDom($template);
 	}
 	
 	protected function parseDom($view)
@@ -276,6 +274,15 @@ class phFormView
 	}
 	
 	/**
+	 * Has this view been initialised already?
+	 * @return boolean
+	 */
+	public function isInitialized()
+	{
+		return isset($this->_initialized);
+	}
+	
+	/**
 	 * Parses the view and sets up the data items and elements that appear there
 	 * 
 	 * @throws phFormException
@@ -287,12 +294,14 @@ class phFormView
 			return;
 		}
 		
+		$dom = $this->parseDom($this->_template);
+		
 		$this->_dataCollection = new phCompositeDataCollection();
 		
 		foreach($this->_names as $rewrittenName=>$name)
 		{
 			$nameInfo = new phNameInfo($name);
-			$elements = $this->getDom()->xpath("//*[@name='{$rewrittenName}']");
+			$elements = $dom->xpath("//*[@name='{$rewrittenName}']");
 			
 			if(!sizeof($elements))
 			{
@@ -322,7 +331,15 @@ class phFormView
 			}
 		}
 		
+		$this->_dom = $dom;
+		
 		$this->_initialized = true;
+		
+		/*
+		 * now we are initialised call the forms configure method so it
+		 * can do any setup like adding validators
+		 */
+		$this->_form->configure();
 	}
 	
 	/*

@@ -25,6 +25,7 @@
 <dl>
 	<dt>Username</dt>
 	<dd>
+		<?php echo $this->errorList('username'); ?>
 		<input 	type="text" 
 				id="<?php echo $this->id('username'); ?>" 
 				name="<?php echo $this->name('username'); ?>" 
@@ -32,6 +33,7 @@
 	</dd>
 	<dt>Password</dt>
 	<dd>
+		<?php echo $this->errorList('password'); ?>
 		<input 	type="password" 
 				id="<?php echo $this->id('password'); ?>" 
 				name="<?php echo $this->name('password'); ?>" 

@@ -193,4 +193,9 @@ class phFormDataItem implements phData
 	{
 		$this->_listeners[] = $l;
 	}
+	
+	public function __toString()
+	{
+		return (string)$this->_value;
+	}
 }
