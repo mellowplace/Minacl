@@ -38,7 +38,7 @@ class phViewTest extends phTestCase
 	
     public function testElementFinding()
     {
-        $this->assertTrue($this->view->username instanceof phFormDataItem, 'username exists and is a phFormDataItem');
+        $this->assertTrue($this->view->getData('username') instanceof phFormDataItem, 'username exists and is a phFormDataItem');
     }
     
     /**
@@ -46,7 +46,7 @@ class phViewTest extends phTestCase
      */
     public function testElementNotfound()
     {
-    	$this->view->elementDoesNotExist;
+    	$this->view->getData('elementDoesNotExist');
     }
     
 	/**
@@ -54,8 +54,8 @@ class phViewTest extends phTestCase
      */
     public function testIdRegisteredButNotInView()
     {
-    	$this->view->name('missing');
-    	$this->view->missing;
+    	$this->view->id('missing');
+    	$this->view->getData('missing');
     }
     
 	/**
@@ -64,7 +64,7 @@ class phViewTest extends phTestCase
     public function testNameRegisteredButNotInView()
     {
     	$this->view->name('missing');
-    	$this->view->missing;
+    	$this->view->getData('missing');
     }
     
     
@@ -75,7 +75,7 @@ class phViewTest extends phTestCase
     {
     	$template = 'invalidElementView';
     	$view = new phFormView($template, new phForm('test', $template));
-    	$view->invalid;
+    	$view->getData('invalid');
     }
     
     /**
@@ -101,7 +101,7 @@ class phViewTest extends phTestCase
     {
     	$template = 'invalidElementView';
     	$view = new phFormView($template, new phForm('test', $template));
-    	$view->noId;
+    	$view->getData('noId');
     }
     
     /**
@@ -256,7 +256,7 @@ class phViewTest extends phTestCase
     
     public function testSetValue()
     {
-    	$this->view->username->bind("Test123 ABC");
+    	$this->view->getData('username')->bind("Test123 ABC");
     	$html = $this->view->render();
     	
     	$this->assertContains('"Test123 ABC"', $html, 'The username value was set and rendered correctly');
@@ -264,8 +264,8 @@ class phViewTest extends phTestCase
     
 	public function testMagicGetReturnsSameInstance()
     {
-    	$username1 = $this->view->username;
-    	$username2 = $this->view->username;
+    	$username1 = $this->view->getData('username');
+    	$username2 = $this->view->getData('username');
     	
     	$this->assertSame($username1, $username2, '__get returns a reference and isn\'t creating a new object each time');
     }
@@ -277,7 +277,7 @@ class phViewTest extends phTestCase
     {
     	$template = 'crapHtmlView';
     	$view = new phFormView($template, new phForm('test', $template));
-    	$view->rubbish; // trigger the initialise
+    	$view->getData('rubbish'); // trigger the initialise
     }
     
     public function testErrorListing()
@@ -321,8 +321,8 @@ class phViewTest extends phTestCase
     public function testArrays()
     {
     	$view = new phFormView('arrayTestView', new phForm('test', 'arrayTestView'));
-    	$this->assertTrue($view->ids instanceof phArrayFormDataItem, 'The ids data is accessible and is an instance of phArrayFormDataItem');
-    	$this->assertEquals(sizeof($view->ids), 5, 'There are 5 elements in ids');
+    	$this->assertTrue($view->getData('ids') instanceof phArrayFormDataItem, 'The ids data is accessible and is an instance of phArrayFormDataItem');
+    	$this->assertEquals(sizeof($view->getData('ids')), 5, 'There are 5 elements in ids');
     }
     
     /**
@@ -345,6 +345,44 @@ class phViewTest extends phTestCase
     	$view = new phFormView('validMultipleElementsTestView', new phForm('test', 'validMultipleElementsTestView'));
     	// need to do something that triggers initialize
     	$view->getAllData();
+    }
+    
+    /**
+     * Tests that you can set your own variable on the view and when rendered
+     * that variable is accessible in the template
+     */
+    public function testSetCustomVariable()
+    {
+    	$view = new phFormView('customVariableView', new phForm('test', 'customVariableView'));
+    	$view->test = "This is testing minacle's variable functionality";
+    	$this->assertEquals("This is testing minacle's variable functionality", $view->test, 'View variable set properly');
+    	$out = $view->render();
+    	$this->assertEquals("This is testing minacle's variable functionality", $view->render(), 'Variable accessible in the view template');
+    }
+    
+    /**
+     * tests that we cannot start custom variables with '_'
+     * @expectedException phFormException
+     */
+    public function testReservedVariable()
+    {
+    	$this->view->_notOk = true;
+    }
+    
+    /**
+     * Test that trying to access a non-existant property generates an error
+     * @expectedException PHPUnit_Framework_Error
+     */
+    public function testNonExistantCustomVariable()
+    {
+    	$this->view->doesNotExist;
+    }
+    
+    public function testHtmlEntities()
+    {
+    	$view = new phFormView('htmlEntityView', new phForm('test', 'htmlEntityView'));
+    	$view->render();
+    	$this->assertTrue(true, 'no errors on parsing some html entities');
     }
 }
 

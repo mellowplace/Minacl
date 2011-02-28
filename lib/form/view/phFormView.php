@@ -36,6 +36,10 @@ class phFormView
 	 * @var phForm
 	 */
 	protected $_form = null;
+	/**
+	 * The template this view will render
+	 * @var string
+	 */
 	protected $_template = null;
 	/**
 	 * Dom handler for the html in the template
@@ -60,7 +64,10 @@ class phFormView
 	 * @var array
 	 */
 	protected $_types = array();
-	
+	/**
+	 * An array holding all the elements on the view
+	 * @var array
+	 */
 	protected $_elements = array();
 	/**
 	 * Holds all the phFormDataItem objects on the view
@@ -74,6 +81,15 @@ class phFormView
 	 * @var string
 	 */
 	protected $_docTypeDecl = '';
+	/**
+	 * Holds any custom vars set for the view
+	 * @var array
+	 */
+	protected $_customVars = array();
+	/**
+	 * @var bool true if the view has been initialised
+	 */
+	protected $_initialized = false;
 	
 	public function __construct($template, phForm $form)
 	{
@@ -87,8 +103,20 @@ class phFormView
 		}
 	}
 	
-	protected function parseDom($view)
+	protected function parseDom($_view)
 	{
+		/*
+		 * All the variables in this method start with _ (underscore)
+		 * so they don't conflict with any custom vars that need to be
+		 * passed through to the view (which we will build up now)
+		 */
+		foreach($this->_customVars as $_name=>$_value)
+		{
+			${$_name} = $_value;
+		}
+		/*
+		 * Now include the template and catch it's output
+		 */
 		ob_start();
 		echo "<!DOCTYPE phformdoc [\n";
 		/*
@@ -97,21 +125,21 @@ class phFormView
 		 * like &nbsp;
 		 */
 		echo $this->_docTypeDecl;
-		echo "\n]>\n";
-		echo "<phformdoc>\n";
-		require phViewLoader::getInstance()->getViewFileOrStream($view);
-		echo "</phformdoc>\n";
+		echo "\n]>";
+		echo "<phformdoc>";
+		require phViewLoader::getInstance()->getViewFileOrStream($_view);
+		echo "</phformdoc>";
 		
-		$xml = ob_get_clean();
+		$_xml = ob_get_clean();
 		
 		try 
 		{
-			$dom = new SimpleXMLElement($xml);
-			return $dom;
+			$_dom = new SimpleXMLElement($_xml);
+			return $_dom;
 		}
-		catch(Exception $e)
+		catch(Exception $_e)
 		{
-			throw new phFormException("Unparsable html in view '{$view}', parser said: {$e->getMessage()}");
+			throw new phFormException("Unparsable html in view '{$_view}', parser said: {$_e->getMessage()}");
 		}
 	}
 	
@@ -129,6 +157,7 @@ class phFormView
 	 */
 	public function render()
 	{
+		$this->initialize();
 		/*
 		 * parse again so any errors are drawn, then for each element,
 		 * replace with our instance
@@ -165,8 +194,13 @@ class phFormView
 		 * needed to create a dom from the view but have no use in being returned
 		 */
 		$xml = str_replace('<?xml version="1.0"?>', '', $xml);
-		$xml = str_replace('<phformdoc>', '', $xml);
-		$xml = str_replace('</phformdoc>', '', $xml);
+		/*
+		 * trim the xml here as SimpleXmlElement seems to add on new lines
+		 * at the beginning and end
+		 */
+		$xml = trim($xml);
+		$xml = str_replace("<phformdoc>", '', $xml);
+		$xml = str_replace("</phformdoc>", '', $xml);
 		/*
 		 * replace any phform tags with their relevant subform output
 		 */
@@ -192,7 +226,7 @@ class phFormView
 	 * 
 	 * @param string $name
 	 */
-	public function __get($name)
+	public function getData($name)
 	{
 		$this->initialize();
 		
@@ -279,7 +313,7 @@ class phFormView
 	 */
 	public function isInitialized()
 	{
-		return isset($this->_initialized);
+		return $this->_initialized;
 	}
 	
 	/**
@@ -289,10 +323,17 @@ class phFormView
 	 */
 	protected function initialize()
 	{
-		if(isset($this->_initialized))
+		if($this->_initialized)
 		{
 			return;
 		}
+		
+		/*
+		 * before initialising call the forms
+		 * preInitialize method so it can setup
+		 * any custom vars for the view
+		 */
+		$this->_form->preInitialize();
 		
 		$dom = $this->parseDom($this->_template);
 		
@@ -336,10 +377,10 @@ class phFormView
 		$this->_initialized = true;
 		
 		/*
-		 * now we are initialised call the forms configure method so it
+		 * now we are initialised call the forms postInitialize method so it
 		 * can do any setup like adding validators
 		 */
-		$this->_form->configure();
+		$this->_form->postInitialize();
 	}
 	
 	/*
@@ -484,7 +525,7 @@ class phFormView
 		
 		if($this->getDom())
 		{
-			$e = $this->$name;
+			$e = $this->getData($name);
 			$errors = $e->getErrors();
 		}
 		
@@ -527,5 +568,33 @@ class phFormView
 			
 			return $html;
 		}
+	}
+	
+	public function __set($name, $value)
+	{
+		if(substr($name, 0, 1)==='_')
+		{
+			throw new phFormException("Invalid custom view variable '{$name}'.  Names starting with '_' are reserved.");
+		}
+		
+		$this->_customVars[$name] = $value;
+	}
+	
+	public function __get($name)
+	{
+		if (array_key_exists($name, $this->_customVars))
+		{
+			return $this->_customVars[$name];
+		}
+
+		$trace = debug_backtrace();
+		trigger_error(
+            'Undefined property in view: ' . $name .
+            ' in ' . $trace[0]['file'] .
+            ' on line ' . $trace[0]['line'],
+			E_USER_NOTICE
+		);
+		
+		return null;
 	}
 }

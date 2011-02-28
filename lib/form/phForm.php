@@ -30,6 +30,9 @@
  */
 class phForm implements phFormViewElement, phData
 {
+	/**
+	 * @var phFormView
+	 */
 	protected $_view;
 	protected $_forms = array();
 	protected $_bound = false;
@@ -60,11 +63,20 @@ class phForm implements phFormViewElement, phData
 	}
 	
 	/**
+	 * A handy method, called by the view prior to initialisation, that allows the
+	 * form so setup any custom vars that the view might need to render 
+	 */
+	public function preInitialize()
+	{
+		
+	}
+	
+	/**
 	 * A handy method subclasses can override to do specific setup, it's called by the view
 	 * once the form is initialised.  This is so if you are using subforms the form isn't
 	 * initialised to early.
 	 */
-	public function configure()
+	public function postInitialize()
 	{
 		
 	}
@@ -284,7 +296,7 @@ class phForm implements phFormViewElement, phData
 	
 	public function __get($name)
 	{
-		return $this->_view->$name;
+		return $this->_view->getData($name);
 	}
 	
 	/**

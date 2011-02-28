@@ -239,11 +239,37 @@ class phFormTest extends phTestCase
     	$this->assertEquals('', (string)$i, 'phFormDataItem __toString works with nulls');
     }
     
+    /**
+     * Test that the preInitialize and postInitialize methods are called
+     */
+    public function testPreAndPostInitialize()
+    {
+    	$form = new phTestInitializeForm('test', 'prePostInitializeView');
+    	$content = $form->__toString();
+    	$found = strpos($content, '<strong>Minacl is doing what it should!</strong>');
+    	
+    	$this->assertTrue($found!==false, 'preInitialize is working');
+    	$this->assertEquals('testing 123', $form->username->getValue(), 'post initialize is working');
+    }
+    
     private function addForm($name)
     {
     	$this->form = new phForm('test', 'viewTestView');
     	$this->addedForm = new phForm($name, 'viewTestView');
         $this->form->addForm($this->addedForm);
     }
+}
+
+class phTestInitializeForm extends phForm
+{
+	public function preInitialize()
+	{
+		$this->_view->test = 'Minacl is doing what it should!';
+	}
+	
+	public function postInitialize()
+	{
+		$this->username->bind('testing 123');
+	}
 }
 ?>
