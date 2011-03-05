@@ -63,7 +63,7 @@ endforeach;
 </select>&nbsp;
 <select id="<?php echo $this->id('hour'); ?>" name="<?php echo $this->name('hour'); ?>">
 <?php 
-for($h=1; $h<=24; $h++):
+for($h=0; $h<=23; $h++):
 	$hs = $h;
 	if(strlen($hs)==1)
 	{

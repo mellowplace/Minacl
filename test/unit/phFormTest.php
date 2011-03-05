@@ -87,6 +87,14 @@ class phFormTest extends phTestCase
     	));
     	
     	$this->assertTrue($form->isValid(), 'form is correctly valid');
+    	
+    	/*
+    	 * change the value of username directly and check
+    	 * that getValue on the form returns the values of
+    	 * its data items and not what was bound to it
+    	 */
+    	$form->username->bind('new');
+    	$this->assertEquals(array('username'=>'new', 'password'=>'pass'), $form->getValue(), 'getValue returns correct data');
     }
     
     /**

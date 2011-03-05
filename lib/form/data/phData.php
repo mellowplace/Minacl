@@ -46,4 +46,23 @@ interface phData extends phValidatable
 	 * clears any bound values
 	 */
 	public function clear();
+	
+	/**
+	 * Gets the value of the data
+	 * 
+	 * @return mixed
+	 */
+	public function getValue();
+	
+	/**
+	 * Set a validator to validate what is bound to this object
+	 * 
+	 * @param phValidator $validator
+	 */
+	public function setValidator(phValidator $validator);
+	
+	/**
+	 * @return phValidator
+	 */
+	public function getValidator();
 }

@@ -46,6 +46,11 @@ class phForm implements phFormViewElement, phData
 	 * @var array
 	 */
 	protected $_errors = array();
+	/**
+	 * Holds an optional validator to validate this form with
+	 * @var phValidator
+	 */
+	protected $_validator = null;
 	
 	public function __construct($name, $template)
 	{
@@ -156,6 +161,30 @@ class phForm implements phFormViewElement, phData
 		$this->setBound(true);
 	}
 	
+	/**
+	 * (non-PHPdoc)
+	 * @see lib/form/data/phData::getValue()
+	 */
+	public function getValue()
+	{
+		/*
+		 * build the values up from what we have in our
+		 * sub forms and data items
+		 */
+		$items = $this->_view->getAllData();
+		$value = array();
+		foreach($items as $i)
+		{
+			$value[$i->getName()] = $i->getValue();
+		}
+		
+		return $value;
+	}
+	
+	/**
+	 * (non-PHPdoc)
+	 * @see lib/form/phValidatable::validate()
+	 */
 	public function validate()
 	{
 		$this->_valid = true;
@@ -169,7 +198,35 @@ class phForm implements phFormViewElement, phData
 			}
 		}
 		
+		/*
+		 * if this form itself has a validator, execute it
+		 * and check it too passes
+		 */
+		$v = $this->getValidator();
+		if($v && !$v->validate($this->getValue(), $this))
+		{
+			$this->_valid = false;
+		}
+		
 		return $this->_valid;
+	}
+	
+	/**
+	 * (non-PHPdoc)
+	 * @see lib/form/data/phData::setValidator()
+	 */
+	public function setValidator(phValidator $validator)
+	{
+		$this->_validator = $validator;
+	}
+	
+	/**
+	 * (non-PHPdoc)
+	 * @see lib/form/data/phData::getValidator()
+	 */
+	public function getValidator()
+	{
+		return $this->_validator;
 	}
 	
 	

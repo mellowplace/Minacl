@@ -54,6 +54,14 @@ class phDateTimeExampleTest extends phTestCase
 		$this->dateTimeForm->setCurrentDateTime('2000-01-01 01:01:01');
 		
 		$this->assertEquals(strtotime('2000-01-01 01:01:01'), $this->dateTimeForm->getCurrentDateTime(), 'time has been set properly');
+		
+		$this->assertEquals(strtotime('2000-01-01 01:01:01'), $this->dateTimeForm->getValue(), 'forms getValue method also returns the timestamp');
+	}
+	
+	public function testGetCurrentDateTimeWhenNothingSet()
+	{
+		$this->assertEquals(null, $this->dateTimeForm->getCurrentDateTime(), 'time is null when nothing is set');
+		$this->assertEquals(null, $this->dateTimeForm->getValue(), 'forms getValue method also returns null');
 	}
 	
 	public function testSelectsCorrectDate()
@@ -65,21 +73,20 @@ class phDateTimeExampleTest extends phTestCase
 		 * (as we are not including the html entity definitions here)
 		 */
 		$xml = str_replace('&nbsp;', '', $xml);
-		echo $xml;
 		$dom = new SimpleXmlElement($xml);
 		
-		$year = $dom->xpath("//select[id='test_year']/option[selected='selected']");
+		$year = $dom->xpath("//select[@id='test_year']/option[@selected='selected']");
 		$this->assertEquals('2000', (string)$year[0], 'Selected year is 2000');
-		$month = $dom->xpath("//select[id='test_month']/option[selected='selected']");
+		$month = $dom->xpath("//select[@id='test_month']/option[@selected='selected']");
 		$this->assertEquals('January', (string)$month[0], 'Selected month is January');
-		$day = $dom->xpath("//select[id='test_day']/option[selected='selected']");
+		$day = $dom->xpath("//select[@id='test_day']/option[@selected='selected']");
 		$this->assertEquals('01', (string)$day[0], 'Selected day is 01');
 		
-		$hour = $dom->xpath("//select[id='test_hour']/option[selected='selected']");
+		$hour = $dom->xpath("//select[@id='test_hour']/option[@selected='selected']");
 		$this->assertEquals('01', (string)$hour[0], 'Selected hour is 01');
-		$minutes = $dom->xpath("//select[id='test_minute']/option[selected='selected']");
+		$minutes = $dom->xpath("//select[@id='test_minute']/option[@selected='selected']");
 		$this->assertEquals('01', (string)$minutes[0], 'Selected minutes is 01');
-		$seconds = $dom->xpath("//select[id='test_second']/option[selected='selected']");
+		$seconds = $dom->xpath("//select[@id='test_second']/option[@selected='selected']");
 		$this->assertEquals('01', (string)$seconds[0], 'Selected seconds is 01');
 	}
 }

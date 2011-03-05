@@ -138,4 +138,18 @@ class phSubFormTest extends phTestCase
 		$form->address; // will trigger initialisation
 		$this->form->addForm($form);
 	}
+	
+	public function testGetValueReturnsSubFormInfoAlso()
+	{
+		$data = array(
+			'first_name'=>'Rob',
+			'address'=>array(
+				'address'=>'A Street',
+				'postal_code'=>'P11'
+			)
+		);
+		$this->form->bind($data);
+		
+		$this->assertEquals($data, $this->form->getValue(), 'Subform values are included in getValue on master form');
+	}
 }

@@ -38,18 +38,32 @@ class phValidatorTest extends phTestCase
 	public function testFormFail()
 	{
 		$this->form->username->setValidator(new TestValidatorFail('required'));
-		$this->form->bind(array(
+		$this->form->bindAndValidate(array(
 			'username'=>'fail',
 			'password'=>'fail'
 		));
 		$this->assertFalse($this->form->isValid(), 'Form is correctly not valid');
 	}
 	
+	/**
+	 * Like the test above but makes sure that the forms validator fails
+	 */
+	public function testFormValidatorFail()
+	{
+		$this->form->setValidator(new TestValidatorFail('The form failed'));
+		$this->form->bindAndValidate(array(
+			'username'=>'fail',
+			'password'=>'fail'
+		));
+		$this->assertFalse($this->form->isValid(), 'Form is correctly not valid');
+		$this->assertEquals(array('The form failed'), $this->extractErrorMessages($this->form->getErrors()), 'Error message correctly set');
+	}
+	
 	public function testEmptyPostFormFail()
 	{
 		$this->form->username->setValidator(new TestValidatorFail('required'));
 		$this->form->username->bind('');
-		$this->form->bind(array());
+		$this->form->bindAndValidate(array());
 		$this->assertFalse($this->form->isValid(), 'Form is correctly not valid');
 	}
 	
@@ -105,12 +119,25 @@ class phValidatorTest extends phTestCase
 		$this->assertTrue($this->form->isValid(), 'Form is correctly valid');
 	}
 	
+	/**
+	 * Like the above test but also checks the validator passes
+	 */
+	public function testFormValidatorPass()
+	{
+		$this->form->setValidator(new TestValidatorPass());
+		$this->form->bindAndValidate(array(
+			'username'=>'pass',
+			'password'=>'pass'
+		));
+		$this->assertTrue($this->form->isValid(), 'Form is correctly valid');
+	}
+	
 	public function testRequiredValidatorFail()
 	{
 		$this->form->username->setValidator(new phRequiredValidator(
 			array(phRequiredValidator::REQUIRED=>'Username is required')
 		));
-		$this->form->bind(array(
+		$this->form->bindAndValidate(array(
 			'username'=>'',
 			'password'=>'fail'
 		));
@@ -126,7 +153,7 @@ class phValidatorTest extends phTestCase
 		$this->form->username->setValidator(new phRequiredValidator(array(
 			phRequiredValidator::REQUIRED=>"Username is required"
 		)));
-		$this->form->bind(array(
+		$this->form->bindAndValidate(array(
 			'username'=>'here',
 			'password'=>'fail'
 		));
@@ -212,6 +239,22 @@ class phValidatorTest extends phTestCase
 		$compareVal = new phCompareValidator($confirmPassword, phCompareValidator::GREATER_EQUAL);
 		$this->assertFalse($compareVal->validate(1, $password), 'The validator is correctly not valid');
 		$this->assertTrue($compareVal->validate(5, $password), 'The validator is correctly valid');
+		
+		/*
+		 * test scalar values can be used
+		 */
+		$compareVal = new phCompareValidator(1, phCompareValidator::EQUAL);
+		$this->assertFalse($compareVal->validate(2, $password), 'The validator is correctly not valid');
+		$this->assertTrue($compareVal->validate(1, $password), 'The validator is correctly valid');
+	}
+	
+	/**
+	 * Check the compare validator doesn't accept a non scalar
+	 * @expectedException phValidatorException
+	 */
+	public function testCompareValidatorNonScalar()
+	{
+		$compareVal = new phCompareValidator(array('moo'), phCompareValidator::EQUAL);
 	}
 	
 	public function testValidatorLogic()

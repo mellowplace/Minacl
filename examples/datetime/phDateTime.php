@@ -77,6 +77,11 @@ class phDateTime extends phForm
 		}
 		
 		$this->element()->year->setRawValue(date('Y', $dateTime));
+		$this->element()->month->setRawValue(date('m', $dateTime));
+		$this->element()->day->setRawValue(date('d', $dateTime));
+		$this->element()->hour->setRawValue(date('H', $dateTime));
+		$this->element()->minute->setRawValue(date('i', $dateTime));
+		$this->element()->second->setRawValue(date('s', $dateTime));
 	}
 	
 	/**
@@ -87,6 +92,22 @@ class phDateTime extends phForm
 	 */
 	public function getCurrentDateTime()
 	{
+		$year = $this->element()->year->getRawValue();
+		$month = $this->element()->month->getRawValue();
+		$day = $this->element()->day->getRawValue();
+		$hour = $this->element()->hour->getRawValue();
+		$minute = $this->element()->minute->getRawValue();
+		$second = $this->element()->second->getRawValue();
 		
+		return strtotime("{$year}-{$month}-{$day} {$hour}:{$minute}:{$second}");
+	}
+	
+	/**
+	 * (non-PHPdoc)
+	 * @see lib/form/phForm::getValue()
+	 */
+	public function getValue()
+	{
+		return $this->getCurrentDateTime();
 	}
 }

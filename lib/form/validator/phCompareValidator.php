@@ -53,12 +53,17 @@ class phCompareValidator extends phValidatorCommon
 	/**
 	 * Compares a value with a data field using an operator.
 	 * 
-	 * @param $compareWith phFormDataItem
+	 * @param $compareWith phData|mixed can compare to another field or a scalar value
 	 * @param $operator int the operator to compare with, e.g. =,!=,<,>
 	 * @param $errors array
 	 */
-	public function __construct(phFormDataItem $compareWith, $operator, $errors = array())
+	public function __construct($compareWith, $operator, $errors = array())
 	{
+		if(!($compareWith instanceof phData) && !is_scalar($compareWith))
+		{
+			throw new phValidatorException('I can only compare phData instances or scalar values');
+		}
+		
 		$this->_compareWith = $compareWith;
 		$this->_operator = $operator;
 		
@@ -71,7 +76,7 @@ class phCompareValidator extends phValidatorCommon
 	 */
 	public function validate($value, phValidatable $errors)
 	{
-		$compareValue = $this->_compareWith->getValue();
+		$compareValue = $this->_compareWith instanceof phData ? $this->_compareWith->getValue() : $this->_compareWith;
 		$valid = false;
 		
 		switch($this->_operator)

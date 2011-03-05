@@ -76,9 +76,8 @@ class phFormDataItem implements phData
 	}
 	
 	/**
-	 * Set a validator to validate what is bound to this object
-	 * 
-	 * @param phValidator $validator
+	 * (non-PHPdoc)
+	 * @see lib/form/data/phData::setValidator()
 	 */
 	public function setValidator(phValidator $validator)
 	{
@@ -86,7 +85,8 @@ class phFormDataItem implements phData
 	}
 	
 	/**
-	 * @return phValidator
+	 * (non-PHPdoc)
+	 * @see lib/form/data/phData::getValidator()
 	 */
 	public function getValidator()
 	{
@@ -156,9 +156,8 @@ class phFormDataItem implements phData
 	}
 	
 	/**
-	 * Gets cleaned values for the element
-	 * 
-	 * @return mixed
+	 * (non-PHPdoc)
+	 * @see lib/form/data/phData::getValue()
 	 */
 	public function getValue()
 	{
