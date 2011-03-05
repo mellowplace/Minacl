@@ -83,22 +83,22 @@ class phCompareValidator extends phValidatorCommon
 		{
 			case self::EQUAL:
 				$valid = $value==$compareValue;
-			break;
+				break;
 			case self::NOT_EQUAL:
 				$valid = $value!=$compareValue;
-			break;
+				break;
 			case self::GREATER_THAN:
 				$valid = $value>$compareValue;
-			break;
+				break;
 			case self::GREATER_EQUAL:
 				$valid = $value>=$compareValue;
-			break;
+				break;
 			case self::LESS_THAN:
 				$valid = $value<$compareValue;
-			break;
+				break;
 			case self::LESS_EQUAL:
 				$valid = $value<=$compareValue;
-			break;
+				break;
 		}
 		
 		if(!$valid)

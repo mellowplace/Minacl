@@ -29,7 +29,7 @@
  * @subpackage element
  */
 class phCheckboxElement extends phCheckableElement
-{	
+{
 	/**
 	 * (non-PHPdoc)
 	 * @see lib/form/phDataChangeListener::dataChanged()

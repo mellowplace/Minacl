@@ -32,8 +32,8 @@ class phValidatorLogic implements phValidator
 {
 	protected $_validators = array();
 	
-	protected static $_AND = 1;
-	protected static $_OR = 2;
+	const _AND = 1;
+	const _OR = 2;
 	
 	public function __construct(phValidator $validator)
 	{
@@ -58,12 +58,11 @@ class phValidatorLogic implements phValidator
 			{
 				$logic = $v[1];
 				
-				if($logic==self::$_AND)
+				if($logic==self::_AND)
 				{
 					$valid .= ' && ' . ($v[0]->validate($value, $errors) ? 'true' : 'false');
 				}
-				else
-				if($logic==self::$_OR)
+				else if($logic==self::_OR)
 				{
 					$valid .= ' || ' . ($v[0]->validate($value, $errors) ? 'true' : 'false');
 				}
@@ -81,7 +80,7 @@ class phValidatorLogic implements phValidator
 	 */
 	public function and_(phValidator $validator)
 	{
-		$this->_validators[] = array($validator, self::$_AND);
+		$this->_validators[] = array($validator, self::_AND);
 		return $this;
 	}
 	
@@ -92,7 +91,7 @@ class phValidatorLogic implements phValidator
 	 */
 	public function or_(phValidator $validator)
 	{
-		$this->_validators[] = array($validator, self::$_OR);
+		$this->_validators[] = array($validator, self::_OR);
 		return $this;
 	}
 }

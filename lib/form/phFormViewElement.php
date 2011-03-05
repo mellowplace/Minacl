@@ -28,7 +28,7 @@
  * @package phform
  */
 interface phFormViewElement
-{	
+{
 	/**
 	 * Creates an instance of a phFormDataCollection object that can
 	 * create and store the implementing classes instances

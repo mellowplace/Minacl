@@ -31,7 +31,7 @@
  * @subpackage data.collection
  */
 abstract class phSimpleArrayDataCollection extends phSimpleDataCollection
-{	
+{
 	/**
 	 * (non-PHPdoc)
 	 * @see lib/form/data/collection/phSimpleDataCollection::getOrCreateArrayDataType()

@@ -30,7 +30,7 @@
  * @subpackage data
  */
 class phArrayFormDataItem extends phFormDataItem implements ArrayAccess, Countable
-{	
+{
 	protected $_autoKey = null;
 	
 	protected $_arrayTemplate = array();
@@ -64,7 +64,7 @@ class phArrayFormDataItem extends phFormDataItem implements ArrayAccess, Countab
 		 * but we still need to bind nothing to the dataitems so
 		 * the elements can uncheck etc)
 		 */
-		foreach ($this->_arrayTemplate as $k=>$v)
+		foreach($this->_arrayTemplate as $k=>$v)
 		{
 			if(array_key_exists($k, $values))
 			{

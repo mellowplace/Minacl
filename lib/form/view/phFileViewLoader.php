@@ -33,11 +33,11 @@
  */
 class phFileViewLoader extends phViewLoader
 {
-	private $viewsFolder = null;
+	private $_viewsFolder = null;
 	
 	public function __construct($viewsFolder)
 	{
-		$this->viewsFolder = $viewsFolder;
+		$this->_viewsFolder = $viewsFolder;
 	}
 	
 	/**
@@ -48,7 +48,7 @@ class phFileViewLoader extends phViewLoader
 	{
 		$info = $this->getFileAndDir($view);
 		
-		$dir = realpath($this->viewsFolder . DIRECTORY_SEPARATOR . $info['dir']);
+		$dir = realpath($this->_viewsFolder . DIRECTORY_SEPARATOR . $info['dir']);
 		$file = $dir . DIRECTORY_SEPARATOR . $info['file'];
 		if($dir===false || !file_exists($file))
 		{

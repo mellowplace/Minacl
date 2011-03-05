@@ -30,7 +30,7 @@
  * @subpackage data.collection
  */
 class phSimpleDataCollection extends phAbstractFindingCollection
-{	
+{
 	/**
 	 * (non-PHPdoc)
 	 * @see lib/form/data/collection/phDataCollection::register()

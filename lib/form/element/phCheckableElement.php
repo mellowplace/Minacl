@@ -68,7 +68,7 @@ class phCheckableElement extends phInputElement
 	{
 		$e = $this->getElement();
 		unset($e->attributes()->checked);
-		$e->addAttribute('checked','checked');
+		$e->addAttribute('checked', 'checked');
 	}
 	
 	/**

@@ -46,9 +46,9 @@ class phLoader
 	 */
 	public static function autoloadClass($className)
 	{
-		if(isset(self::$classes[$className]))
+		if(isset(self::$_classes[$className]))
 		{
-			require_once realpath(dirname(__FILE__)) . DIRECTORY_SEPARATOR . self::$classes[$className];
+			require_once realpath(dirname(__FILE__)) . DIRECTORY_SEPARATOR . self::$_classes[$className];
 		}
 	}
 	
@@ -59,7 +59,7 @@ class phLoader
 	 * 
 	 * @var array
 	 */
-	private static $classes = array(
+	private static $_classes = array(
 		'phForm'						=> 'phForm.php',
 		'phFormViewElement'				=> 'phFormViewElement.php',
 		'phFormException'				=> 'phFormException.php',

@@ -34,10 +34,10 @@
 class phCompositeDataCollection
 {
 	protected $_collections = array();
-	
+
 	/**
 	 * Registers an element with the composite
-	 * 
+	 *
 	 * @param phFormViewElement $element
 	 * @param phNameInfo $name
 	 */
@@ -46,9 +46,9 @@ class phCompositeDataCollection
 		$elementClass = get_class($element);
 		if(!array_key_exists($elementClass, $this->_collections))
 		{
-			$this->_collections[$elementClass] = $element->createDataCollection(); 
+			$this->_collections[$elementClass] = $element->createDataCollection();
 		}
-		
+
 		/*
 		 * make sure the element is valid, call validate for each of
 		 * our registered collections
@@ -57,11 +57,11 @@ class phCompositeDataCollection
 		{
 			$c->validate($element, $name, $this);
 		}
-		
+
 		$collection = $this->_collections[$elementClass];
 		$collection->register($element, $name, $this);
 	}
-	
+
 	/**
 	 * @return Iterator an iterator to go through all the data items in the collection
 	 */
@@ -72,13 +72,13 @@ class phCompositeDataCollection
 		{
 			$i->addIterator($c->createIterator());
 		}
-		
+
 		return $i;
 	}
-	
+
 	/**
 	 * Finds a phData instance in the collection
-	 * 
+	 *
 	 * @param string $name the name by which the phData instance is identified
 	 * @return phData the phData instance identified by $name
 	 */
@@ -92,27 +92,27 @@ class phCompositeDataCollection
 				return $dataItem;
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	/**
 	 * Gets a phFormDataCollection instance who is the owner of the data item defined
 	 * by $name
-	 * 
+	 *
 	 * @param string $name
 	 * @return phFormDataCollection the collection who owns the data item defined by $name
 	 */
 	public function getOwner($name)
 	{
-		
+
 	}
 }
 
 /**
  * Iterator alot like the SPL MultipleIterator (>=5.3 only though I think)
  * just iterates over multiple Iterator instances
- * 
+ *
  * @author Rob Graham <htmlforms@mellowplace.com>
  * @package phform
  * @subpackage data.collection
@@ -122,53 +122,53 @@ class phMultipleIterator implements Iterator
 	protected $_iterators = array();
 	protected $_iteratorIndex = null;
 	protected $_currentIterator = null;
-	
+
 	public function addIterator(Iterator $i)
 	{
 		$this->_iterators[] = $i;
 	}
-	
-	 public function current()
-	 {
-	 	if($this->_currentIterator!==null)
-	 	{
-	 		return $this->_currentIterator->current();
-	 	}
-	 }
 
-	 public function key()
-	 {
-	 	if($this->_currentIterator!==null)
-	 	{
-	 		return $this->_currentIterator->key();
-	 	}
-	 }
+	public function current()
+	{
+		if($this->_currentIterator!==null)
+		{
+			return $this->_currentIterator->current();
+		}
+	}
 
-	 public function next()
-	 {
-	 	if($this->_currentIterator!==null)
-	 	{
-	 		$this->_currentIterator->next();
-	 		if(!$this->_currentIterator->valid() && $this->_iteratorIndex<(sizeof($this->_iterators)-1))
-	 		{
-	 			$this->_iteratorIndex++;
-	 			$this->_currentIterator = $this->_iterators[$this->_iteratorIndex];
-	 			$this->_currentIterator->rewind();
-	 		}
-	 	}
-	 }
-	 
-	 public function rewind()
-	 {
-	 	if(sizeof($this->_iterators)>0)
-	 	{
-		 	$this->_currentIterator = $this->_iterators[0];
-		 	$this->_currentIterator->rewind();
-	 	}
-	 }
-	 
-	 public function valid()
-	 {
-	 	return ($this->_currentIterator!==null && $this->_currentIterator->valid());
-	 }
+	public function key()
+	{
+		if($this->_currentIterator!==null)
+		{
+			return $this->_currentIterator->key();
+		}
+	}
+
+	public function next()
+	{
+		if($this->_currentIterator!==null)
+		{
+			$this->_currentIterator->next();
+			if(!$this->_currentIterator->valid() && $this->_iteratorIndex<(sizeof($this->_iterators)-1))
+			{
+				$this->_iteratorIndex++;
+				$this->_currentIterator = $this->_iterators[$this->_iteratorIndex];
+				$this->_currentIterator->rewind();
+			}
+		}
+	}
+
+	public function rewind()
+	{
+		if(sizeof($this->_iterators)>0)
+		{
+			$this->_currentIterator = $this->_iterators[0];
+			$this->_currentIterator->rewind();
+		}
+	}
+
+	public function valid()
+	{
+		return ($this->_currentIterator!==null && $this->_currentIterator->valid());
+	}
 }

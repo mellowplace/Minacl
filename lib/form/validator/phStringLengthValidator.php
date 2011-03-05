@@ -33,7 +33,8 @@ class phStringLengthValidator extends phValidatorCommon
 {
 	const INVALID = 1;
 	
-	private $_min = null, $_max = null;
+	private $_min = null;
+	private $_max = null;
 	
 	public function validate($value, phValidatable $errors)
 	{

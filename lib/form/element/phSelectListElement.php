@@ -92,7 +92,7 @@ class phSelectListElement extends phSimpleXmlElement
 			{
 				if(in_array($oVal, $value))
 				{
-					$o->addAttribute('selected','selected');
+					$o->addAttribute('selected', 'selected');
 				}
 				else
 				{
@@ -103,7 +103,7 @@ class phSelectListElement extends phSimpleXmlElement
 			{
 				if($oVal==$value)
 				{
-					$o->addAttribute('selected','selected');
+					$o->addAttribute('selected', 'selected');
 				}
 				else 
 				{

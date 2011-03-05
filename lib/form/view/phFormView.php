@@ -562,7 +562,7 @@ class phFormView
 			$html = sizeof($errors)>0 ? '<ul>' : '';
 			foreach($errors as $e)
 			{
-				$html .= '<li>'.htmlentities($e,ENT_COMPAT,'utf-8').'</li>';
+				$html .= '<li>'.htmlentities($e, ENT_COMPAT, 'utf-8').'</li>';
 			}
 			$html .= sizeof($errors)>0 ? '</ul>' : '';
 			
@@ -582,7 +582,7 @@ class phFormView
 	
 	public function __get($name)
 	{
-		if (array_key_exists($name, $this->_customVars))
+		if(array_key_exists($name, $this->_customVars))
 		{
 			return $this->_customVars[$name];
 		}

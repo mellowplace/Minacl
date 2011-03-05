@@ -34,7 +34,7 @@ abstract class phViewLoader
 	/**
 	 * @var phViewLoader
 	 */
-	private static $instance = null;
+	private static $_instance = null;
 	
 	/**
 	 * Gets the view loader
@@ -42,17 +42,17 @@ abstract class phViewLoader
 	 */
 	public static function getInstance()
 	{
-		if(self::$instance===null)
+		if(self::$_instance===null)
 		{
 			throw new phFormException('No view loader instance has been set. You\'ll probably want to use a phFileViewLoader instance.');
 		}
 		
-		return self::$instance;
+		return self::$_instance;
 	}
 	
 	public static function setInstance(phViewLoader $instance)
 	{
-		self::$instance = $instance;
+		self::$_instance = $instance;
 	}
 	
 	/**
