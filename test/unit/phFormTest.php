@@ -260,6 +260,11 @@ class phFormTest extends phTestCase
     	$this->assertEquals('testing 123', $form->username->getValue(), 'post initialize is working');
     }
     
+    public function testCI()
+    {
+    	$this->assertTrue(false, 'deliberate fail');
+    }
+    
     private function addForm($name)
     {
     	$this->form = new phForm('test', 'viewTestView');
