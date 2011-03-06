@@ -83,7 +83,7 @@ if($_SERVER['REQUEST_METHOD']=='POST')
 		 * form data is valid, put your code to
 		 * register a new user here
 		 */
-		echo "<h1>Thankyou! You chose the date: " . date('r', $form->time->getCurrentDateTime()) . "</h1>";
+		echo "<h1>Thankyou! You chose the date: " . date('r', $form->time->getDateTime()) . "</h1>";
 	}
 }
 ?>

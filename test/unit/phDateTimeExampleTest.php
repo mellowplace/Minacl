@@ -49,24 +49,24 @@ class phDateTimeExampleTest extends phTestCase
 		$this->dateTimeForm = new phDateTime('test', 'dateTimeView', 1999, 2001);
 	}
 	
-	public function testSetAndGetCurrentDateTime()
+	public function testSetAndGetDateTime()
 	{
-		$this->dateTimeForm->setCurrentDateTime('2000-01-01 01:01:01');
+		$this->dateTimeForm->setDateTime('2000-01-01 01:01:01');
 		
-		$this->assertEquals(strtotime('2000-01-01 01:01:01'), $this->dateTimeForm->getCurrentDateTime(), 'time has been set properly');
+		$this->assertEquals(strtotime('2000-01-01 01:01:01'), $this->dateTimeForm->getDateTime(), 'time has been set properly');
 		
 		$this->assertEquals(strtotime('2000-01-01 01:01:01'), $this->dateTimeForm->getValue(), 'forms getValue method also returns the timestamp');
 	}
 	
 	public function testGetCurrentDateTimeWhenNothingSet()
 	{
-		$this->assertEquals(null, $this->dateTimeForm->getCurrentDateTime(), 'time is null when nothing is set');
+		$this->assertEquals(null, $this->dateTimeForm->getDateTime(), 'time is null when nothing is set');
 		$this->assertEquals(null, $this->dateTimeForm->getValue(), 'forms getValue method also returns null');
 	}
 	
 	public function testSelectsCorrectDate()
 	{
-		$this->dateTimeForm->setCurrentDateTime('2000-01-01 01:01:01');
+		$this->dateTimeForm->setDateTime('2000-01-01 01:01:01');
 		$xml = '<minacl>' . $this->dateTimeForm->__toString() . '</minacl>';
 		/*
 		 * replace the &nbsp; with nothing otherwise it'll cause an error

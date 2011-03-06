@@ -65,11 +65,28 @@ class phDateTime extends phForm
 	}
 	
 	/**
+	 * Gets the currently selected date time
+	 * 
+	 * @return int the current datetime as a unix timestamp
+	 */
+	public function getDateTime()
+	{
+		$year = $this->year->getValue();
+		$month = $this->month->getValue();
+		$day = $this->day->getValue();
+		$hour = $this->hour->getValue();
+		$minute = $this->minute->getValue();
+		$second = $this->second->getValue();
+		
+		return strtotime("{$year}-{$month}-{$day} {$hour}:{$minute}:{$second}");
+	}
+	
+	/**
 	 * Set the current selected date time
 	 * @param string|int $dateTime a string or timestamp
 	 * @todo select the correct options
 	 */
-	public function setCurrentDateTime($dateTime)
+	public function setDateTime($dateTime)
 	{
 		if(!is_int($dateTime))
 		{
@@ -85,29 +102,11 @@ class phDateTime extends phForm
 	}
 	
 	/**
-	 * Gets the currently selected date time
-	 * 
-	 * @return int the current datetime as a unix timestamp
-	 * @todo calc the current datetime from the selected options
-	 */
-	public function getCurrentDateTime()
-	{
-		$year = $this->year->getValue();
-		$month = $this->month->getValue();
-		$day = $this->day->getValue();
-		$hour = $this->hour->getValue();
-		$minute = $this->minute->getValue();
-		$second = $this->second->getValue();
-		
-		return strtotime("{$year}-{$month}-{$day} {$hour}:{$minute}:{$second}");
-	}
-	
-	/**
 	 * (non-PHPdoc)
 	 * @see lib/form/phForm::getValue()
 	 */
 	public function getValue()
 	{
-		return $this->getCurrentDateTime();
+		return $this->getDateTime();
 	}
 }
