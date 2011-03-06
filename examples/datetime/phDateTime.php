@@ -41,6 +41,13 @@ class phDateTime extends phForm
 	
 	public function preInitialize()
 	{
+		$this->_view->years = new ArrayObject();
+		
+		for($x = $this->_startYear; $x <= $this->_endYear; $x++)
+		{
+			$this->_view->years[] = $x;
+		}
+		
 		$this->_view->months = array(
 			1	=> 'January',
 			2	=> 'February',
@@ -55,13 +62,6 @@ class phDateTime extends phForm
 			11	=> 'November',
 			12	=> 'December'
 		);
-		
-		$this->_view->years = new ArrayObject();
-		
-		for($x = $this->_startYear; $x <= $this->_endYear; $x++)
-		{
-			$this->_view->years[] = $x;
-		}
 	}
 	
 	/**
@@ -76,12 +76,12 @@ class phDateTime extends phForm
 			$dateTime = strtotime($dateTime);
 		}
 		
-		$this->element()->year->setRawValue(date('Y', $dateTime));
-		$this->element()->month->setRawValue(date('m', $dateTime));
-		$this->element()->day->setRawValue(date('d', $dateTime));
-		$this->element()->hour->setRawValue(date('H', $dateTime));
-		$this->element()->minute->setRawValue(date('i', $dateTime));
-		$this->element()->second->setRawValue(date('s', $dateTime));
+		$this->year->bind(date('Y', $dateTime));
+		$this->month->bind(date('m', $dateTime));
+		$this->day->bind(date('d', $dateTime));
+		$this->hour->bind(date('H', $dateTime));
+		$this->minute->bind(date('i', $dateTime));
+		$this->second->bind(date('s', $dateTime));
 	}
 	
 	/**
@@ -92,12 +92,12 @@ class phDateTime extends phForm
 	 */
 	public function getCurrentDateTime()
 	{
-		$year = $this->element()->year->getRawValue();
-		$month = $this->element()->month->getRawValue();
-		$day = $this->element()->day->getRawValue();
-		$hour = $this->element()->hour->getRawValue();
-		$minute = $this->element()->minute->getRawValue();
-		$second = $this->element()->second->getRawValue();
+		$year = $this->year->getValue();
+		$month = $this->month->getValue();
+		$day = $this->day->getValue();
+		$hour = $this->hour->getValue();
+		$minute = $this->minute->getValue();
+		$second = $this->second->getValue();
 		
 		return strtotime("{$year}-{$month}-{$day} {$hour}:{$minute}:{$second}");
 	}
