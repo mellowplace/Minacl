@@ -87,6 +87,6 @@ if($_SERVER['REQUEST_METHOD']=='POST')
 	}
 }
 ?>
-<form action="/datetime/event.php" method="post">
+<form action="event.php" method="post">
 	<?php echo $form; // this will render the form ?>
 </form>
