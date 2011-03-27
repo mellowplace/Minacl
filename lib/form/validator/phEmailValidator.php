@@ -55,7 +55,7 @@ class phEmailValidator extends phValidatorCommon
 	{
 		$isValid = true;
 		$atIndex = strrpos($email, "@");
-		if (is_bool($atIndex) && !$atIndex)
+		if(is_bool($atIndex) && !$atIndex)
 		{
 			$isValid = false;
 		}
@@ -66,17 +66,17 @@ class phEmailValidator extends phValidatorCommon
 			$localLen = strlen($local);
 			$domainLen = strlen($domain);
 			
-			if ($localLen < 1 || $localLen > 64)
+			if($localLen < 1 || $localLen > 64)
 			{
 				// local part length exceeded
 				$isValid = false;
 			}
-			else if ($domainLen < 1 || $domainLen > 255)
+			else if($domainLen < 1 || $domainLen > 255)
 			{
 				// domain part length exceeded
 				$isValid = false;
 			}
-			else if (!preg_match($this->_emailRegex, $email))
+			else if(!preg_match($this->_emailRegex, $email))
 			{
 				// bad email format
 				$isValid = false;
@@ -96,4 +96,3 @@ class phEmailValidator extends phValidatorCommon
 		return array(self::INVALID=>'Invalid email address');
 	}
 }
-?>
