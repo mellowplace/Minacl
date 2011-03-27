@@ -105,6 +105,7 @@ class phLoader
 		'phCompareValidator'			=> 'validator/phCompareValidator.php',
 		'phFileValidator'				=> 'validator/phFileValidator.php',
 		'phValidatorError'				=> 'validator/phValidatorError.php',
+		'phEmailValidator'				=> 'validator/phEmailValidator.php',
 		'phTextAreaElementFactory'		=> 'factory/phTextAreaElementFactory.php',
 		'phTextAreaElement' 			=> 'element/phTextAreaElement.php',
 	);
