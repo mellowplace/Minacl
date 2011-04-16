@@ -136,6 +136,14 @@ class phViewTest extends phTestCase
     	$this->view->id('_noUnderscoreStart');
     }
     
+	/**
+     * @expectedException phFormException
+     */
+    public function testInvalidElementId5()
+    {
+    	$this->view->id('cannotEndWith.');
+    }
+    
     public function testValidElementId()
     {
     	$this->assertEquals($this->view->id('idIsGood'), 'test_idIsGood', 'element id set ok');
@@ -144,6 +152,34 @@ class phViewTest extends phTestCase
 	public function testValidElementId2()
     {
     	$this->assertEquals($this->view->id('underscores_are_ok'), 'test_underscores_are_ok', 'element id set ok');
+    }
+    
+    /**
+     * Test that we can use dot notation to get access to ids on subforms
+     */
+    public function testIdForSubform()
+    {
+    	/*
+    	 * add 2 subforms and make sure we can go 2 levels down
+    	 */
+    	$subform = new phForm('address', 'addressTestView');
+    	$subform2 = new phForm('address2', 'addressTestView');
+    	$subform->addForm($subform2);
+    	$this->form->addForm($subform);
+    	
+    	$this->assertEquals('test_address_address', $this->view->id('address.address'), 'id for subform returned correctly');
+    	$this->assertEquals('test_address_address2_address', $this->view->id('address.address2.address'), 'id for subform of subform returned correctly');
+    }
+    
+    /**
+     * @expectedException phFormException
+     */
+    public function testNonExistantSubformId()
+    {
+    	/*
+    	 * there is no subform "nonexistant" - this should throw an error
+    	 */
+    	$this->view->id('nonexistant.address');
     }
     
     public function testValidNames()

@@ -113,6 +113,13 @@ class phForm implements phFormViewElement, phData
 		$this->_forms[$name] = $form;
 	}
 	
+	/**
+	 * Gets a subform
+	 * 
+	 * @param string $name
+	 * @return phForm
+	 * @throws phFormException
+	 */
 	public function getForm($name)
 	{
 		if(!isset($this->_forms[$name]))
@@ -126,6 +133,14 @@ class phForm implements phFormViewElement, phData
 	public function hasForm($name)
 	{
 		return isset($this->_forms[$name]);
+	}
+	
+	/**
+	 * @return phFormView the view for this form
+	 */
+	public function getView()
+	{
+		return $this->_view;
 	}
 	
 	/**
@@ -320,6 +335,14 @@ class phForm implements phFormViewElement, phData
 	public function setNameFormat($format)
 	{
 		$this->_nameFormat = $format;
+		/*
+		 * go through any subforms and set the name format
+		 * again incase ours has changed in a way that affects them
+		 */
+		foreach($this->_forms as $form)
+		{
+			$form->setNameFormat(sprintf($this->getNameFormat(), $form->getName()) . '[%s]');
+		}
 	}
 	
 	public function getNameFormat()
@@ -330,6 +353,14 @@ class phForm implements phFormViewElement, phData
 	public function setIdFormat($format)
 	{
 		$this->_idFormat = $format;
+		/*
+		 * go through any subforms and set the id format
+		 * again incase ours has changed in a way that affects them
+		 */
+		foreach($this->_forms as $form)
+		{
+			$form->setIdFormat(sprintf($this->getIdFormat(), $form->getName()) . '_%s');
+		}
 	}
 	
 	public function getIdFormat()

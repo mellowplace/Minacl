@@ -438,15 +438,39 @@ class phFormView
 		}
 		else
 		{
-			if(!$this->_form->isValidId($id))
+			if(!preg_match('/^[a-zA-Z\x7f-\xff][a-zA-Z0-9_\x7f-\xff\.]*?[a-zA-Z0-9_\x7f-\xff]$/', $id))
 			{
-				throw new phFormException("'{$id}' is not valid, ids must be a-z0-9 or '_' only and contain no spaces and must not start with an '_' (underscore) or number", $code);
+				throw new phFormException("'{$id}' is not valid, ids must consist of a-z, 0-9, '_' or '.' only and contain no spaces and must not start with an '_' (underscore), number or '.' (fullstop) and must not end with '.' (fullstop)", $code);
 			}
+			
+			/*
+			 * if there are fullstops in the id then we are trying to get the id of a subform
+			 */
+			$fullstop = strpos($id, '.');
+			if($fullstop!==false)
+			{
+				$subform = substr($id, 0, $fullstop);
+				$restOfId = substr($id, $fullstop+1);
+				
+				if(!$this->_form->hasForm($subform))
+				{
+					// trying to get an ID on a non-existant subform
+					throw new phFormException("Id '{$id}' is invalid, there is no subform called '{$subform}'");
+				}
+				else
+				{
+					// ask the subform for the rewritten id
+					$form = $this->_form->getForm($subform);
+					return $form->getView()->id($restOfId);
+				}
+			}
+			else
+			{
+				$newId = sprintf($this->_form->getIdFormat(), $id);
+				$this->_ids[$newId] = $id;
 
-			$newId = sprintf($this->_form->getIdFormat(), $id);
-			$this->_ids[$newId] = $id;
-
-			return $newId;
+				return $newId;
+			}
 		}
 	}
 	

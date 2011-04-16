@@ -63,6 +63,30 @@ class phSubFormTest extends phTestCase
 		$this->assertEquals(1, preg_match_all('/name="test\[address\]\[address\]"/i', $contents, $matches), 'address field has name set properly');
 	}
 	
+	/**
+	 * Same as above but with a subform of a subform, which is added before the first subform is
+	 * added to the parent.  I.e. if A is the parent and B and C are subforms C is added to B
+	 * before B is added to A
+	 */
+	public function testNameAndIdRewrite2()
+	{
+		$a = new phTestForm('test', 'subFormTestView');
+		$b = new phTestForm('address', 'subFormOfSubFormView');
+		$c = new phTestForm('address2', 'addressTestView');
+		
+		$b->addForm($c);
+		$a->addForm($b);
+		
+		// test names
+		$this->assertEquals('test[%s]', $a->getNameFormat());
+		$this->assertEquals('test[address][%s]', $b->getNameFormat());
+		$this->assertEquals('test[address][address2][%s]', $c->getNameFormat());
+		// test ids
+		$this->assertEquals('test_firstName', (string)$a->element()->firstName->getElement()->attributes()->id, 'first_name id rewritten properly');
+		$this->assertEquals('test_address_address', (string)$a->address->element()->address->getElement()->attributes()->id, 'address id rewritten properly');
+		$this->assertEquals('test_address_address2_address', (string)$a->address->address2->element()->address->getElement()->attributes()->id, 'address id on subform of subform rewritten properly');
+	}
+	
 	public function testIdRewrite()
 	{
 		$this->assertEquals('test_firstName', (string)$this->form->element()->firstName->getElement()->attributes()->id, 'first_name id rewritten properly');
