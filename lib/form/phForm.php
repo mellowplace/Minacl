@@ -69,7 +69,7 @@ class phForm implements phFormViewElement, phData
 	
 	/**
 	 * A handy method, called by the view prior to initialisation, that allows the
-	 * form so setup any custom vars that the view might need to render 
+	 * form to setup any custom vars that the view might need to render 
 	 */
 	public function preInitialize()
 	{
