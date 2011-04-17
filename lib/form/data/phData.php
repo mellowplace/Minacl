@@ -58,6 +58,7 @@ interface phData extends phValidatable
 	 * Set a validator to validate what is bound to this object
 	 * 
 	 * @param phValidator $validator
+	 * @return phValidator returns the passed $validator object so you can chain calls
 	 */
 	public function setValidator(phValidator $validator);
 	

@@ -233,6 +233,8 @@ class phForm implements phFormViewElement, phData
 	public function setValidator(phValidator $validator)
 	{
 		$this->_validator = $validator;
+		
+		return $validator;
 	}
 	
 	/**

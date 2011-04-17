@@ -82,6 +82,8 @@ class phFormDataItem implements phData
 	public function setValidator(phValidator $validator)
 	{
 		$this->_validator = $validator;
+		
+		return $validator;
 	}
 	
 	/**
