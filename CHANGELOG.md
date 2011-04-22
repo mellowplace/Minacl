@@ -4,3 +4,4 @@
 * Added a numeric validator (phNumericValidator) that can validate whole and decimal numbers optionally requiring a minimum and maximum
 * Added '.' capability to phFormView's id method so you can refer to subforms elements
 * Added Nathans email validator with unit tests and modifications to make it only validate public emails and to make it more RFC 5321 & 5322 compliant
+* BUGFIX Subforms of subforms where not having their names set properly
