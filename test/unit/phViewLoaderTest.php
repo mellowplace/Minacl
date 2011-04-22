@@ -96,5 +96,15 @@ class phViewLoaderTest extends phTestCase
 		require $fileLoader->getViewFileOrStream('fileViewLoaderTest');
 		
 		$this->assertTrue($loaded, 'The view was loaded');
+		
+		/*
+		 * Try and add a directory and make sure the view can be found
+		 */
+		$fileLoader->addDir(realpath(dirname(__FILE__) . '/../resources/moreViews'));
+		
+		$loaded = false;
+		require $fileLoader->getViewFileOrStream('subDirFileViewLoaderTest');
+		
+		$this->assertTrue($loaded, 'The view in the other directory was loaded');
 	}
 }

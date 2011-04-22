@@ -33,11 +33,11 @@
  */
 class phFileViewLoader extends phViewLoader
 {
-	private $_viewsFolder = null;
+	private $_viewsFolders = array();
 	
 	public function __construct($viewsFolder)
 	{
-		$this->_viewsFolder = $viewsFolder;
+		$this->_viewsFolders[] = $viewsFolder;
 	}
 	
 	/**
@@ -48,14 +48,31 @@ class phFileViewLoader extends phViewLoader
 	{
 		$info = $this->getFileAndDir($view);
 		
-		$dir = realpath($this->_viewsFolder . DIRECTORY_SEPARATOR . $info['dir']);
-		$file = $dir . DIRECTORY_SEPARATOR . $info['file'];
-		if($dir===false || !file_exists($file))
+		foreach($this->_viewsFolders as $folder)
 		{
-			throw new phFormException("The view '{$view}' could not be found");
+			$dir = realpath($folder . DIRECTORY_SEPARATOR . $info['dir']);
+			$file = $dir . DIRECTORY_SEPARATOR . $info['file'];
+		
+			if($dir===false || !file_exists($file))
+			{
+				continue;
+			}
+			
+			return $file;
 		}
 		
-		return $file;
+		throw new phFormException("The view '{$view}' could not be found");
+	}
+	
+	/**
+	 * Adds another directory to search for views in
+	 * @param string $dir
+	 * @return phFileViewLoader
+	 */
+	public function addDir($dir)
+	{
+		$this->_viewsFolders[] = $dir;
+		return $this;
 	}
 	
 	protected function getFileAndDir($view)
