@@ -47,7 +47,7 @@ $release = new phReleaseNotesReflector(dirname(__FILE__) . '/CHANGELOG.md');
 $options = array(
 'filelistgenerator' => 'file', // this copy of our source code is a CVS checkout
 'simpleoutput' => true,
-'baseinstalldir' => '/',
+'baseinstalldir' => '/Minacl',
 'packagedirectory' => dirname(___FILE___) . '/lib/form', // just package the library
 'clearcontents' => false,
 'dir_roles' => array('.' => 'php'),
