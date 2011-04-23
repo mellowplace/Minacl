@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package packagerversion="1.9.2" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0
+    http://pear.php.net/dtd/tasks-1.0.xsd
+    http://pear.php.net/dtd/package-2.0
+    http://pear.php.net/dtd/package-2.0.xsd">
+ <name>Minacl</name>
+ <channel>pear.minacl.org</channel>
+ <summary>Minacl - Agile, reusable forms for PHP</summary>
+ <description>Minacl is a form library that parses valid XHTML and gives you an API to validate and access the data your form produces.</description>
+ <lead>
+  <name>Rob Graham</name>
+  <user>Rob</user>
+  <email>minacl@mellowplace.com</email>
+  <active>yes</active>
+ </lead>
+ <date>2011-04-23</date>
+ <time>12:45:41</time>
+ <version>
+  <release>0.9.1</release>
+  <api>0.9.1</api>
+ </version>
+ <stability>
+  <release>alpha</release>
+  <api>alpha</api>
+ </stability>
+ <license uri="http://www.gnu.org/licenses/">LGPL</license>
+ <notes>
+* Added addDir() method to phFileViewLoader so it can search in different folders
+* Altered setValidator methods so they return the validator that was passed in and can be chained
+* Added a numeric validator (phNumericValidator) that can validate whole and decimal numbers optionally requiring a minimum and maximum
+* Added &apos;.&apos; capability to phFormView&apos;s id method so you can refer to subforms elements
+* Added Nathans email validator with unit tests and modifications to make it only validate public emails and to make it more RFC 5321 &amp; 5322 compliant
+* BUGFIX Subforms of subforms where not having their names set properly
+ </notes>
+ <contents>
+  <dir baseinstalldir="/" name="/">
+   <dir name="data">
+    <dir name="collection">
+     <file name="phAbstractFindingCollection.php" role="php" />
+     <file name="phCheckboxDataCollection.php" role="php" />
+     <file name="phCompositeDataCollection.php" role="php" />
+     <file name="phDataCollection.php" role="php" />
+     <file name="phFileDataCollection.php" role="php" />
+     <file name="phFormDataCollection.php" role="php" />
+     <file name="phRadioDataCollection.php" role="php" />
+     <file name="phSelectListDataCollection.php" role="php" />
+     <file name="phSimpleArrayDataCollection.php" role="php" />
+     <file name="phSimpleDataCollection.php" role="php" />
+    </dir> <!-- /data/collection -->
+    <file name="phArrayFormDataItem.php" role="php" />
+    <file name="phData.php" role="php" />
+    <file name="phDataChangeListener.php" role="php" />
+    <file name="phFileDataException.php" role="php" />
+    <file name="phFileFormDataItem.php" role="php" />
+    <file name="phFormDataItem.php" role="php" />
+    <file name="phSimpleArrayDataItem.php" role="php" />
+   </dir> <!-- /data -->
+   <dir name="dtd">
+    <file name="xhtml-entities.ent" role="data" />
+   </dir> <!-- /dtd -->
+   <dir name="element">
+    <file name="phCheckableElement.php" role="php" />
+    <file name="phCheckboxElement.php" role="php" />
+    <file name="phFileElement.php" role="php" />
+    <file name="phInputElement.php" role="php" />
+    <file name="phRadioButtonElement.php" role="php" />
+    <file name="phSelectListElement.php" role="php" />
+    <file name="phSimpleXmlElement.php" role="php" />
+    <file name="phTextAreaElement.php" role="php" />
+   </dir> <!-- /element -->
+   <dir name="factory">
+    <file name="phCheckboxElementFactory.php" role="php" />
+    <file name="phElementFactory.php" role="php" />
+    <file name="phFileElementFactory.php" role="php" />
+    <file name="phFormElementFactory.php" role="php" />
+    <file name="phInputElementFactory.php" role="php" />
+    <file name="phRadioButtonElementFactory.php" role="php" />
+    <file name="phSelectListElementFactory.php" role="php" />
+    <file name="phTextAreaElementFactory.php" role="php" />
+   </dir> <!-- /factory -->
+   <dir name="validator">
+    <file name="phCompareValidator.php" role="php" />
+    <file name="phEmailValidator.php" role="php" />
+    <file name="phFileValidator.php" role="php" />
+    <file name="phNumericValidator.php" role="php" />
+    <file name="phRequiredValidator.php" role="php" />
+    <file name="phStringLengthValidator.php" role="php" />
+    <file name="phValidator.php" role="php" />
+    <file name="phValidatorCommon.php" role="php" />
+    <file name="phValidatorError.php" role="php" />
+    <file name="phValidatorException.php" role="php" />
+    <file name="phValidatorLogic.php" role="php" />
+   </dir> <!-- /validator -->
+   <dir name="view">
+    <file name="phArrayInfo.php" role="php" />
+    <file name="phFileViewLoader.php" role="php" />
+    <file name="phFormView.php" role="php" />
+    <file name="phNameInfo.php" role="php" />
+    <file name="phViewLoader.php" role="php" />
+   </dir> <!-- /view -->
+   <file name="LICENSE" role="doc" />
+   <file name="phForm.php" role="php" />
+   <file name="phFormException.php" role="php" />
+   <file name="phFormViewElement.php" role="php" />
+   <file name="phLoader.php" role="php" />
+   <file name="phValidatable.php" role="php" />
+   <file name="README" role="doc" />
+  </dir> <!-- / -->
+ </contents>
+ <dependencies>
+  <required>
+   <php>
+    <min>5.2</min>
+   </php>
+   <pearinstaller>
+    <min>1.8.0</min>
+   </pearinstaller>
+   <package>
+    <name>PEAR</name>
+    <channel>pear.php.net</channel>
+    <min>1.4.0</min>
+   </package>
+  </required>
+ </dependencies>
+ <phprelease />
+ <changelog>
+  <release>
+   <version>
+    <release>0.9.1</release>
+    <api>0.9.1</api>
+   </version>
+   <stability>
+    <release>alpha</release>
+    <api>alpha</api>
+   </stability>
+   <date>2011-04-23</date>
+   <license uri="http://www.gnu.org/licenses/">LGPL</license>
+   <notes>
+* Added addDir() method to phFileViewLoader so it can search in different folders
+* Altered setValidator methods so they return the validator that was passed in and can be chained
+* Added a numeric validator (phNumericValidator) that can validate whole and decimal numbers optionally requiring a minimum and maximum
+* Added &apos;.&apos; capability to phFormView&apos;s id method so you can refer to subforms elements
+* Added Nathans email validator with unit tests and modifications to make it only validate public emails and to make it more RFC 5321 &amp; 5322 compliant
+* BUGFIX Subforms of subforms where not having their names set properly
+   </notes>
+  </release>
+ </changelog>
+</package>
