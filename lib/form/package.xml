@@ -13,8 +13,8 @@
   <email>minacl@mellowplace.com</email>
   <active>yes</active>
  </lead>
- <date>2011-04-23</date>
- <time>12:54:47</time>
+ <date>2011-04-25</date>
+ <time>12:14:33</time>
  <version>
   <release>0.9.1</release>
   <api>0.9.1</api>
@@ -56,7 +56,7 @@
     <file name="phSimpleArrayDataItem.php" role="php" />
    </dir> <!-- /data -->
    <dir name="dtd">
-    <file name="xhtml-entities.ent" role="data" />
+    <file name="xhtml-entities.ent" role="php" />
    </dir> <!-- /dtd -->
    <dir name="element">
     <file name="phCheckableElement.php" role="php" />
@@ -133,7 +133,7 @@
     <release>alpha</release>
     <api>alpha</api>
    </stability>
-   <date>2011-04-23</date>
+   <date>2011-04-25</date>
    <license uri="http://www.gnu.org/licenses/">LGPL</license>
    <notes>
 * Added addDir() method to phFileViewLoader so it can search in different folders

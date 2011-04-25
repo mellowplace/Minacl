@@ -53,7 +53,8 @@ $options = array(
 'dir_roles' => array('.' => 'php'),
 'exceptions' => array(
 	'README' => 'doc',
-	'LICENSE' => 'doc'
+	'LICENSE' => 'doc',
+	'dtd/xhtml-entities.ent' => 'php'
 )
 );
 
