@@ -71,6 +71,14 @@ class phEmailValidatorTest extends phTestCase
 		}
 	}
 	
+	/**
+	 * Test that an empty email validates ok.
+	 */
+	public function testEmptyEmail()
+	{
+		$this->assertTrue($this->validator->validate('', $this->errors), "Email addie {$e} is correctly valid");
+	}
+	
 	public function testInvalidEmails()
 	{
 		$emails = array(
