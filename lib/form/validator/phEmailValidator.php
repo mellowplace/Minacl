@@ -61,7 +61,11 @@ class phEmailValidator extends phValidatorCommon
 		{
 			throw new phValidatorException('I cannot validate elements that return multiple values');
 		}
-
+		
+		if ($value == '')
+		{
+			return true;
+		}
 		$valid = $this->isValidEmail($value);
 
 		if(!$valid)
