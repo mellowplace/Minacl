@@ -39,6 +39,7 @@ class phRenderingTest extends phTestCase
 		parent::setUp();
 		
 		$this->form = new phForm('test', 'xhtmlView');
+		$this->schema = realpath(dirname(__FILE__) . '/../resources/schema/xhtml1-strict.xsd');
 		$this->xhtmlDecl = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" 
         \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n";
 	}
@@ -46,10 +47,9 @@ class phRenderingTest extends phTestCase
 	public function testValidXhtml()
 	{
 		$xhtml = $this->xhtmlDecl . $this->form->__toString();
-		
 		$doc = new DOMDocument();
 		$doc->loadXML($xhtml);
-		$this->assertTrue($doc->validate(), 'The rendered form is valid xhtml');
+		$this->assertTrue($doc->schemaValidate($this->schema), 'The rendered form is valid xhtml');
 	}
 	
 	public function testSpecialCharsFillinValidXhtml()
@@ -62,7 +62,7 @@ class phRenderingTest extends phTestCase
 		$xhtml = $this->xhtmlDecl . $this->form->__toString();
 		$doc = new DOMDocument();
 		$doc->loadXML($xhtml);
-		$this->assertTrue($doc->validate(), 'The rendered form is valid xhtml');
+		$this->assertTrue($doc->schemaValidate($this->schema), 'The rendered form is valid xhtml');
 	}
 	
 	/**
