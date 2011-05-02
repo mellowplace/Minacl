@@ -20,32 +20,5 @@
  * License along with Minacl.  If not, see 
  * <http://www.gnu.org/licenses/>.
  */
-
-/**
- * This factory can handle textarea elements
- * 
- * @author Rob Graham <htmlforms@mellowplace.com>
- * @package phform
- * @subpackage factory
- */
-class phTextAreaElementFactory extends phElementFactory
-{
-	public function canHandle(SimpleXMLElement $e)
-	{
-		return ($e->getName()=='textarea');
-	}
-	
-	public function createPhElement(SimpleXMLElement $e, phFormView $view)
-	{
-		/*
-		 * if the textarea is empty then add a blank child so that no 
-		 * shorttag (<textarea />) is outputted
-		 */
-		if((string)$e==='')
-		{
-			$e[0] = '';
-		}
-		
-		return new phTextAreaElement($e, $view);
-	}
-}
+?>
+<textarea name="<?php echo $this->name('notes') ?>" id="<?php echo $this->id('notes') ?>"></textarea>

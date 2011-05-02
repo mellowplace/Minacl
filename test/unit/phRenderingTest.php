@@ -64,4 +64,18 @@ class phRenderingTest extends phTestCase
 		$doc->loadXML($xhtml);
 		$this->assertTrue($doc->validate(), 'The rendered form is valid xhtml');
 	}
+	
+	/**
+	 * <textarea></textarea> gets rewritten by simplexml to <textarea /> which is invalid
+	 * HTML and causes the rest of the pages HTML to be the contents of the textarea tag.
+	 * 
+	 * The issue was first reported here -
+	 * https://github.com/mellowplace/PHP-HTML-Driven-Forms/issues/2
+	 */
+	public function testEmptyTextArea()
+	{
+		$form = new phForm('test', 'emptyTextAreaView');
+		$html = $form->__toString();
+		$this->assertTrue(strpos($html, '<textarea name="test[notes]" id="test_notes"></textarea>')!==false, 'Empty text area tag was not written as a shorthand <textarea />');
+	}
 }
