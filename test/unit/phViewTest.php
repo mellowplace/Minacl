@@ -420,6 +420,19 @@ class phViewTest extends phTestCase
     	$view->render();
     	$this->assertTrue(true, 'no errors on parsing some html entities');
     }
+    
+	/**
+     * Test that using a template for the view in anything other than UTF-8 causes
+     * an exception, this is a solution to the issue - 
+     * https://github.com/mellowplace/PHP-HTML-Driven-Forms/issues/3
+     * 
+     * @expectedException phFormException
+     */
+    public function testCp1252Template()
+    {
+    	$form = new phForm('test', 'cp1252View');
+    	$form->getView()->render();
+    }
 }
 
 class phFormViewTest extends phFormView

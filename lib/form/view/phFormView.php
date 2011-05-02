@@ -125,17 +125,7 @@ class phFormView
 		 */
 		try
 		{
-			echo "<!DOCTYPE phformdoc [\n";
-			/*
-			 * include the xhtml entity definitions so there are
-			 * no parsing errors when coming across special entities
-			 * like &nbsp;
-			 */
-			echo $this->_docTypeDecl;
-			echo "\n]>";
-			echo "<phformdoc>";
 			require phViewLoader::getInstance()->getViewFileOrStream($_view);
-			echo "</phformdoc>";
 		}
 		catch(Exception $e)
 		{
@@ -143,7 +133,27 @@ class phFormView
 			throw $e;
 		}
 		
-		$_xml = ob_get_clean();
+		/*
+		 * Flush the buffer, get the template output and make sure it's utf-8
+		 */
+		$_templateOutput = ob_get_clean();
+		
+		if(!$this->isUtf8($_templateOutput))
+		{
+			throw new phFormException("The template '{$this->_template}' contains, non UTF-8 content.  Please make sure you have set the files character encoding to UTF-8 and check for any unknown characters");
+		}
+		
+		$_xml = "<!DOCTYPE phformdoc [\n";
+		/*
+		 * include the xhtml entity definitions so there are
+		 * no parsing errors when coming across special entities
+		 * like &nbsp;
+		 */
+		$_xml .= $this->_docTypeDecl;
+		$_xml .= "\n]>";
+		$_xml .= "<phformdoc>";
+		$_xml .= $_templateOutput;
+		$_xml .= "</phformdoc>";
 		
 		try 
 		{
@@ -633,5 +643,18 @@ class phFormView
 		);
 		
 		return null;
+	}
+	
+	/**
+	 * This takes $input, and tells us if it's utf-8 or not
+	 * 
+	 * @param string $input mixed charset input
+	 * @return boolean
+	 */
+	protected function isUtf8($input)
+	{		
+		$charset = mb_detect_encoding($input, 'UTF-8', true);
+		
+		return $charset!==false;
 	}
 }
