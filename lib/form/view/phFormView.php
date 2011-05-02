@@ -118,17 +118,30 @@ class phFormView
 		 * Now include the template and catch it's output
 		 */
 		ob_start();
-		echo "<!DOCTYPE phformdoc [\n";
 		/*
-		 * include the xhtml entity definitions so there are
-		 * no parsing errors when coming across special entities
-		 * like &nbsp;
+		 * if any exception is thrown at this point we'll want to clean the output
+		 * buffer first before we throw it up the stack.  If we don't then a load
+		 * of junk will be flushed from the buffer
 		 */
-		echo $this->_docTypeDecl;
-		echo "\n]>";
-		echo "<phformdoc>";
-		require phViewLoader::getInstance()->getViewFileOrStream($_view);
-		echo "</phformdoc>";
+		try
+		{
+			echo "<!DOCTYPE phformdoc [\n";
+			/*
+			 * include the xhtml entity definitions so there are
+			 * no parsing errors when coming across special entities
+			 * like &nbsp;
+			 */
+			echo $this->_docTypeDecl;
+			echo "\n]>";
+			echo "<phformdoc>";
+			require phViewLoader::getInstance()->getViewFileOrStream($_view);
+			echo "</phformdoc>";
+		}
+		catch(Exception $e)
+		{
+			ob_clean();
+			throw $e;
+		}
 		
 		$_xml = ob_get_clean();
 		

@@ -260,6 +260,36 @@ class phFormTest extends phTestCase
     	$this->assertEquals('testing 123', $form->username->getValue(), 'post initialize is working');
     }
     
+    /**
+     * This tests that __toString in form triggers an error, so PHP doesn't mask the exception
+     * as per issue https://github.com/mellowplace/PHP-HTML-Driven-Forms/issues/6
+     */
+    public function testToStringTriggersError()
+    {
+    	$form = new phForm('test', 'doesntExist');
+    	/*
+    	 * __toString should trigger an error here causing and fire our
+    	 * error handler assertion
+    	 */
+    	set_error_handler(array($this, 'handleToStringError'));
+    	(string)$form;
+    	/*
+    	 * set back to the previous handler
+    	 */
+    	restore_error_handler();
+    	/*
+    	 * check the error was thrown
+    	 */
+    	$this->assertEquals("phFormException exception thrown in phForm::__toString()
+Message: The view 'doesntExist' could not be found
+Code: 0", $this->previousErrorMessage, 'Exception was caught and raised with trigger_error in phForm::toString()');
+    }
+    
+    public function handleToStringError($code, $string, $file, $line)
+    {
+    	$this->previousErrorMessage = $string;
+    }
+    
     private function addForm($name)
     {
     	$this->form = new phForm('test', 'viewTestView');

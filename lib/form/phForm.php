@@ -399,7 +399,26 @@ class phForm implements phFormViewElement, phData
 	
 	public function __toString()
 	{
-		return $this->_view->render();
+		/*
+		 * exceptions cannot be thrown from __toString() and if they are then PHP catches them
+		 * and rethrows a generic one.  This leads to confusion as to what caused the original
+		 * error, the solution is to use trigger error and describe the exception instead.
+		 */
+		try
+		{
+			$html = $this->_view->render();
+			return $html;
+		}
+		catch(Exception $e)
+		{
+			$class = get_class($e);
+			trigger_error("{$class} exception thrown in phForm::__toString()\nMessage: {$e->getMessage()}\nCode: {$e->getCode()}", E_USER_ERROR);
+			/*
+			 * still return a string, because if a custom error handler is set then it may be that
+			 * trigger_error above will not fatal
+			 */
+			return '';
+		}
 	}
 	
 	protected function entityExists($name)
