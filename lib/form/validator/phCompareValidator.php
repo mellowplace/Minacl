@@ -30,6 +30,18 @@
  */
 class phCompareValidator extends phValidatorCommon
 {
+	/**
+	 * We don't want to ignore empty's like phValidatorCommon does
+	 * by default
+	 * @var boolean
+	 */
+	protected $_ignoreEmpty = false;
+	/**
+	 * Array's are ok
+	 * @var boolean
+	 */
+	protected $_allowArrays = true;
+	
 	/*
 	 * comparison constants
 	 */
@@ -74,7 +86,7 @@ class phCompareValidator extends phValidatorCommon
 	 * (non-PHPdoc)
 	 * @see lib/form/validator/phValidator::validate()
 	 */
-	public function validate($value, phValidatable $errors)
+	protected function doValidate($value, phValidatable $errors)
 	{
 		$compareValue = $this->_compareWith instanceof phData ? $this->_compareWith->getValue() : $this->_compareWith;
 		$valid = false;

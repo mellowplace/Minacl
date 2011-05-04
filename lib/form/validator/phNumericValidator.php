@@ -72,9 +72,9 @@ class phNumericValidator extends phValidatorCommon
 	
 	/**
 	 * (non-PHPdoc)
-	 * @see lib/form/validator/phValidator::validate()
+	 * @see lib/form/validator/phValidatorCommon::doValidate()
 	 */
-	public function validate($value, phValidatable $errors)
+	protected function doValidate($value, phValidatable $errors)
 	{
 		if(!is_numeric($value))
 		{

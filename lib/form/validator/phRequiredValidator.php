@@ -33,17 +33,28 @@ class phRequiredValidator extends phValidatorCommon
 	const REQUIRED = 1;
 	
 	/**
-	 * (non-PHPdoc)
-	 * @see lib/form/validator/phValidator::validate()
+	 * We don't want to ignore empty's like phValidatorCommon does
+	 * by default
+	 * @var boolean
 	 */
-	public function validate($value, phValidatable $errors)
+	protected $_ignoreEmpty = false;
+	/**
+	 * Array's are ok
+	 * @var boolean
+	 */
+	protected $_allowArrays = true;
+	
+	/**
+	 * (non-PHPdoc)
+	 * @see lib/form/validator/phValidatorCommon::doValidate()
+	 */
+	protected function doValidate($value, phValidatable $errors)
 	{
-		if(is_array($value))
-		{
-			throw new phValidatorException('I cannot validate elements that return multiple values');
-		}
-		
-		$valid = (strlen($value)>0);
+		/*
+		 * either the value is an array with at least one element or
+		 * it has a string length > 0 for it to be valid
+		 */
+		$valid = ((is_array($value) && sizeof($value)>0) || (!is_array($value) && strlen($value)>0));
 		if(!$valid)
 		{
 			$errors->addError($this->getError(self::REQUIRED));

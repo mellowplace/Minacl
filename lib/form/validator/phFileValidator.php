@@ -62,7 +62,20 @@ class phFileValidator extends phValidatorCommon
 		);
 	}
 	
+	/**
+	 * We don't want the empty or array behaviour
+	 * @see lib/form/validator/phValidatorCommon::validate()
+	 */
 	public function validate($value, phValidatable $errors)
+	{
+		return $this->doValidate($value, $errors);
+	}
+	
+	/**
+	 * (non-PHPdoc)
+	 * @see lib/form/validator/phValidatorCommon::doValidate()
+	 */
+	protected function doValidate($value, phValidatable $errors)
 	{
 		if($this->_required && $value===null)
 		{

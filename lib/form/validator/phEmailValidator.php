@@ -53,24 +53,10 @@ class phEmailValidator extends phValidatorCommon
 	
 	/**
 	 * (non-PHPdoc)
-	 * @see lib/form/validator/phValidator::validate()
+	 * @see lib/form/validator/phValidatorCommon::doValidate()
 	 */
-	public function validate($value, phValidatable $errors)
+	protected function doValidate($value, phValidatable $errors)
 	{
-		if(is_array($value))
-		{
-			throw new phValidatorException('I cannot validate elements that return multiple values');
-		}
-		
-		/*
-		 * Empty should pass, if you want to make a value required use
-		 * phRequiredValidator
-		 */
-		if ($value === '' || $value===null)
-		{
-			return true;
-		}
-		
 		$valid = $this->isValidEmail($value);
 
 		if(!$valid)

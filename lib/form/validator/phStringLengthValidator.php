@@ -36,13 +36,12 @@ class phStringLengthValidator extends phValidatorCommon
 	private $_min = null;
 	private $_max = null;
 	
-	public function validate($value, phValidatable $errors)
+	/**
+	 * (non-PHPdoc)
+	 * @see lib/form/validator/phValidatorCommon::doValidate()
+	 */
+	protected function doValidate($value, phValidatable $errors)
 	{
-		if(is_array($value))
-		{
-			throw new phValidatorException('I cannot validate elements that return multiple values');
-		}
-		
 		$length = strlen($value);
 		
 		$valid = true;

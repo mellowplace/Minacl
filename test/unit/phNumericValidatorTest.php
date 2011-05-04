@@ -146,4 +146,12 @@ class phNumericValidatorTest extends phTestCase
 		$this->assertEquals(1, sizeof($errors), '1 error was added for value of 5.49');
 		$this->assertEquals(phNumericValidator::MIN_ERROR, $errors[0]->getCode(), 'the error was MIN_ERROR');
 	}
+	
+	public function testEmptyOk()
+	{
+		$this->_validator->validate('', $this->_testValidatable);
+		$this->assertEquals(0, sizeof(($this->_testValidatable)), 'Empty string validates ok');
+		$this->_validator->validate(null, $this->_testValidatable);
+		$this->assertEquals(0, sizeof(($this->_testValidatable)), 'Null validates ok');
+	}
 }

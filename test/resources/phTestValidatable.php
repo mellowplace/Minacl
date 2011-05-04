@@ -28,7 +28,7 @@
  * @package phform
  * @subpackage test
  */
-class phTestValidatable implements phValidatable
+class phTestValidatable implements phValidatable, Countable
 {
 	protected $_errors = array();
 	
@@ -62,5 +62,10 @@ class phTestValidatable implements phValidatable
 	public function getErrors()
 	{
 		return $this->_errors;
+	}
+	
+	public function count()
+	{
+		return sizeof($this->_errors);
 	}
 }

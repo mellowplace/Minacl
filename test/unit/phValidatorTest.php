@@ -161,6 +161,15 @@ class phValidatorTest extends phTestCase
 		$this->assertTrue($this->form->username->validate(), 'The username is valid');
 	}
 	
+	public function testRequiredValidatorArray()
+	{
+		$val = new phRequiredValidator();
+		$errors = new phTestValidatable();
+		
+		$this->assertTrue($val->validate(array(0), $errors), 'required validator passes an array with an element');
+		$this->assertFalse($val->validate(array(), $errors), 'required validator fails an empty array');
+	}
+	
 	public function testStringLengthValidator()
 	{
 		$strVal = new phStringLengthValidator(array(
@@ -199,6 +208,15 @@ class phValidatorTest extends phTestCase
 		
 		$username->bind('waaaaaaaayyyytooooolong');
 		$this->assertFalse($strVal->validate($username->getValue(), $username), 'The validator is correctly not valid');
+		
+		/*
+		 * test empty values are ok
+		 */
+		$errors = new phTestValidatable();
+		$strVal->validate('', $errors);
+		$this->assertEquals(0, sizeof($errors), 'Empty string passes ok');
+		$strVal->validate(null, $errors);
+		$this->assertEquals(0, sizeof($errors), 'Null passes ok');
 	}
 	
 	public function testCompareValidator()
@@ -246,6 +264,12 @@ class phValidatorTest extends phTestCase
 		$compareVal = new phCompareValidator(1, phCompareValidator::EQUAL);
 		$this->assertFalse($compareVal->validate(2, $password), 'The validator is correctly not valid');
 		$this->assertTrue($compareVal->validate(1, $password), 'The validator is correctly valid');
+		
+		/*
+		 * test empty values don't equal
+		 */
+		$this->assertFalse($compareVal->validate('', $password), 'Empty string not equal');
+		$this->assertFalse($compareVal->validate(null, $password), 'Null not equal');
 	}
 	
 	/**

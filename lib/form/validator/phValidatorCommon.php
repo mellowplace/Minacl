@@ -32,6 +32,20 @@ abstract class phValidatorCommon implements phValidator
 {
 	protected $_errors = array();
 	
+	/**
+	 * If true then validation will not occur for empty values
+	 * @var boolean
+	 */
+	protected $_ignoreEmpty = true;
+	
+	/**
+	 * If true then the validator can validate array values, if false
+	 * an exception is thrown if the value is an array
+	 * 
+	 * @var boolean
+	 */
+	protected $_allowArrays = false;
+	
 	public function __construct(array $errors = array())
 	{
 		foreach($errors as $code=>$e)
@@ -48,6 +62,30 @@ abstract class phValidatorCommon implements phValidator
 		}
 		
 		$this->_errors[$code] = new phValidatorError($message, $code, $this);
+	}
+	
+	/**
+	 * (non-PHPdoc)
+	 * @see lib/form/validator/phValidator::validate()
+	 */
+	public function validate($value, phValidatable $errors)
+	{
+		/*
+		 * if we don't allow arrays and $value is an array throw a wobbler
+		 */
+		if(!$this->_allowArrays && is_array($value))
+		{
+			throw new phValidatorException('I cannot validate elements that return multiple values');
+		}
+		/*
+		 * if we ignore empties and the value is empty then we pass the value
+		 */
+		if($this->_ignoreEmpty && $this->isEmpty($value))
+		{
+			return true;
+		}
+		
+		return $this->doValidate($value, $errors);
 	}
 	
 	/**
@@ -77,6 +115,38 @@ abstract class phValidatorCommon implements phValidator
 		
 		return $error;
 	}
+	
+	/**
+	 * Decides if a value is empty ('' or null is).  Used to decide whether validation is
+	 * needed
+	 * 
+	 * @param mixed $value
+	 * @return boolean
+	 */
+	protected function isEmpty($value)
+	{
+		/*
+		 * empty arrays, strings or null values are all empty
+		 */
+		if(	(!is_array($value) && ($value==='' || $value===null)) ||
+			(is_array($value) && sizeof($value)===0) )
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	/**
+	 * Implement and perform the actual validation in this method (it's called
+	 * by validate)
+	 * 
+	 * @param string $value
+	 * @param array $errors
+	 */
+	protected abstract function doValidate($value, phValidatable $errors);
 	
 	protected abstract function getValidErrorCodes();
 	
