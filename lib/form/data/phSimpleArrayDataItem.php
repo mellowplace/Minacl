@@ -50,9 +50,9 @@ class phSimpleArrayDataItem extends phArrayFormDataItem
 	 */
 	public function bind($value)
 	{
-		if($values===null)
+		if($value===null)
 		{
-			$values = array();
+			$value = array();
 		}
 		
 		if(!is_array($value))

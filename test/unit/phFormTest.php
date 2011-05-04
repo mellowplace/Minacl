@@ -290,6 +290,25 @@ Code: 0", $this->previousErrorMessage, 'Exception was caught and raised with tri
     	$this->previousErrorMessage = $string;
     }
     
+    /**
+     * Test that when we have checkboxes defined like:
+     * 	ids[]
+     * 	ids[]
+     * 	etc... and no value is bound to them (because the user didn't check any)
+     * that minacl deals with it properly.  Issue - 
+     * https://github.com/mellowplace/Minacl/issues/7
+     */
+    public function testCheckboxArraysWithNoDataBound()
+    {
+    	$form = new phForm('test', 'arrayFillInView');
+    	$form->bind(array(
+    		'test' => array(
+    			'name' => 'test',
+    			'address' => 'addie'
+    		)
+    	));
+    }
+    
     private function addForm($name)
     {
     	$this->form = new phForm('test', 'viewTestView');
