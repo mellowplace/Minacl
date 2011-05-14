@@ -52,7 +52,7 @@ class phNumericValidatorTest extends phTestCase
 	
 	public function testNotNumeric()
 	{
-		$this->_validator->validate('not a number', $this->_testValidatable);
+		$this->assertFalse($this->_validator->validate('not a number', $this->_testValidatable), 'String does not validate');
 		
 		$errors = $this->_testValidatable->getErrors();
 		$this->assertEquals(1, sizeof($errors), '1 error was added');
@@ -65,12 +65,12 @@ class phNumericValidatorTest extends phTestCase
 		/*
 		 * try a whole number, should still be valid
 		 */
-		$this->_validator->validate('1', $this->_testValidatable);
+		$this->assertTrue($this->_validator->validate('1', $this->_testValidatable), '1 validates');
 		$this->assertEquals(0, sizeof($this->_testValidatable->getErrors()), 'No errors where added for value of "1"');
 		/*
 		 * try a decimal
 		 */
-		$this->_validator->validate('1.1', $this->_testValidatable);
+		$this->assertTrue($this->_validator->validate('1.1', $this->_testValidatable), '1.1 validates');
 		$this->assertEquals(0, sizeof($this->_testValidatable->getErrors()), 'No errors where added for value of "1.1"');
 	}
 	
@@ -80,12 +80,12 @@ class phNumericValidatorTest extends phTestCase
 		/*
 		 * try a whole number first, should be valid
 		 */
-		$this->_validator->validate('1', $this->_testValidatable);
+		$this->assertTrue($this->_validator->validate('1', $this->_testValidatable), 'Whole number validates');
 		$this->assertEquals(0, sizeof($this->_testValidatable->getErrors()), 'No errors where added for value of "1"');
 		/*
 		 * try decimal, should be invalid
 		 */
-		$this->_validator->validate('1.1', $this->_testValidatable);
+		$this->assertFalse($this->_validator->validate('1.1', $this->_testValidatable), 'Decimal does not validate');
 		$errors = $this->_testValidatable->getErrors();
 		$this->assertEquals(1, sizeof($errors), '1 error added for "1.1"');
 		$this->assertEquals(phNumericValidator::DECIMAL_ERROR, $errors[0]->getCode(), 'the error was DECIMAL_ERROR');
@@ -94,12 +94,12 @@ class phNumericValidatorTest extends phTestCase
 	public function testMin()
 	{
 		$this->_validator->min(10);
-		$this->_validator->validate('10', $this->_testValidatable);
+		$this->assertTrue($this->_validator->validate('10', $this->_testValidatable), '10 validates');
 		$this->assertEquals(0, sizeof($this->_testValidatable->getErrors()), 'No errors where added for value of "10"');
 		/*
 		 * test just below the minimum
 		 */
-		$this->_validator->validate('9', $this->_testValidatable);
+		$this->assertFalse($this->_validator->validate('9', $this->_testValidatable), '9 does not validate');
 		$errors = $this->_testValidatable->getErrors();
 		$this->assertEquals(1, sizeof($errors), '1 error was added for value of 9');
 		$this->assertEquals(phNumericValidator::MIN_ERROR, $errors[0]->getCode(), 'the error was MIN_ERROR');
@@ -108,12 +108,12 @@ class phNumericValidatorTest extends phTestCase
 	public function testMax()
 	{
 		$this->_validator->max(10);
-		$this->_validator->validate('10', $this->_testValidatable);
+		$this->assertTrue($this->_validator->validate('10', $this->_testValidatable), '10 validates');
 		$this->assertEquals(0, sizeof($this->_testValidatable->getErrors()), 'No errors where added for value of "10"');
 		/*
 		 * test just above the maximum
 		 */
-		$this->_validator->validate('11', $this->_testValidatable);
+		$this->assertFalse($this->_validator->validate('11', $this->_testValidatable), '11 does not validate');
 		$errors = $this->_testValidatable->getErrors();
 		$this->assertEquals(1, sizeof($errors), '1 error was added for value of 11');
 		$this->assertEquals(phNumericValidator::MAX_ERROR, $errors[0]->getCode(), 'the error was MAX_ERROR');
@@ -149,9 +149,9 @@ class phNumericValidatorTest extends phTestCase
 	
 	public function testEmptyOk()
 	{
-		$this->_validator->validate('', $this->_testValidatable);
+		$this->assertTrue($this->_validator->validate('', $this->_testValidatable), 'Empty validates');
 		$this->assertEquals(0, sizeof(($this->_testValidatable)), 'Empty string validates ok');
-		$this->_validator->validate(null, $this->_testValidatable);
+		$this->assertTrue($this->_validator->validate(null, $this->_testValidatable), 'Null validates');
 		$this->assertEquals(0, sizeof(($this->_testValidatable)), 'Null validates ok');
 	}
 }

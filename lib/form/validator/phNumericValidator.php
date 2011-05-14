@@ -79,29 +79,31 @@ class phNumericValidator extends phValidatorCommon
 		if(!is_numeric($value))
 		{
 			$errors->addError($this->getError(self::NOT_NUMERIC));
-			return;
+			return false;
 		}
 		
 		if(strpos($value, '.')!==false && !$this->_decimal)
 		{
 			// decimals not allowed and this value is a decimal
 			$errors->addError($this->getError(self::DECIMAL_ERROR));
-			return;
+			return false;
 		}
 		
 		if($this->_min!==null && $value<$this->_min)
 		{
 			// value is below required minimum
 			$errors->addError($this->getError(self::MIN_ERROR, array('%min%'=>$this->_min)));
-			return;
+			return false;
 		}
 		
 		if($this->_max!==null && $value>$this->_max)
 		{
 			// value is above required minimum
 			$errors->addError($this->getError(self::MAX_ERROR, array('%max%'=>$this->_max)));
-			return;
+			return false;
 		}
+		
+		return true;
 	}
 	
 	/**
