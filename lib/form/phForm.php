@@ -281,7 +281,9 @@ class phForm implements phFormViewElement, phData
 	public function getErrors()
 	{
 		$errors = $this->_errors;
-		
+		/*
+		 * merge in element errors
+		 */
 		$items = $this->_view->getAllData();
 		foreach($items as $i)
 		{

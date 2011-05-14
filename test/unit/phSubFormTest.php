@@ -148,8 +148,12 @@ class phSubFormTest extends phTestCase
 		$this->form->address->address->setValidator(new phRequiredValidator(
 			array(phRequiredValidator::REQUIRED=>'Required field')
 		));
-		$this->form->bind(array());
+		$this->form->bindAndValidate(array());
 		$this->assertFalse($this->form->isValid(), 'Form is not valid');
+		/*
+		 * check get errors on phForm returns subform errors too
+		 */
+		$this->assertEquals(1, sizeof($this->form->getErrors()), 'Errors from subform have been returned by getErrors on the master');
 	}
 	
 	/**
