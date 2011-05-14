@@ -524,6 +524,7 @@ class phValidatorFinder
 	/**
 	 * Finds a validator attached to the data item in the view referenced by $name
 	 * @param string $name
+	 * @return phData
 	 */
 	public function __get($name)
 	{

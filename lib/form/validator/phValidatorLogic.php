@@ -107,6 +107,7 @@ class phValidatorLogic implements phValidator, ArrayAccess
 	/**
 	 * (non-PHPdoc)
 	 * @see ArrayAccess::offsetGet()
+	 * @return phValidator
 	 */
 	public function offsetGet ($offset)
 	{
