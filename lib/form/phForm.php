@@ -51,6 +51,11 @@ class phForm implements phFormViewElement, phData
 	 * @var phValidator
 	 */
 	protected $_validator = null;
+	/**
+	 * An object that gets validators from the data items on the view 
+	 * @var phValidatorFinder
+	 */
+	protected $_validatorFinder = null;
 	
 	public function __construct($name, $template)
 	{
@@ -65,6 +70,7 @@ class phForm implements phFormViewElement, phData
 		
 		$this->_view = new phFormView($template, $this);
 		$this->_elementFinder = new phElementFinder($this->_view);
+		$this->_validatorFinder = new phValidatorFinder($this->_view);
 	}
 	
 	/**
@@ -399,6 +405,14 @@ class phForm implements phFormViewElement, phData
 		return $this->_elementFinder;
 	}
 	
+	/**
+	 * @return phValidatorFinder an object that gets the validator set on a data item
+	 */
+	public function validator()
+	{
+		return $this->_validatorFinder;
+	}
+	
 	public function __toString()
 	{
 		/*
@@ -486,5 +500,34 @@ class phElementFinder
 	public function __get($id)
 	{
 		return $this->_view->getElement($id);
+	}
+}
+
+/**
+ * Private class that finds validators by the data item they are set on.
+ * (it is returned from phForm::validator())
+ * @author rob
+ *
+ */
+class phValidatorFinder
+{
+	/**
+	 * @var phFormView
+	 */
+	protected $_view = null;
+	
+	public function __construct(phFormView $view)
+	{
+		$this->_view = $view;
+	}
+	
+	/**
+	 * Finds a validator attached to the data item in the view referenced by $name
+	 * @param string $name
+	 */
+	public function __get($name)
+	{
+		$data = $this->_view->getData($name);
+		return $data->getValidator();
 	}
 }

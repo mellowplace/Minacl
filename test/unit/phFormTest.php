@@ -309,6 +309,39 @@ Code: 0", $this->previousErrorMessage, 'Exception was caught and raised with tri
     	));
     }
     
+    /**
+     * test that trying to get the validator via validate() for a non
+     * existant form element throws an error
+     * 
+     * @expectedException phFormException
+     */
+    public function testValidateNonExistant()
+    {
+    	$form = new phForm('test', 'addressTestView');
+    	$form->validator()->doesNotExist;
+    }
+    
+    /**
+     * Test the validator helper that gets the validator on a data item
+     */
+    public function testValidate()
+    {
+    	$form = new phForm('test', 'subFormTestView');
+    	$addressForm = new phForm('address', 'addressTestView');
+    	$form->addForm($addressForm);
+    	
+    	$form->first_name->setValidator(new phRequiredValidator());
+    	/*
+    	 * set a validator on the subform and make sure we can use
+    	 * validator() to get it
+    	 */
+    	$form->address->setValidator(new phStringLengthValidator());
+    	
+    	$this->assertTrue($form->validator()->first_name instanceof phRequiredValidator, 'first name validator found');
+    	$this->assertTrue($form->validator()->address instanceof phStringLengthValidator, 'address forms validator found');
+    }
+    
+    
     private function addForm($name)
     {
     	$this->form = new phForm('test', 'viewTestView');
