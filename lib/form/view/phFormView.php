@@ -258,7 +258,7 @@ class phFormView
 		
 		if($dataItem===null)
 		{
-			throw new phFormException("The data item \"{$name}\" is not registered in this view", $code);
+			throw new phFormException("The data item \"{$name}\" is not registered in this view");
 		}
 		
 		return $dataItem;
