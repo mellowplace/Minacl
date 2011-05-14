@@ -433,6 +433,14 @@ class phViewTest extends phTestCase
     	$form = new phForm('test', 'cp1252View');
     	$form->getView()->render();
     }
+    
+    public function testHasData()
+    {
+    	$this->assertTrue($this->form->getView()->hasData('username'), 'hasData for username is true');
+    	$this->assertFalse($this->form->getView()->hasData('nonexistant'), 'hasData for nonexistant is false');
+    	$this->assertTrue($this->form->getView()->hasData('checkbox[0]'), 'hasData for checkbox[0] is true');
+    	$this->assertFalse($this->form->getView()->hasData('checkbox[99]'), 'hasData for checkbox[99] is false');
+    }
 }
 
 class phFormViewTest extends phFormView

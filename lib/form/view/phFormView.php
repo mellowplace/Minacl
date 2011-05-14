@@ -265,6 +265,19 @@ class phFormView
 	}
 	
 	/**
+	 * Returns true if $name exists in the data collection
+	 * @param string $name
+	 * @return boolean
+	 */
+	public function hasData($name)
+	{
+		$this->initialize();
+		
+		$dataItem = $this->_dataCollection->find($name);
+		return ($dataItem !== null);
+	}
+	
+	/**
 	 * Gets the real element id from the rewritten one
 	 * 
 	 * @param string $id
