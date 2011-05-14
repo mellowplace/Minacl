@@ -303,6 +303,13 @@ class phValidatorTest extends phTestCase
 		$logic->and_($fail)->or_($pass);
 		$this->assertTrue($logic->validate('test', $errors), 'The v and v or v logic correctly passes');
 		
+		/*
+		 * test the array access returns the correct validators
+		 */
+		$this->assertEquals($pass, $logic[0], 'Element at 0 is the pass validator');
+		$this->assertEquals($fail, $logic[1], 'Element at 1 is the fail validator');
+		$this->assertEquals($pass, $logic[2], 'Element at 2 is the pass validator');
+		
 		$logic = new phValidatorLogic($fail);
 		$logic->and_($fail);
 		$errors->resetErrors();

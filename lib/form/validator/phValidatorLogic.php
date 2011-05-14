@@ -28,7 +28,7 @@
  * @package phform
  * @subpackage validator
  */
-class phValidatorLogic implements phValidator
+class phValidatorLogic implements phValidator, ArrayAccess
 {
 	protected $_validators = array();
 	
@@ -37,7 +37,7 @@ class phValidatorLogic implements phValidator
 	
 	public function __construct(phValidator $validator)
 	{
-		$this->_validators[] = $validator;
+		$this->_validators[] = array($validator);
 	}
 	
 	/**
@@ -52,7 +52,7 @@ class phValidatorLogic implements phValidator
 		{
 			if($valid==='')
 			{
-				$valid = $v->validate($value, $errors) ? 'true' : 'false';
+				$valid = $v[0]->validate($value, $errors) ? 'true' : 'false';
 			}
 			else
 			{
@@ -93,5 +93,41 @@ class phValidatorLogic implements phValidator
 	{
 		$this->_validators[] = array($validator, self::_OR);
 		return $this;
+	}
+	
+	/**
+	 * (non-PHPdoc)
+	 * @see ArrayAccess::offsetExists()
+	 */
+	public function offsetExists ($offset)
+	{
+		return array_key_exists($offset, $this->_validators);
+	}
+
+	/**
+	 * (non-PHPdoc)
+	 * @see ArrayAccess::offsetGet()
+	 */
+	public function offsetGet ($offset)
+	{
+		return $this->offsetExists($offset) ? $this->_validators[$offset][0] : null;
+	}
+
+	/**
+	 * (non-PHPdoc)
+	 * @see ArrayAccess::offsetSet()
+	 */
+	public function offsetSet ($offset, $value)
+	{
+		throw new phFormException('You cannot set validators using array access');
+	}
+
+	/**
+	 * (non-PHPdoc)
+	 * @see ArrayAccess::offsetUnset()
+	 */
+	public function offsetUnset ($offset)
+	{
+		throw new phFormException('You cannot unset validators using array access');
 	}
 }
