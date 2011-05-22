@@ -341,6 +341,39 @@ Code: 0", $this->previousErrorMessage, 'Exception was caught and raised with tri
     	$this->assertTrue($form->validator()->address instanceof phStringLengthValidator, 'address forms validator found');
     }
     
+    /**
+     * Test you can pass variables onto the view
+     */
+    public function testViewParams()
+    {
+    	$form = new phForm('test', 'customVariableView', array('test' => 'this is a custom variable'));
+    	$this->assertEquals('this is a custom variable', $form->__toString(), 'custom variable was passed');
+    }
+    
+    /**
+     * @expectedException phFormException
+     */
+    public function testInvalidViewParamName1()
+    {
+    	$form = new phForm('test', 'customVariableView', array('not valid' => 'this is a custom variable'));
+    }
+    
+    /**
+     * @expectedException phFormException
+     */
+	public function testInvalidViewParamName2()
+    {
+    	$form = new phForm('test', 'customVariableView', array('_test' => 'this is a custom variable'));
+    }
+    
+    /**
+     * @expectedException phFormException
+     */
+	public function testInvalidViewParamName3()
+    {
+    	$form = new phForm('test', 'customVariableView', array('1test' => 'this is a custom variable'));
+    }
+    
     
     private function addForm($name)
     {

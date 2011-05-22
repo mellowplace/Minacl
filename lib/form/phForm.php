@@ -57,7 +57,14 @@ class phForm implements phFormViewElement, phData
 	 */
 	protected $_validatorFinder = null;
 	
-	public function __construct($name, $template)
+	/**
+	 * @param string $name the name of this form (if you use it as a subform you can access it with this name)
+	 * @param string $template the name of the template to use
+	 * @param array $viewParams optional variables to pass on to the view (the array key becomes the variable name)
+	 * 
+	 * @throws phFormException
+	 */
+	public function __construct($name, $template, array $viewParams = array())
 	{
 		if(!$this->isValidId($name))
 		{
@@ -68,7 +75,7 @@ class phForm implements phFormViewElement, phData
 		$this->setNameFormat($name . '[%s]');
 		$this->setIdFormat($name . '_%s');
 		
-		$this->_view = new phFormView($template, $this);
+		$this->_view = new phFormView($template, $this, $viewParams);
 		$this->_elementFinder = new phElementFinder($this->_view);
 		$this->_validatorFinder = new phValidatorFinder($this->_view);
 	}

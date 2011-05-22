@@ -91,7 +91,7 @@ class phFormView
 	 */
 	protected $_initialized = false;
 	
-	public function __construct($template, phForm $form)
+	public function __construct($template, phForm $form, array $viewParams = array())
 	{
 		$this->_template = $template;
 		$this->_form = $form;
@@ -100,6 +100,19 @@ class phFormView
 		if($this->_docTypeDecl===false)
 		{
 			throw new phFormException('Cannot find xhtml entities definitions');
+		}
+		
+		/*
+		 * add any custom view params
+		 */
+		foreach($viewParams as $name => $value)
+		{
+			if(!$form->isValidId($name))
+			{
+				throw new phFormException("'{$name}' is not a valid variable name.  Valid names must be a-z0-9 only and not start with an underscore (_) or a number.");
+			}
+			
+			$this->_customVars[$name] = $value;
 		}
 	}
 	
