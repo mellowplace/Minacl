@@ -355,7 +355,6 @@ Code: 0", $this->previousErrorMessage, 'Exception was caught and raised with tri
      */
     public function testInvalidViewParamName1()
     {
-    	$this->fail('failing deliberately');
     	$form = new phForm('test', 'customVariableView', array('not valid' => 'this is a custom variable'));
     }
     
